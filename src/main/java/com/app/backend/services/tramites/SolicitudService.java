@@ -1,0 +1,16 @@
+package com.app.backend.services.tramites;
+
+import com.app.backend.dtos.tramites.SolicitudDTO;
+import lombok.NonNull;
+import java.util.List;
+
+public interface SolicitudService {
+    List<SolicitudDTO> listarTodas();
+    List<SolicitudDTO> listarPorUsuario(@NonNull Integer idUsuario);
+    List<SolicitudDTO> listarPorEstado(String estado);
+    SolicitudDTO obtenerPorId(@NonNull Integer id);
+    SolicitudDTO obtenerPorCodigo(String codigo);
+    SolicitudDTO crear(SolicitudDTO dto);
+    SolicitudDTO actualizar(@NonNull Integer id, SolicitudDTO dto);
+    void eliminar(@NonNull Integer id);
+}

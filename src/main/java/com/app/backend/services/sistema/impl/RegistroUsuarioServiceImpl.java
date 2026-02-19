@@ -1,0 +1,175 @@
+package com.app.backend.services.sistema.impl;
+
+import com.app.backend.dtos.sistema.RegistroUsuarioDTO;
+import com.app.backend.dtos.sistema.RegistroUsuarioRespuestaDTO;
+import com.app.backend.entities.academico.*;
+import com.app.backend.entities.sistema.Credencial;
+import com.app.backend.entities.sistema.Rol;
+import com.app.backend.entities.sistema.Usuario;
+import com.app.backend.exceptions.RecursoNoEncontradoException;
+import com.app.backend.repositories.academico.*;
+import com.app.backend.repositories.sistema.CredencialRepository;
+import com.app.backend.repositories.sistema.RolRepository;
+import com.app.backend.repositories.sistema.UsuarioRepository;
+import com.app.backend.services.sistema.RegistroUsuarioService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+@Transactional
+@SuppressWarnings("null")
+public class RegistroUsuarioServiceImpl implements RegistroUsuarioService {
+
+    private final UsuarioRepository usuarioRepository;
+    private final RolRepository rolRepository;
+    private final CarreraRepository carreraRepository;
+    private final SemestreRepository semestreRepository;
+    private final EstudianteRepository estudianteRepository;
+    private final CoordinadorRepository coordinadorRepository;
+    private final DecanoRepository decanoRepository;
+    private final CredencialRepository credencialRepository;
+
+    @Override
+    public RegistroUsuarioRespuestaDTO registrarUsuario(RegistroUsuarioDTO dto) {
+
+        // 1. Validar que no exista un usuario con la misma cédula o correo institucional
+        if (usuarioRepository.existsByCedula(dto.getCedula())) {
+            throw new IllegalArgumentException("Ya existe un usuario registrado con la cédula: " + dto.getCedula());
+        }
+        if (usuarioRepository.existsByCorreoInstitucional(dto.getCorreoInstitucional())) {
+            throw new IllegalArgumentException("Ya existe un usuario registrado con el correo: " + dto.getCorreoInstitucional());
+        }
+
+        // 2. Buscar la Carrera por código (los IDs del sistema externo pueden diferir)
+        Carrera carrera = null;
+        if (dto.getCodigoCarrera() != null) {
+            carrera = carreraRepository.findByCodigoCarrera(dto.getCodigoCarrera())
+                    .orElseThrow(() -> new RecursoNoEncontradoException(
+                            "Carrera no encontrada con código: " + dto.getCodigoCarrera()));
+        }
+
+        // 3. Buscar el Semestre por código de periodo
+        Semestre semestre = null;
+        if (dto.getCodigoPeriodo() != null) {
+            semestre = semestreRepository.findByCodigoPeriodo(dto.getCodigoPeriodo())
+                    .orElseThrow(() -> new RecursoNoEncontradoException(
+                            "Semestre no encontrado con código de periodo: " + dto.getCodigoPeriodo()));
+        }
+
+        // 4. Buscar el Rol por nombre
+        Rol rol = null;
+        if (dto.getRol() != null) {
+            rol = rolRepository.findByNombreRol(dto.getRol())
+                    .orElseThrow(() -> new RecursoNoEncontradoException(
+                            "Rol no encontrado con nombre: " + dto.getRol()));
+        }
+
+        // 5. Crear el Usuario
+        Usuario usuario = Usuario.builder()
+                .cedula(dto.getCedula())
+                .nombres(dto.getNombres())
+                .apellidos(dto.getApellidos())
+                .correoPersonal(dto.getCorreoPersonal())
+                .correoInstitucional(dto.getCorreoInstitucional())
+                .telefono(dto.getTelefono())
+                .fechaNacimiento(dto.getFechaNacimiento())
+                .genero(dto.getGenero())
+                .direccion(dto.getDireccion())
+                .estado(dto.getEstadoUsuario() != null ? dto.getEstadoUsuario() : true)
+                .build();
+
+        if (rol != null) {
+            usuario.setRoles(List.of(rol));
+        }
+
+        usuario = usuarioRepository.save(usuario);
+
+        // 6. Crear la Credencial con la cédula como contraseña por defecto
+        Credencial credencial = Credencial.builder()
+                .usuario(usuario)
+                .hashContrasena(dto.getCedula())
+                .estado(true)
+                .build();
+        credencialRepository.save(credencial);
+
+        // 7. Crear la entidad específica según el rol
+        Integer idEstudiante = null;
+        Integer idCoordinador = null;
+        Integer idDecano = null;
+
+        String rolNombre = dto.getRol() != null ? dto.getRol().toLowerCase() : "";
+
+        switch (rolNombre) {
+            case "estudiante" -> {
+                LocalDate fechaMatricula = null;
+                if (dto.getFechaIngreso() != null) {
+                    fechaMatricula = dto.getFechaIngreso().toLocalDate();
+                }
+
+                Estudiante estudiante = Estudiante.builder()
+                        .usuario(usuario)
+                        .carrera(carrera)
+                        .semestre(semestre)
+                        .paralelo(dto.getParalelo())
+                        .estadoAcademico(dto.getEstadoAcademico() != null ? dto.getEstadoAcademico() : "Regular")
+                        .fechaMatricula(fechaMatricula)
+                        .esExterno(false)
+                        .build();
+
+                estudiante = estudianteRepository.save(estudiante);
+                idEstudiante = estudiante.getIdEstudiante();
+            }
+
+            case "coordinador" -> {
+                Coordinador coordinador = Coordinador.builder()
+                        .usuario(usuario)
+                        .carrera(carrera)
+                        .horarioAtencion(dto.getHorarioAtencion())
+                        .ubicacionOficina(dto.getOficinaAtencion())
+                        .estaActivo(true)
+                        .fechaNombramiento(dto.getFechaNombramientoCoordinador())
+                        .build();
+
+                coordinador = coordinadorRepository.save(coordinador);
+                idCoordinador = coordinador.getIdCoordinador();
+            }
+
+            case "decano" -> {
+                Decano decano = Decano.builder()
+                        .usuario(usuario)
+                        .facultad(carrera != null ? carrera.getFacultad() : null)
+                        .fechaNombramiento(dto.getFechaNombramientoDecano() != null
+                                ? dto.getFechaNombramientoDecano().atStartOfDay()
+                                : null)
+                        .estaActivo(true)
+                        .build();
+
+                decano = decanoRepository.save(decano);
+                idDecano = decano.getIdDecano();
+            }
+
+            default -> {
+                // Rol genérico: solo se crea el usuario con credencial
+            }
+        }
+
+        // 8. Construir la respuesta
+        return RegistroUsuarioRespuestaDTO.builder()
+                .idUsuario(usuario.getIdUsuario())
+                .idEstudiante(idEstudiante)
+                .idCoordinador(idCoordinador)
+                .idDecano(idDecano)
+                .cedula(usuario.getCedula())
+                .nombres(usuario.getNombres())
+                .apellidos(usuario.getApellidos())
+                .correoInstitucional(usuario.getCorreoInstitucional())
+                .rol(dto.getRol())
+                .mensaje("Usuario registrado exitosamente")
+                .build();
+    }
+}
