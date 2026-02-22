@@ -8,8 +8,10 @@ import com.app.backend.entities.sistema.Rol;
 import com.app.backend.entities.sistema.Usuario;
 import com.app.backend.exceptions.RecursoNoEncontradoException;
 import com.app.backend.repositories.academico.*;
+import com.app.backend.entities.sistema.RolServidor;
 import com.app.backend.repositories.sistema.CredencialRepository;
 import com.app.backend.repositories.sistema.RolRepository;
+import com.app.backend.repositories.sistema.RolServidorRepository;
 import com.app.backend.repositories.sistema.UsuarioRepository;
 import com.app.backend.services.sistema.RegistroUsuarioService;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +35,7 @@ public class RegistroUsuarioServiceImpl implements RegistroUsuarioService {
     private final CoordinadorRepository coordinadorRepository;
     private final DecanoRepository decanoRepository;
     private final CredencialRepository credencialRepository;
+    private final RolServidorRepository rolServidorRepository;
 
     @Override
     public RegistroUsuarioRespuestaDTO registrarUsuario(RegistroUsuarioDTO dto) {
@@ -89,7 +92,17 @@ public class RegistroUsuarioServiceImpl implements RegistroUsuarioService {
 
         usuario = usuarioRepository.save(usuario);
 
-        // 6. Crear la Credencial con la cédula como contraseña por defecto
+        // 6. Asignar el Rol de Servidor según el rol del usuario
+        if (dto.getRol() != null) {
+            String nombreRolDb = "rol_" + dto.getRol().toLowerCase();
+            RolServidor rolServidor = rolServidorRepository.findByNombreRolDb(nombreRolDb)
+                    .orElseThrow(() -> new RecursoNoEncontradoException(
+                            "Rol de servidor no encontrado: " + nombreRolDb));
+            usuario.setRolesServidor(List.of(rolServidor));
+            usuario = usuarioRepository.save(usuario);
+        }
+
+        // 7. Crear la Credencial con la cédula como contraseña por defecto
         Credencial credencial = Credencial.builder()
                 .usuario(usuario)
                 .hashContrasena(dto.getCedula())
@@ -97,7 +110,7 @@ public class RegistroUsuarioServiceImpl implements RegistroUsuarioService {
                 .build();
         credencialRepository.save(credencial);
 
-        // 7. Crear la entidad específica según el rol
+        // 8. Crear la entidad específica según el rol
         Integer idEstudiante = null;
         Integer idCoordinador = null;
         Integer idDecano = null;
@@ -158,7 +171,7 @@ public class RegistroUsuarioServiceImpl implements RegistroUsuarioService {
             }
         }
 
-        // 8. Construir la respuesta
+        // 9. Construir la respuesta
         return RegistroUsuarioRespuestaDTO.builder()
                 .idUsuario(usuario.getIdUsuario())
                 .idEstudiante(idEstudiante)
