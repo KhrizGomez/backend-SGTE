@@ -19,8 +19,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -39,13 +42,16 @@ public class RegistroUsuarioServiceImpl implements RegistroUsuarioService {
 
     @Override
     public RegistroUsuarioRespuestaDTO registrarUsuario(RegistroUsuarioDTO dto) {
+        log.info("Iniciando registro de usuario con cédula: {}, rol: {}", dto.getCedula(), dto.getRol());
 
-        // 1. Validar que no exista un usuario con la misma cédula o correo institucional
+        // 1. Validar que no exista un usuario con la misma cédula o correo
+        // institucional
         if (usuarioRepository.existsByCedula(dto.getCedula())) {
             throw new IllegalArgumentException("Ya existe un usuario registrado con la cédula: " + dto.getCedula());
         }
         if (usuarioRepository.existsByCorreoInstitucional(dto.getCorreoInstitucional())) {
-            throw new IllegalArgumentException("Ya existe un usuario registrado con el correo: " + dto.getCorreoInstitucional());
+            throw new IllegalArgumentException(
+                    "Ya existe un usuario registrado con el correo: " + dto.getCorreoInstitucional());
         }
 
         // 2. Buscar la Carrera por código (los IDs del sistema externo pueden diferir)
@@ -87,7 +93,9 @@ public class RegistroUsuarioServiceImpl implements RegistroUsuarioService {
                 .build();
 
         if (rol != null) {
-            usuario.setRoles(List.of(rol));
+            List<Rol> roles = new ArrayList<>();
+            roles.add(rol);
+            usuario.setRoles(roles);
         }
 
         usuario = usuarioRepository.save(usuario);
@@ -95,10 +103,13 @@ public class RegistroUsuarioServiceImpl implements RegistroUsuarioService {
         // 6. Asignar el Rol de Servidor según el rol del usuario
         if (dto.getRol() != null) {
             String nombreRolDb = "rol_" + dto.getRol().toLowerCase();
+            log.info("Buscando rol de servidor: {}", nombreRolDb);
             RolServidor rolServidor = rolServidorRepository.findByNombreRolDb(nombreRolDb)
                     .orElseThrow(() -> new RecursoNoEncontradoException(
                             "Rol de servidor no encontrado: " + nombreRolDb));
-            usuario.setRolesServidor(List.of(rolServidor));
+            List<RolServidor> rolesServidor = new ArrayList<>();
+            rolesServidor.add(rolServidor);
+            usuario.setRolesServidor(rolesServidor);
             usuario = usuarioRepository.save(usuario);
         }
 
