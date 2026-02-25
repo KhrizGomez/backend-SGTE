@@ -114,11 +114,19 @@ public class RegistroUsuarioServiceImpl implements RegistroUsuarioService {
         }
 
         // 7. Crear la Credencial con la cédula como contraseña por defecto
-        Credencial credencial = Credencial.builder()
-                .usuario(usuario)
-                .hashContrasena(dto.getCedula())
-                .estado(true)
-                .build();
+        // y el nombre de usuario derivado del correo institucional
+        String correoInst = dto.getCorreoInstitucional();
+        String nombreUsuario = (correoInst != null && !correoInst.isBlank())
+                ? correoInst.split("@")[0]
+                : dto.getCedula();
+
+        log.info("nombreUsuario calculado para credencial: {}", nombreUsuario);
+
+        Credencial credencial = new Credencial();
+        credencial.setUsuario(usuario);
+        credencial.setHashContrasena(dto.getCedula());
+        credencial.setNombreUsuario(nombreUsuario);
+        credencial.setEstado(true);
         credencialRepository.save(credencial);
 
         // 8. Crear la entidad específica según el rol

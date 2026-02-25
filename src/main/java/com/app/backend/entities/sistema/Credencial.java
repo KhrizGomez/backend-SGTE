@@ -5,8 +5,10 @@ import lombok.*;
 
 @Entity
 @Table(name = "credenciales", schema = "sistema")
-@Getter @Setter
-@NoArgsConstructor @AllArgsConstructor
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class Credencial {
 
@@ -21,6 +23,9 @@ public class Credencial {
 
     @Column(name = "hash_contrasena", nullable = false, columnDefinition = "text")
     private String hashContrasena;
+
+    @Column(name = "nombre_usuario", length = 25)
+    private String nombreUsuario;
 
     @Column(name = "estado")
     @Builder.Default
