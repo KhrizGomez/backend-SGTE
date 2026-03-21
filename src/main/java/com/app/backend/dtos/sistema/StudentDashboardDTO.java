@@ -1,9 +1,7 @@
 package com.app.backend.dtos.sistema;
 
-import com.app.backend.dtos.sistema.NotificacionDTO;
 import com.app.backend.dtos.tramites.SolicitudDTO;
 import lombok.*;
-
 import java.util.List;
 
 @Data

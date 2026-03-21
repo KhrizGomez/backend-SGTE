@@ -3,6 +3,7 @@ package com.app.backend.services.sistema.impl;
 import com.app.backend.dtos.sistema.LoginRequestDTO;
 import com.app.backend.dtos.sistema.LoginRespuestaDTO;
 import com.app.backend.entities.sistema.Credencial;
+import com.app.backend.entities.sistema.Rol;
 import com.app.backend.entities.sistema.Usuario;
 import com.app.backend.repositories.sistema.CredencialRepository;
 import com.app.backend.services.sistema.LoginService;
@@ -10,8 +11,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Slf4j
 @Service
@@ -42,14 +41,15 @@ public class LoginServiceImpl implements LoginService {
             throw new IllegalArgumentException("El usuario no está activo");
         }
 
-        // 4. Obtener roles del usuario
-        List<String> roles = usuario.getRoles() != null
+        // 4. Obtener rol del usuario
+        String rol = usuario.getRoles() != null
                 ? usuario.getRoles().stream()
-                        .map(rol -> rol.getNombreRol())
-                        .toList()
-                : List.of();
+                        .map(Rol::getNombreRol)
+                        .findFirst()
+                        .orElse("")
+                :"";
 
-        log.info("Login exitoso para: {} con roles: {}", request.getNombreUsuario(), roles);
+        log.info("Login exitoso para: {} con roles: {}", request.getNombreUsuario(), rol);
 
         return LoginRespuestaDTO.builder()
                 .idUsuario(usuario.getIdUsuario())
@@ -60,7 +60,7 @@ public class LoginServiceImpl implements LoginService {
                 .correoPersonal(usuario.getCorreoPersonal())
                 .telefono(usuario.getTelefono())
                 .estado(usuario.getEstado())
-                .roles(roles)
+                .rol(rol)
                 .mensaje("Login exitoso")
                 .build();
     }

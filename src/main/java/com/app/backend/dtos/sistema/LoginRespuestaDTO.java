@@ -1,7 +1,6 @@
 package com.app.backend.dtos.sistema;
 
 import lombok.*;
-import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -16,6 +15,6 @@ public class LoginRespuestaDTO {
     private String correoPersonal;
     private String telefono;
     private Boolean estado;
-    private List<String> roles;
+    private String rol;
     private String mensaje;
 }
