@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -30,7 +31,11 @@ public class DetallesTramiteController {
     }
 
     @GetMapping("/plantillas")
-    public ResponseEntity<List<PlantillaTramiteResponseDTO>> listarPlantillasTramites() {
-        return ResponseEntity.ok(tipoTramiteService.listarPlantillasTramites());
+    public ResponseEntity<List<PlantillaTramiteResponseDTO>> listarPlantillasTramites(
+            @RequestParam(required = false) String categoria,
+            @RequestParam(required = false) Boolean activo,
+            @RequestParam(required = false) String busqueda
+    ) {
+        return ResponseEntity.ok(tipoTramiteService.listarPlantillasTramites(categoria, activo, busqueda));
     }
 }

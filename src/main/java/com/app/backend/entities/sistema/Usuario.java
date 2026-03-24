@@ -7,8 +7,10 @@ import java.util.List;
 
 @Entity
 @Table(name = "usuarios", schema = "sistema")
-@Getter @Setter
-@NoArgsConstructor @AllArgsConstructor
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class Usuario {
 
@@ -48,12 +50,8 @@ public class Usuario {
     @Builder.Default
     private Boolean estado = true;
 
-    @ManyToMany
-    @JoinTable(
-        name = "usuarios_roles", schema = "sistema",
-        joinColumns = @JoinColumn(name = "id_usuario"),
-        inverseJoinColumns = @JoinColumn(name = "id_rol")
-    )
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "usuarios_roles", schema = "sistema", joinColumns = @JoinColumn(name = "id_usuario"), inverseJoinColumns = @JoinColumn(name = "id_rol"))
     private List<Rol> roles;
 
     @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -61,7 +59,6 @@ public class Usuario {
 
     @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
     private Credencial credencial;
-
 
     @OneToMany(mappedBy = "usuario")
     private List<Notificacion> notificaciones;
