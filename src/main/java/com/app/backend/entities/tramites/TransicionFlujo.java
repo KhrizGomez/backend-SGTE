@@ -17,7 +17,7 @@ public class TransicionFlujo {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_flujo", nullable = false)
-    private DefinicionFlujo definicionFlujo;
+    private FlujoTrabajo flujoTrabajo;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_paso_origen")

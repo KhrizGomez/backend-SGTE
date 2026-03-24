@@ -26,7 +26,7 @@ public class MotivoRechazo {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_categoria")
-    private CategoriaTramite categoria;
+    private Categoria categoria;
 
     @Column(name = "esta_activo")
     @Builder.Default

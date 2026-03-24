@@ -8,5 +8,5 @@ import java.util.List;
 
 @Repository
 public interface TransicionFlujoRepository extends JpaRepository<TransicionFlujo, Integer> {
-    List<TransicionFlujo> findByDefinicionFlujoIdFlujo(Integer idFlujo);
+    List<TransicionFlujo> findByFlujoTrabajoIdFlujo(Integer idFlujo);
 }

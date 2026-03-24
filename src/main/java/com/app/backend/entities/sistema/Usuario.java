@@ -62,16 +62,6 @@ public class Usuario {
     @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
     private Credencial credencial;
 
-    @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
-    private CredencialServidor credencialServidor;
-
-    @ManyToMany
-    @JoinTable(
-        name = "usuarios_roles_servidor", schema = "sistema",
-        joinColumns = @JoinColumn(name = "id_usuario"),
-        inverseJoinColumns = @JoinColumn(name = "id_rol_srv")
-    )
-    private List<RolServidor> rolesServidor;
 
     @OneToMany(mappedBy = "usuario")
     private List<Notificacion> notificaciones;

@@ -1,12 +1,12 @@
 package com.app.backend.services.tramites.impl;
 
 import com.app.backend.dtos.tramites.SeguimientoSolicitudDTO;
-import com.app.backend.entities.tramites.SeguimientoSolicitud;
+import com.app.backend.entities.tramites.HistorialSolicitud;
 import com.app.backend.exceptions.RecursoNoEncontradoException;
 import com.app.backend.repositories.sistema.UsuarioRepository;
-import com.app.backend.repositories.tramites.EtapaProcesamientoRepository;
+import com.app.backend.repositories.tramites.EtapaRepository;
+import com.app.backend.repositories.tramites.HistorialSolicitudRepository;
 import com.app.backend.repositories.tramites.PasoFlujoRepository;
-import com.app.backend.repositories.tramites.SeguimientoSolicitudRepository;
 import com.app.backend.repositories.tramites.SolicitudRepository;
 import com.app.backend.services.tramites.SeguimientoSolicitudService;
 import lombok.NonNull;
@@ -23,20 +23,20 @@ import java.util.List;
 @SuppressWarnings("null")
 public class SeguimientoSolicitudServiceImpl implements SeguimientoSolicitudService {
 
-    private final SeguimientoSolicitudRepository seguimientoSolicitudRepository;
+    private final HistorialSolicitudRepository historialSolicitudRepository;
     private final SolicitudRepository solicitudRepository;
     private final PasoFlujoRepository pasoFlujoRepository;
-    private final EtapaProcesamientoRepository etapaProcesamientoRepository;
+    private final EtapaRepository etapaRepository;
     private final UsuarioRepository usuarioRepository;
 
     @Override @Transactional(readOnly = true)
     public List<SeguimientoSolicitudDTO> listarPorSolicitud(@NonNull Integer idSolicitud) {
-        return seguimientoSolicitudRepository.findBySolicitudIdSolicitudOrderByFechaEntradaAsc(idSolicitud).stream().map(this::toDTO).toList();
+        return historialSolicitudRepository.findBySolicitudIdSolicitudOrderByFechaEntradaAsc(idSolicitud).stream().map(this::toDTO).toList();
     }
 
     @Override
     public SeguimientoSolicitudDTO crear(SeguimientoSolicitudDTO dto) {
-        SeguimientoSolicitud s = SeguimientoSolicitud.builder()
+        HistorialSolicitud s = HistorialSolicitud.builder()
                 .solicitud(solicitudRepository.findById(dto.getIdSolicitud()).orElseThrow(() -> new RecursoNoEncontradoException("Solicitud no encontrada: " + dto.getIdSolicitud())))
                 .estado(dto.getEstado())
                 .comentarios(dto.getComentarios())
@@ -45,12 +45,12 @@ public class SeguimientoSolicitudServiceImpl implements SeguimientoSolicitudServ
                 .slaExcedido(dto.getSlaExcedido() != null ? dto.getSlaExcedido() : false)
                 .build();
         if (dto.getIdPaso() != null) s.setPasoFlujo(pasoFlujoRepository.findById(dto.getIdPaso()).orElseThrow(() -> new RecursoNoEncontradoException("Paso no encontrado: " + dto.getIdPaso())));
-        if (dto.getIdEtapa() != null) s.setEtapaProcesamiento(etapaProcesamientoRepository.findById(dto.getIdEtapa()).orElseThrow(() -> new RecursoNoEncontradoException("Etapa no encontrada: " + dto.getIdEtapa())));
+        if (dto.getIdEtapa() != null) s.setEtapa(etapaRepository.findById(dto.getIdEtapa()).orElseThrow(() -> new RecursoNoEncontradoException("Etapa no encontrada: " + dto.getIdEtapa())));
         if (dto.getProcesadoPorId() != null) s.setProcesadoPor(usuarioRepository.findById(dto.getProcesadoPorId()).orElseThrow(() -> new RecursoNoEncontradoException("Usuario no encontrado: " + dto.getProcesadoPorId())));
-        return toDTO(seguimientoSolicitudRepository.save(s));
+        return toDTO(historialSolicitudRepository.save(s));
     }
 
-    private SeguimientoSolicitudDTO toDTO(SeguimientoSolicitud s) {
-        return SeguimientoSolicitudDTO.builder().idSeguimiento(s.getIdSeguimiento()).idSolicitud(s.getSolicitud().getIdSolicitud()).idPaso(s.getPasoFlujo() != null ? s.getPasoFlujo().getIdPaso() : null).idEtapa(s.getEtapaProcesamiento() != null ? s.getEtapaProcesamiento().getIdEtapa() : null).estado(s.getEstado()).procesadoPorId(s.getProcesadoPor() != null ? s.getProcesadoPor().getIdUsuario() : null).comentarios(s.getComentarios()).fechaEntrada(s.getFechaEntrada()).fechaCompletado(s.getFechaCompletado()).slaExcedido(s.getSlaExcedido()).build();
+    private SeguimientoSolicitudDTO toDTO(HistorialSolicitud s) {
+        return SeguimientoSolicitudDTO.builder().idSeguimiento(s.getIdHistorial()).idSolicitud(s.getSolicitud().getIdSolicitud()).idPaso(s.getPasoFlujo() != null ? s.getPasoFlujo().getIdPaso() : null).idEtapa(s.getEtapa() != null ? s.getEtapa().getIdEtapa() : null).estado(s.getEstado()).procesadoPorId(s.getProcesadoPor() != null ? s.getProcesadoPor().getIdUsuario() : null).comentarios(s.getComentarios()).fechaEntrada(s.getFechaEntrada()).fechaCompletado(s.getFechaCompletado()).slaExcedido(s.getSlaExcedido()).build();
     }
 }

@@ -8,5 +8,5 @@ import java.util.List;
 
 @Repository
 public interface PasoFlujoRepository extends JpaRepository<PasoFlujo, Integer> {
-    List<PasoFlujo> findByDefinicionFlujoIdFlujoOrderByOrdenPasoAsc(Integer idFlujo);
+    List<PasoFlujo> findByFlujoTrabajoIdFlujoOrderByOrdenPasoAsc(Integer idFlujo);
 }

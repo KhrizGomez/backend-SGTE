@@ -1,7 +1,7 @@
 package com.app.backend.entities.documentos;
 
 import com.app.backend.entities.sistema.Usuario;
-import com.app.backend.entities.tramites.RequisitoTramite;
+import com.app.backend.entities.tramites.RequisitoPlantilla;
 import com.app.backend.entities.tramites.Solicitud;
 import jakarta.persistence.*;
 import lombok.*;
@@ -25,7 +25,7 @@ public class DocumentoAdjunto {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_requisito")
-    private RequisitoTramite requisitoTramite;
+    private RequisitoPlantilla requisitoPlantilla;
 
     @Column(name = "nombre_archivo", nullable = false, length = 255)
     private String nombreArchivo;

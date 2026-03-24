@@ -8,20 +8,18 @@ import com.app.backend.entities.sistema.Rol;
 import com.app.backend.entities.sistema.Usuario;
 import com.app.backend.exceptions.RecursoNoEncontradoException;
 import com.app.backend.repositories.academico.*;
-import com.app.backend.entities.sistema.RolServidor;
 import com.app.backend.repositories.sistema.CredencialRepository;
 import com.app.backend.repositories.sistema.RolRepository;
-import com.app.backend.repositories.sistema.RolServidorRepository;
 import com.app.backend.repositories.sistema.UsuarioRepository;
 import com.app.backend.services.sistema.RegistroUsuarioService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
@@ -33,12 +31,11 @@ public class RegistroUsuarioServiceImpl implements RegistroUsuarioService {
     private final UsuarioRepository usuarioRepository;
     private final RolRepository rolRepository;
     private final CarreraRepository carreraRepository;
-    private final SemestreRepository semestreRepository;
+    private final PeriodoRepository periodoRepository;
     private final EstudianteRepository estudianteRepository;
     private final CoordinadorRepository coordinadorRepository;
     private final DecanoRepository decanoRepository;
     private final CredencialRepository credencialRepository;
-    private final RolServidorRepository rolServidorRepository;
 
     @Override
     public RegistroUsuarioRespuestaDTO registrarUsuario(RegistroUsuarioDTO dto) {
@@ -71,7 +68,7 @@ public class RegistroUsuarioServiceImpl implements RegistroUsuarioService {
                     "Ya existe un usuario registrado con el correo: " + dto.getCorreoInstitucional());
         }
 
-        // 2. Buscar la Carrera por código (los IDs del sistema externo pueden diferir)
+        // 2. Buscar la Carrera por código
         Carrera carrera = null;
         if (dto.getCodigoCarrera() != null) {
             carrera = carreraRepository.findByCodigoCarrera(dto.getCodigoCarrera())
@@ -79,12 +76,12 @@ public class RegistroUsuarioServiceImpl implements RegistroUsuarioService {
                             "Carrera no encontrada con código: " + dto.getCodigoCarrera()));
         }
 
-        // 3. Buscar el Semestre por código de periodo
-        Semestre semestre = null;
+        // 3. Buscar el Periodo por código
+        Periodo periodo = null;
         if (dto.getCodigoPeriodo() != null) {
-            semestre = semestreRepository.findByCodigoPeriodo(dto.getCodigoPeriodo())
+            periodo = periodoRepository.findByCodigoPeriodo(dto.getCodigoPeriodo())
                     .orElseThrow(() -> new RecursoNoEncontradoException(
-                            "Semestre no encontrado con código de periodo: " + dto.getCodigoPeriodo()));
+                            "Periodo no encontrado con código: " + dto.getCodigoPeriodo()));
         }
 
         // 4. Buscar el Rol por nombre
@@ -117,21 +114,7 @@ public class RegistroUsuarioServiceImpl implements RegistroUsuarioService {
 
         usuario = usuarioRepository.save(usuario);
 
-        // 6. Asignar el Rol de Servidor según el rol del usuario
-        if (dto.getRol() != null) {
-            String nombreRolDb = "rol_" + dto.getRol().toLowerCase();
-            log.info("Buscando rol de servidor: {}", nombreRolDb);
-            RolServidor rolServidor = rolServidorRepository.findByNombreRolDb(nombreRolDb)
-                    .orElseThrow(() -> new RecursoNoEncontradoException(
-                            "Rol de servidor no encontrado: " + nombreRolDb));
-            List<RolServidor> rolesServidor = new ArrayList<>();
-            rolesServidor.add(rolServidor);
-            usuario.setRolesServidor(rolesServidor);
-            usuario = usuarioRepository.save(usuario);
-        }
-
-        // 7. Crear la Credencial con la cédula como contraseña por defecto
-        // y el nombre de usuario derivado del correo institucional
+        // 6. Crear la Credencial con la cédula como contraseña por defecto
         String correoInst = dto.getCorreoInstitucional();
         String nombreUsuario = (correoInst != null && !correoInst.isBlank())
                 ? correoInst.split("@")[0]
@@ -146,7 +129,7 @@ public class RegistroUsuarioServiceImpl implements RegistroUsuarioService {
         credencial.setEstado(true);
         credencialRepository.save(credencial);
 
-        // 8. Crear la entidad específica según el rol
+        // 7. Crear la entidad específica según el rol
         Integer idEstudiante = null;
         Integer idCoordinador = null;
         Integer idDecano = null;
@@ -163,7 +146,7 @@ public class RegistroUsuarioServiceImpl implements RegistroUsuarioService {
                 Estudiante estudiante = Estudiante.builder()
                         .usuario(usuario)
                         .carrera(carrera)
-                        .semestre(semestre)
+                        .periodo(periodo)
                         .paralelo(dto.getParalelo())
                         .estadoAcademico(dto.getEstadoAcademico() != null ? dto.getEstadoAcademico() : "Regular")
                         .fechaMatricula(fechaMatricula)
@@ -207,7 +190,7 @@ public class RegistroUsuarioServiceImpl implements RegistroUsuarioService {
             }
         }
 
-        // 9. Construir la respuesta
+        // 8. Construir la respuesta
         return RegistroUsuarioRespuestaDTO.builder()
                 .idUsuario(usuario.getIdUsuario())
                 .idEstudiante(idEstudiante)

@@ -4,7 +4,7 @@ import com.app.backend.dtos.documentos.DocumentoAdjuntoDTO;
 import com.app.backend.entities.documentos.DocumentoAdjunto;
 import com.app.backend.exceptions.RecursoNoEncontradoException;
 import com.app.backend.repositories.documentos.DocumentoAdjuntoRepository;
-import com.app.backend.repositories.tramites.RequisitoTramiteRepository;
+import com.app.backend.repositories.tramites.RequisitoPlantillaRepository;
 import com.app.backend.repositories.tramites.SolicitudRepository;
 import com.app.backend.repositories.sistema.UsuarioRepository;
 import com.app.backend.services.documentos.DocumentoAdjuntoService;
@@ -24,7 +24,7 @@ public class DocumentoAdjuntoServiceImpl implements DocumentoAdjuntoService {
 
     private final DocumentoAdjuntoRepository documentoAdjuntoRepository;
     private final SolicitudRepository solicitudRepository;
-    private final RequisitoTramiteRepository requisitoTramiteRepository;
+    private final RequisitoPlantillaRepository requisitoPlantillaRepository;
     private final UsuarioRepository usuarioRepository;
 
     @Override @Transactional(readOnly = true)
@@ -42,7 +42,7 @@ public class DocumentoAdjuntoServiceImpl implements DocumentoAdjuntoService {
                 .esValido(dto.getEsValido()).mensajeValidacion(dto.getMensajeValidacion())
                 .fechaSubida(dto.getFechaSubida() != null ? dto.getFechaSubida() : LocalDateTime.now())
                 .build();
-        if (dto.getIdRequisito() != null) d.setRequisitoTramite(requisitoTramiteRepository.findById(dto.getIdRequisito()).orElseThrow(() -> new RecursoNoEncontradoException("Requisito no encontrado: " + dto.getIdRequisito())));
+        if (dto.getIdRequisito() != null) d.setRequisitoPlantilla(requisitoPlantillaRepository.findById(dto.getIdRequisito()).orElseThrow(() -> new RecursoNoEncontradoException("Requisito no encontrado: " + dto.getIdRequisito())));
         if (dto.getSubidoPorId() != null) d.setSubidoPor(usuarioRepository.findById(dto.getSubidoPorId()).orElseThrow(() -> new RecursoNoEncontradoException("Usuario no encontrado: " + dto.getSubidoPorId())));
         return toDTO(documentoAdjuntoRepository.save(d));
     }
@@ -51,6 +51,6 @@ public class DocumentoAdjuntoServiceImpl implements DocumentoAdjuntoService {
     public void eliminar(@NonNull Integer id) { if (!documentoAdjuntoRepository.existsById(id)) throw new RecursoNoEncontradoException("Documento adjunto no encontrado con id: " + id); documentoAdjuntoRepository.deleteById(id); }
 
     private DocumentoAdjuntoDTO toDTO(DocumentoAdjunto d) {
-        return DocumentoAdjuntoDTO.builder().idDocumento(d.getIdDocumento()).idSolicitud(d.getSolicitud().getIdSolicitud()).idRequisito(d.getRequisitoTramite() != null ? d.getRequisitoTramite().getIdRequisito() : null).nombreArchivo(d.getNombreArchivo()).nombreOriginal(d.getNombreOriginal()).rutaArchivo(d.getRutaArchivo()).tamanoBytes(d.getTamanoBytes()).tipoMime(d.getTipoMime()).checksum(d.getChecksum()).esValido(d.getEsValido()).mensajeValidacion(d.getMensajeValidacion()).subidoPorId(d.getSubidoPor() != null ? d.getSubidoPor().getIdUsuario() : null).fechaSubida(d.getFechaSubida()).build();
+        return DocumentoAdjuntoDTO.builder().idDocumento(d.getIdDocumento()).idSolicitud(d.getSolicitud().getIdSolicitud()).idRequisito(d.getRequisitoPlantilla() != null ? d.getRequisitoPlantilla().getIdRequisito() : null).nombreArchivo(d.getNombreArchivo()).nombreOriginal(d.getNombreOriginal()).rutaArchivo(d.getRutaArchivo()).tamanoBytes(d.getTamanoBytes()).tipoMime(d.getTipoMime()).checksum(d.getChecksum()).esValido(d.getEsValido()).mensajeValidacion(d.getMensajeValidacion()).subidoPorId(d.getSubidoPor() != null ? d.getSubidoPor().getIdUsuario() : null).fechaSubida(d.getFechaSubida()).build();
     }
 }

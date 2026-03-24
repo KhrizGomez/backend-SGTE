@@ -3,6 +3,7 @@ package com.app.backend.entities.academico;
 import com.app.backend.entities.sistema.Usuario;
 import jakarta.persistence.*;
 import lombok.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -27,6 +28,12 @@ public class Decano {
 
     @Column(name = "fecha_nombramiento")
     private LocalDateTime fechaNombramiento;
+
+    @Column(name = "fecha_fin_periodo")
+    private LocalDate fechaFinPeriodo;
+
+    @Column(name = "resolucion_nombramiento", length = 100)
+    private String resolucionNombramiento;
 
     @Column(name = "esta_activo")
     @Builder.Default

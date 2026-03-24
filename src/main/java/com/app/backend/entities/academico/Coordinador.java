@@ -31,12 +31,18 @@ public class Coordinador {
     @Column(name = "horario_atencion", length = 255)
     private String horarioAtencion;
 
+    @Column(name = "extension_telefonica", length = 20)
+    private String extensionTelefonica;
+
     @Column(name = "esta_activo")
     @Builder.Default
     private Boolean estaActivo = true;
 
     @Column(name = "fecha_nombramiento")
     private LocalDate fechaNombramiento;
+
+    @Column(name = "fecha_fin_periodo")
+    private LocalDate fechaFinPeriodo;
 
     @Column(name = "id_coordinador_sga")
     private Integer idCoordinadorSga;

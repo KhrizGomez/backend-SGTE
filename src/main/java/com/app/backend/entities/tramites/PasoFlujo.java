@@ -23,11 +23,11 @@ public class PasoFlujo {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_flujo", nullable = false)
-    private DefinicionFlujo definicionFlujo;
+    private FlujoTrabajo flujoTrabajo;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_etapa", nullable = false)
-    private EtapaProcesamiento etapaProcesamiento;
+    private Etapa etapa;
 
     @Column(name = "orden_paso", nullable = false)
     private Integer ordenPaso;

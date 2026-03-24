@@ -12,7 +12,7 @@ public class EstudianteDTO {
     private Integer idEstudiante;
     private Integer idUsuario;
     private Integer idCarrera;
-    private Integer idSemestre;
+    private Integer idPeriodo;
     private String paralelo;
     private String estadoAcademico;
     private LocalDate fechaMatricula;

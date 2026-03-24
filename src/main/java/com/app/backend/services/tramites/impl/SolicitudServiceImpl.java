@@ -6,8 +6,8 @@ import com.app.backend.exceptions.RecursoNoEncontradoException;
 import com.app.backend.repositories.academico.CarreraRepository;
 import com.app.backend.repositories.sistema.UsuarioRepository;
 import com.app.backend.repositories.tramites.PasoFlujoRepository;
+import com.app.backend.repositories.tramites.PlantillaTramiteRepository;
 import com.app.backend.repositories.tramites.SolicitudRepository;
-import com.app.backend.repositories.tramites.TipoTramiteRepository;
 import com.app.backend.services.tramites.SolicitudService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +23,7 @@ import java.util.List;
 public class SolicitudServiceImpl implements SolicitudService {
 
     private final SolicitudRepository solicitudRepository;
-    private final TipoTramiteRepository tipoTramiteRepository;
+    private final PlantillaTramiteRepository plantillaTramiteRepository;
     private final UsuarioRepository usuarioRepository;
     private final CarreraRepository carreraRepository;
     private final PasoFlujoRepository pasoFlujoRepository;
@@ -47,7 +47,7 @@ public class SolicitudServiceImpl implements SolicitudService {
     public SolicitudDTO crear(SolicitudDTO dto) {
         Solicitud s = Solicitud.builder()
                 .codigoSolicitud(dto.getCodigoSolicitud())
-                .tipoTramite(tipoTramiteRepository.findById(dto.getIdTipoTramite()).orElseThrow(() -> new RecursoNoEncontradoException("Tipo trámite no encontrado: " + dto.getIdTipoTramite())))
+                .plantilla(plantillaTramiteRepository.findById(dto.getIdPlantilla()).orElseThrow(() -> new RecursoNoEncontradoException("Plantilla no encontrada: " + dto.getIdPlantilla())))
                 .usuario(usuarioRepository.findById(dto.getIdUsuario()).orElseThrow(() -> new RecursoNoEncontradoException("Usuario no encontrado: " + dto.getIdUsuario())))
                 .detallesSolicitud(dto.getDetallesSolicitud())
                 .prioridad(dto.getPrioridad() != null ? dto.getPrioridad() : "normal")
@@ -73,6 +73,6 @@ public class SolicitudServiceImpl implements SolicitudService {
     public void eliminar(@NonNull Integer id) { if (!solicitudRepository.existsById(id)) throw new RecursoNoEncontradoException("Solicitud no encontrada con id: " + id); solicitudRepository.deleteById(id); }
 
     private SolicitudDTO toDTO(Solicitud s) {
-        return SolicitudDTO.builder().idSolicitud(s.getIdSolicitud()).codigoSolicitud(s.getCodigoSolicitud()).idTipoTramite(s.getTipoTramite().getIdTipoTramite()).idUsuario(s.getUsuario().getIdUsuario()).idCarrera(s.getCarrera() != null ? s.getCarrera().getIdCarrera() : null).creadoPorId(s.getCreadoPor() != null ? s.getCreadoPor().getIdUsuario() : null).detallesSolicitud(s.getDetallesSolicitud()).prioridad(s.getPrioridad()).pasoActualId(s.getPasoActual() != null ? s.getPasoActual().getIdPaso() : null).estadoActual(s.getEstadoActual()).fechaEstimadaFin(s.getFechaEstimadaFin()).fechaRealFin(s.getFechaRealFin()).resolucion(s.getResolucion()).build();
+        return SolicitudDTO.builder().idSolicitud(s.getIdSolicitud()).codigoSolicitud(s.getCodigoSolicitud()).idPlantilla(s.getPlantilla().getIdPlantilla()).idUsuario(s.getUsuario().getIdUsuario()).idCarrera(s.getCarrera() != null ? s.getCarrera().getIdCarrera() : null).creadoPorId(s.getCreadoPor() != null ? s.getCreadoPor().getIdUsuario() : null).detallesSolicitud(s.getDetallesSolicitud()).prioridad(s.getPrioridad()).pasoActualId(s.getPasoActual() != null ? s.getPasoActual().getIdPaso() : null).estadoActual(s.getEstadoActual()).fechaCreacion(s.getFechaCreacion()).fechaEstimadaFin(s.getFechaEstimadaFin()).fechaRealFin(s.getFechaRealFin()).resolucion(s.getResolucion()).build();
     }
 }

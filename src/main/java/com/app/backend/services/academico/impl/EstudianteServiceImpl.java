@@ -7,7 +7,7 @@ import com.app.backend.entities.sistema.Usuario;
 import com.app.backend.exceptions.RecursoNoEncontradoException;
 import com.app.backend.repositories.academico.CarreraRepository;
 import com.app.backend.repositories.academico.EstudianteRepository;
-import com.app.backend.repositories.academico.SemestreRepository;
+import com.app.backend.repositories.academico.PeriodoRepository;
 import com.app.backend.repositories.sistema.UsuarioRepository;
 import com.app.backend.services.academico.EstudianteService;
 import lombok.NonNull;
@@ -26,7 +26,7 @@ public class EstudianteServiceImpl implements EstudianteService {
     private final EstudianteRepository estudianteRepository;
     private final UsuarioRepository usuarioRepository;
     private final CarreraRepository carreraRepository;
-    private final SemestreRepository semestreRepository;
+    private final PeriodoRepository periodoRepository;
 
     @Override @Transactional(readOnly = true)
     public List<EstudianteDTO> listarTodos() { return estudianteRepository.findAll().stream().map(this::toDTO).toList(); }
@@ -45,7 +45,7 @@ public class EstudianteServiceImpl implements EstudianteService {
         Usuario u = usuarioRepository.findById(dto.getIdUsuario()).orElseThrow(() -> new RecursoNoEncontradoException("Usuario no encontrado: " + dto.getIdUsuario()));
         Carrera c = carreraRepository.findById(dto.getIdCarrera()).orElseThrow(() -> new RecursoNoEncontradoException("Carrera no encontrada: " + dto.getIdCarrera()));
         Estudiante e = Estudiante.builder().usuario(u).carrera(c).paralelo(dto.getParalelo()).estadoAcademico(dto.getEstadoAcademico()).fechaMatricula(dto.getFechaMatricula()).esExterno(dto.getEsExterno()).idEstudianteSga(dto.getIdEstudianteSga()).build();
-        if (dto.getIdSemestre() != null) { e.setSemestre(semestreRepository.findById(dto.getIdSemestre()).orElseThrow(() -> new RecursoNoEncontradoException("Semestre no encontrado: " + dto.getIdSemestre()))); }
+        if (dto.getIdPeriodo() != null) { e.setPeriodo(periodoRepository.findById(dto.getIdPeriodo()).orElseThrow(() -> new RecursoNoEncontradoException("Periodo no encontrado: " + dto.getIdPeriodo()))); }
         return toDTO(estudianteRepository.save(e));
     }
 
@@ -54,7 +54,7 @@ public class EstudianteServiceImpl implements EstudianteService {
         Estudiante e = estudianteRepository.findById(id).orElseThrow(() -> new RecursoNoEncontradoException("Estudiante no encontrado con id: " + id));
         e.setParalelo(dto.getParalelo()); e.setEstadoAcademico(dto.getEstadoAcademico()); e.setFechaMatricula(dto.getFechaMatricula()); e.setEsExterno(dto.getEsExterno()); e.setIdEstudianteSga(dto.getIdEstudianteSga());
         if (dto.getIdCarrera() != null) { e.setCarrera(carreraRepository.findById(dto.getIdCarrera()).orElseThrow(() -> new RecursoNoEncontradoException("Carrera no encontrada: " + dto.getIdCarrera()))); }
-        if (dto.getIdSemestre() != null) { e.setSemestre(semestreRepository.findById(dto.getIdSemestre()).orElseThrow(() -> new RecursoNoEncontradoException("Semestre no encontrado: " + dto.getIdSemestre()))); }
+        if (dto.getIdPeriodo() != null) { e.setPeriodo(periodoRepository.findById(dto.getIdPeriodo()).orElseThrow(() -> new RecursoNoEncontradoException("Periodo no encontrado: " + dto.getIdPeriodo()))); }
         return toDTO(estudianteRepository.save(e));
     }
 
@@ -62,6 +62,6 @@ public class EstudianteServiceImpl implements EstudianteService {
     public void eliminar(@NonNull Integer id) { if (!estudianteRepository.existsById(id)) throw new RecursoNoEncontradoException("Estudiante no encontrado con id: " + id); estudianteRepository.deleteById(id); }
 
     private EstudianteDTO toDTO(Estudiante e) {
-        return EstudianteDTO.builder().idEstudiante(e.getIdEstudiante()).idUsuario(e.getUsuario().getIdUsuario()).idCarrera(e.getCarrera().getIdCarrera()).idSemestre(e.getSemestre() != null ? e.getSemestre().getIdSemestre() : null).paralelo(e.getParalelo()).estadoAcademico(e.getEstadoAcademico()).fechaMatricula(e.getFechaMatricula()).esExterno(e.getEsExterno()).idEstudianteSga(e.getIdEstudianteSga()).ultimaSincronizacion(e.getUltimaSincronizacion()).build();
+        return EstudianteDTO.builder().idEstudiante(e.getIdEstudiante()).idUsuario(e.getUsuario().getIdUsuario()).idCarrera(e.getCarrera().getIdCarrera()).idPeriodo(e.getPeriodo() != null ? e.getPeriodo().getIdPeriodo() : null).paralelo(e.getParalelo()).estadoAcademico(e.getEstadoAcademico()).fechaMatricula(e.getFechaMatricula()).esExterno(e.getEsExterno()).idEstudianteSga(e.getIdEstudianteSga()).ultimaSincronizacion(e.getUltimaSincronizacion()).build();
     }
 }

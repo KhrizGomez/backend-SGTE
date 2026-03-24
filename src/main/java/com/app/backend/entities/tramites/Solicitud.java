@@ -24,8 +24,8 @@ public class Solicitud {
     private String codigoSolicitud;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_tipo_tramite", nullable = false)
-    private TipoTramite tipoTramite;
+    @JoinColumn(name = "id_plantilla", nullable = false)
+    private PlantillaTramite plantilla;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_usuario", nullable = false)
@@ -54,6 +54,9 @@ public class Solicitud {
     @Builder.Default
     private String estadoActual = "pendiente";
 
+    @Column(name = "fecha_creacion")
+    private LocalDateTime fechaCreacion;
+
     @Column(name = "fecha_estimada_fin")
     private LocalDate fechaEstimadaFin;
 
@@ -64,8 +67,8 @@ public class Solicitud {
     private String resolucion;
 
     @OneToMany(mappedBy = "solicitud", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<SeguimientoSolicitud> seguimientos;
+    private List<HistorialSolicitud> historiales;
 
     @OneToMany(mappedBy = "solicitud")
-    private List<RechazoSolicitud> rechazos;
+    private List<Rechazo> rechazos;
 }

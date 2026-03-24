@@ -26,6 +26,14 @@ public class Carrera {
     @JoinColumn(name = "id_facultad", nullable = false)
     private Facultad facultad;
 
+    @Column(name = "duracion_semestres")
+    @Builder.Default
+    private Integer duracionSemestres = 10;
+
+    @Column(name = "modalidad", length = 50)
+    @Builder.Default
+    private String modalidad = "Presencial";
+
     @OneToMany(mappedBy = "carrera")
     private List<Estudiante> estudiantes;
 

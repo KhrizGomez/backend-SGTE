@@ -5,11 +5,11 @@ import com.app.backend.dtos.tramites.PasoFlujoTramiteDTO;
 import com.app.backend.dtos.tramites.RequisitoTramiteDTO;
 import com.app.backend.entities.sistema.Usuario;
 import com.app.backend.entities.tramites.PasoFlujo;
-import com.app.backend.entities.tramites.RequisitoTramite;
+import com.app.backend.entities.tramites.RequisitoPlantilla;
 import com.app.backend.exceptions.RecursoNoEncontradoException;
 import com.app.backend.repositories.tramites.PasoFlujoRepository;
-import com.app.backend.repositories.tramites.RequisitoTramiteRepository;
-import com.app.backend.repositories.tramites.TipoTramiteRepository;
+import com.app.backend.repositories.tramites.PlantillaTramiteRepository;
+import com.app.backend.repositories.tramites.RequisitoPlantillaRepository;
 import com.app.backend.repositories.tramites.projections.DetallesTramiteBaseProjection;
 import com.app.backend.services.tramites.DetallesTramiteService;
 import lombok.NonNull;
@@ -25,22 +25,22 @@ import java.util.List;
 @SuppressWarnings("null")
 public class DetallesTramiteServiceImpl implements DetallesTramiteService {
 
-    private final TipoTramiteRepository tipoTramiteRepository;
+    private final PlantillaTramiteRepository plantillaTramiteRepository;
     private final PasoFlujoRepository pasoFlujoRepository;
-    private final RequisitoTramiteRepository requisitoTramiteRepository;
+    private final RequisitoPlantillaRepository requisitoPlantillaRepository;
 
         @Override
         public List<DetallesTramiteDTO> listarTodos() {
-        return tipoTramiteRepository.findAllDetallesBase()
+        return plantillaTramiteRepository.findAllDetallesBase()
             .stream()
             .map(this::buildDetalle)
             .toList();
         }
 
     @Override
-    public DetallesTramiteDTO obtenerPorTipoTramite(@NonNull Integer idTipoTramite) {
-        DetallesTramiteBaseProjection base = tipoTramiteRepository.findDetalleBaseByIdTipoTramite(idTipoTramite)
-                .orElseThrow(() -> new RecursoNoEncontradoException("Tipo trámite no encontrado con id: " + idTipoTramite));
+    public DetallesTramiteDTO obtenerPorTipoTramite(@NonNull Integer idPlantilla) {
+        DetallesTramiteBaseProjection base = plantillaTramiteRepository.findDetalleBaseByIdPlantilla(idPlantilla)
+                .orElseThrow(() -> new RecursoNoEncontradoException("Plantilla no encontrada con id: " + idPlantilla));
 
         return buildDetalle(base);
         }
@@ -49,36 +49,36 @@ public class DetallesTramiteServiceImpl implements DetallesTramiteService {
 
         List<PasoFlujoTramiteDTO> pasos = base.getIdFlujo() == null
                 ? List.of()
-                : pasoFlujoRepository.findByDefinicionFlujoIdFlujoOrderByOrdenPasoAsc(base.getIdFlujo())
+                : pasoFlujoRepository.findByFlujoTrabajoIdFlujoOrderByOrdenPasoAsc(base.getIdFlujo())
                         .stream()
                         .map(this::toPasoFlujoTramiteDTO)
                         .toList();
 
-        List<RequisitoTramiteDTO> requisitos = requisitoTramiteRepository
-            .findByTipoTramiteIdTipoTramiteOrderByNumeroOrdenAsc(base.getIdTipoTramite())
+        List<RequisitoTramiteDTO> requisitos = requisitoPlantillaRepository
+            .findByPlantillaIdPlantillaOrderByNumeroOrdenAsc(base.getIdPlantilla())
                 .stream()
                 .map(this::toRequisitoTramiteDTO)
                 .toList();
 
         return DetallesTramiteDTO.builder()
-                .idTipoTramite(base.getIdTipoTramite())
-                .nombreTramite(base.getNombreTramite())
-                .descripcionTramite(base.getDescripcionTramite())
+                .idPlantilla(base.getIdPlantilla())
+                .nombrePlantilla(base.getNombrePlantilla())
+                .descripcionPlantilla(base.getDescripcionPlantilla())
                 .idCategoria(base.getIdCategoria())
                 .categoria(base.getCategoria())
                 .idFlujo(base.getIdFlujo())
                 .nombreFlujo(base.getNombreFlujo())
-                .descripcionFlujo(base.getDescripcionFlujo())
+                .descripcion(base.getDescripcion())
                 .idUsuarioCreador(base.getIdUsuarioCreador())
                 .usuarioCreador(base.getUsuarioCreador() != null ? base.getUsuarioCreador().trim() : null)
                 .version(base.getVersion())
                 .pasosTramite(pasos)
                 .requisitosTramite(requisitos)
-                .idPlazo(base.getIdPlazo())
+                .idVentana(base.getIdVentana())
                 .fechaApertura(base.getFechaApertura())
                 .fechaCierre(base.getFechaCierre())
                 .permiteExtension(base.getPermiteExtension())
-                .diasEstimados(base.getDiasEstimados())
+                .diasResolucionEstimados(base.getDiasResolucionEstimados())
                 .estaActivo(base.getEstaActivo())
                 .disponibleExternos(base.getDisponibleExternos())
                 .build();
@@ -87,12 +87,12 @@ public class DetallesTramiteServiceImpl implements DetallesTramiteService {
     private PasoFlujoTramiteDTO toPasoFlujoTramiteDTO(PasoFlujo paso) {
         return PasoFlujoTramiteDTO.builder()
                 .idPaso(paso.getIdPaso())
-                .idFlujo(paso.getDefinicionFlujo().getIdFlujo())
+                .idFlujo(paso.getFlujoTrabajo().getIdFlujo())
                 .ordenPaso(paso.getOrdenPaso())
-                .idEtapa(paso.getEtapaProcesamiento().getIdEtapa())
-                .codigoEtapa(paso.getEtapaProcesamiento().getCodigoEtapa())
-                .nombreEtapa(paso.getEtapaProcesamiento().getNombreEtapa())
-                .descripcionEtapa(paso.getEtapaProcesamiento().getDescripcionEtapa())
+                .idEtapa(paso.getEtapa().getIdEtapa())
+                .codigoEtapa(paso.getEtapa().getCodigo())
+                .nombreEtapa(paso.getEtapa().getNombreEtapa())
+                .descripcionEtapa(paso.getEtapa().getDescripcion())
                 .idRolRequerido(paso.getRolRequerido() != null ? paso.getRolRequerido().getIdRol() : null)
                 .rolRequerido(paso.getRolRequerido() != null ? paso.getRolRequerido().getNombreRol() : null)
                 .idUsuarioEncargado(paso.getUsuarioEncargado() != null ? paso.getUsuarioEncargado().getIdUsuario() : null)
@@ -101,10 +101,10 @@ public class DetallesTramiteServiceImpl implements DetallesTramiteService {
                 .build();
     }
 
-    private RequisitoTramiteDTO toRequisitoTramiteDTO(RequisitoTramite requisito) {
+    private RequisitoTramiteDTO toRequisitoTramiteDTO(RequisitoPlantilla requisito) {
         return RequisitoTramiteDTO.builder()
                 .idRequisito(requisito.getIdRequisito())
-                .idTipoTramite(requisito.getTipoTramite().getIdTipoTramite())
+                .idTipoTramite(requisito.getPlantilla().getIdPlantilla())
                 .nombreRequisito(requisito.getNombreRequisito())
                 .descripcionRequisito(requisito.getDescripcionRequisito())
                 .esObligatorio(requisito.getEsObligatorio())

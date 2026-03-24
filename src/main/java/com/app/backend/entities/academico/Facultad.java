@@ -19,8 +19,14 @@ public class Facultad {
     @Column(name = "nombre_facultad", nullable = false, unique = true, length = 255)
     private String nombreFacultad;
 
+    @Column(name = "codigo_facultad", length = 20)
+    private String codigoFacultad;
+
     @Column(name = "ubicacion_oficina", length = 255)
     private String ubicacionOficina;
+
+    @Column(name = "telefono_oficina", length = 20)
+    private String telefonoOficina;
 
     @Column(name = "email_facultad", length = 255)
     private String emailFacultad;

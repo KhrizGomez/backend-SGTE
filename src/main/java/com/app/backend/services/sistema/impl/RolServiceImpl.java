@@ -38,7 +38,6 @@ public class RolServiceImpl implements RolService {
         Rol rol = Rol.builder()
                 .nombreRol(dto.getNombreRol())
                 .descripcionRol(dto.getDescripcionRol())
-                .esRolSistema(dto.getEsRolSistema())
                 .nivelJerarquico(dto.getNivelJerarquico())
                 .build();
         return toDTO(rolRepository.save(rol));
@@ -50,7 +49,6 @@ public class RolServiceImpl implements RolService {
                 .orElseThrow(() -> new RecursoNoEncontradoException("Rol no encontrado con id: " + id));
         rol.setNombreRol(dto.getNombreRol());
         rol.setDescripcionRol(dto.getDescripcionRol());
-        rol.setEsRolSistema(dto.getEsRolSistema());
         rol.setNivelJerarquico(dto.getNivelJerarquico());
         return toDTO(rolRepository.save(rol));
     }
@@ -68,7 +66,6 @@ public class RolServiceImpl implements RolService {
                 .idRol(r.getIdRol())
                 .nombreRol(r.getNombreRol())
                 .descripcionRol(r.getDescripcionRol())
-                .esRolSistema(r.getEsRolSistema())
                 .nivelJerarquico(r.getNivelJerarquico())
                 .build();
     }

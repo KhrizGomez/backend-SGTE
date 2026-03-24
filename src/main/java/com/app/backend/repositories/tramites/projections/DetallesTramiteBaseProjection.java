@@ -3,22 +3,22 @@ package com.app.backend.repositories.tramites.projections;
 import java.time.LocalDate;
 
 public interface DetallesTramiteBaseProjection {
-    Integer getIdTipoTramite();
-    String getNombreTramite();
-    String getDescripcionTramite();
+    Integer getIdPlantilla();
+    String getNombrePlantilla();
+    String getDescripcionPlantilla();
     Integer getIdCategoria();
     String getCategoria();
     Integer getIdFlujo();
     String getNombreFlujo();
-    String getDescripcionFlujo();
+    String getDescripcion();
     Integer getIdUsuarioCreador();
     String getUsuarioCreador();
     Integer getVersion();
-    Integer getIdPlazo();
+    Integer getIdVentana();
     LocalDate getFechaApertura();
     LocalDate getFechaCierre();
     Boolean getPermiteExtension();
-    Integer getDiasEstimados();
+    Integer getDiasResolucionEstimados();
     Boolean getEstaActivo();
     Boolean getDisponibleExternos();
 }

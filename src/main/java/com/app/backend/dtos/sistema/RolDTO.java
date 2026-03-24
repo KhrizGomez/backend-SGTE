@@ -10,6 +10,5 @@ public class RolDTO {
     private Integer idRol;
     private String nombreRol;
     private String descripcionRol;
-    private Boolean esRolSistema;
     private Integer nivelJerarquico;
 }

@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 public class SolicitudDTO {
     private Integer idSolicitud;
     private String codigoSolicitud;
-    private Integer idTipoTramite;
+    private Integer idPlantilla;
     private Integer idUsuario;
     private Integer idCarrera;
     private Integer creadoPorId;
@@ -19,6 +19,7 @@ public class SolicitudDTO {
     private String prioridad;
     private Integer pasoActualId;
     private String estadoActual;
+    private LocalDateTime fechaCreacion;
     private LocalDate fechaEstimadaFin;
     private LocalDateTime fechaRealFin;
     private String resolucion;

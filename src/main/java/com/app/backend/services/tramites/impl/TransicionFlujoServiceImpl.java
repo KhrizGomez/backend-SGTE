@@ -3,7 +3,7 @@ package com.app.backend.services.tramites.impl;
 import com.app.backend.dtos.tramites.TransicionFlujoDTO;
 import com.app.backend.entities.tramites.TransicionFlujo;
 import com.app.backend.exceptions.RecursoNoEncontradoException;
-import com.app.backend.repositories.tramites.DefinicionFlujoRepository;
+import com.app.backend.repositories.tramites.FlujoTrabajoRepository;
 import com.app.backend.repositories.tramites.PasoFlujoRepository;
 import com.app.backend.repositories.tramites.TransicionFlujoRepository;
 import com.app.backend.services.tramites.TransicionFlujoService;
@@ -21,16 +21,16 @@ import java.util.List;
 public class TransicionFlujoServiceImpl implements TransicionFlujoService {
 
     private final TransicionFlujoRepository transicionFlujoRepository;
-    private final DefinicionFlujoRepository definicionFlujoRepository;
+    private final FlujoTrabajoRepository flujoTrabajoRepository;
     private final PasoFlujoRepository pasoFlujoRepository;
 
     @Override @Transactional(readOnly = true)
-    public List<TransicionFlujoDTO> listarPorFlujo(@NonNull Integer idFlujo) { return transicionFlujoRepository.findByDefinicionFlujoIdFlujo(idFlujo).stream().map(this::toDTO).toList(); }
+    public List<TransicionFlujoDTO> listarPorFlujo(@NonNull Integer idFlujo) { return transicionFlujoRepository.findByFlujoTrabajoIdFlujo(idFlujo).stream().map(this::toDTO).toList(); }
 
     @Override
     public TransicionFlujoDTO crear(TransicionFlujoDTO dto) {
         TransicionFlujo t = TransicionFlujo.builder()
-                .definicionFlujo(definicionFlujoRepository.findById(dto.getIdFlujo()).orElseThrow(() -> new RecursoNoEncontradoException("Flujo no encontrado: " + dto.getIdFlujo())))
+                .flujoTrabajo(flujoTrabajoRepository.findById(dto.getIdFlujo()).orElseThrow(() -> new RecursoNoEncontradoException("Flujo no encontrado: " + dto.getIdFlujo())))
                 .pasoDestino(pasoFlujoRepository.findById(dto.getIdPasoDestino()).orElseThrow(() -> new RecursoNoEncontradoException("Paso destino no encontrado: " + dto.getIdPasoDestino())))
                 .observacion(dto.getObservacion() != null ? dto.getObservacion() : false)
                 .documentoGenerado(dto.getDocumentoGenerado() != null ? dto.getDocumentoGenerado() : false)
@@ -43,6 +43,6 @@ public class TransicionFlujoServiceImpl implements TransicionFlujoService {
     public void eliminar(@NonNull Integer id) { if (!transicionFlujoRepository.existsById(id)) throw new RecursoNoEncontradoException("Transicion no encontrada con id: " + id); transicionFlujoRepository.deleteById(id); }
 
     private TransicionFlujoDTO toDTO(TransicionFlujo t) {
-        return TransicionFlujoDTO.builder().idTransicion(t.getIdTransicion()).idFlujo(t.getDefinicionFlujo().getIdFlujo()).idPasoOrigen(t.getPasoOrigen() != null ? t.getPasoOrigen().getIdPaso() : null).idPasoDestino(t.getPasoDestino().getIdPaso()).observacion(t.getObservacion()).documentoGenerado(t.getDocumentoGenerado()).build();
+        return TransicionFlujoDTO.builder().idTransicion(t.getIdTransicion()).idFlujo(t.getFlujoTrabajo().getIdFlujo()).idPasoOrigen(t.getPasoOrigen() != null ? t.getPasoOrigen().getIdPaso() : null).idPasoDestino(t.getPasoDestino().getIdPaso()).observacion(t.getObservacion()).documentoGenerado(t.getDocumentoGenerado()).build();
     }
 }

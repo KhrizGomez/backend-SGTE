@@ -9,24 +9,24 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class DetallesTramiteDTO {
-    private Integer idTipoTramite;
-    private String nombreTramite;
-    private String descripcionTramite;
+    private Integer idPlantilla;
+    private String nombrePlantilla;
+    private String descripcionPlantilla;
     private Integer idCategoria;
     private String categoria;
     private Integer idFlujo;
     private String nombreFlujo;
-    private String descripcionFlujo;
+    private String descripcion;
     private Integer idUsuarioCreador;
     private String usuarioCreador;
     private Integer version;
     private List<PasoFlujoTramiteDTO> pasosTramite;
     private List<RequisitoTramiteDTO> requisitosTramite;
-    private Integer idPlazo;
+    private Integer idVentana;
     private LocalDate fechaApertura;
     private LocalDate fechaCierre;
     private Boolean permiteExtension;
-    private Integer diasEstimados;
+    private Integer diasResolucionEstimados;
     private Boolean estaActivo;
     private Boolean disponibleExternos;
 }

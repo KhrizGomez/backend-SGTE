@@ -22,9 +22,6 @@ public class Rol {
     @Column(name = "descripcion_rol", columnDefinition = "text")
     private String descripcionRol;
 
-    @Column(name = "es_rol_sistema")
-    @Builder.Default
-    private Boolean esRolSistema = false;
 
     @Column(name = "nivel_jerarquico")
     @Builder.Default
