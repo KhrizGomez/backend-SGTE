@@ -1,24 +1,47 @@
 # backend-SGTE
 
-**SGTE (Sistema de Gestión de Trámites Estudiantiles)** es una plataforma diseñada para automatizar, organizar y dar seguimiento a las solicitudes y trámites académicos que realizan los estudiantes dentro de la institución universitaria.
-
-Este proyecto corresponde a la capa **Backend** del sistema, desarrollado bajo una arquitectura robusta y escalable utilizando **Java y Spring Boot**. Actúa como el motor central que gestiona la lógica de negocio, el acceso a la base de datos (PostgreSQL) y provee de APIs RESTful para la interacción con los clientes (frontend).
+## Descripción General
+backend-SGTE es una API REST desarrollada con Spring Boot 3.5 y Java 25, diseñada para servir como módulo auxiliar de un Sistema de Gestión Académica (SGA). Su función principal es gestionar y exponer los datos de los actores académicos de una institución educativa, incluyendo estudiantes, coordinadores, decanos, carrera, facultades y matrículas.
 
 ## Funcionalidades Principales
-
-El backend expone puntos de acceso (endpoints) para cubrir todas las necesidades del ciclo de vida de un trámite universitario:
-
-* **Gestión de Identidad y Acceso:** Autenticación de usuarios y administración de roles específicos (Estudiantes, Coordinadores de Carrera, Decanos, Administradores del Sistema).
-* **Catálogo Académico:** Administración de datos institucionales centrales (Facultades, Carreras, Periodos/Semestres).
-* **Parametrización de Trámites:** Sistema altamente configurable que permite definir Plantillas de Trámites, flujos de trabajo (workflows) personalizados, etapas de aprobación, ventanas de recepción (fechas) y requisitos documentales por cada tipo de trámite.
-* **Motor de Solicitudes:** Capacidad para que los estudiantes inicien nuevas solicitudes de trámites, suban sus documentos de soporte e inicien el flujo de aprobación.
-* **Seguimiento y Auditoría:** Registro detallado del historial de cambios de estado de cada solicitud, con opciones de aprobación, revisión y rechazo (con catálogo de motivos).
-* **Gestión Documental:** Integración con sistemas de almacenamiento (como Azure Blob Storage o almacenamiento local) para la carga segura y validación de documentos adjuntos a los trámites.
-* **Notificaciones:** Generación de alertas en tiempo real y correos electrónicos para mantener a los estudiantes y autoridades informados sobre actualizaciones en sus solicitudes.
+* **Gestión de Usuarios:** CRUD completo de usuarios del sistema con sus roles (estudiante, coordinador, decano).
+* **Validación de Usuarios:** Permite validar si un usuario está registrado en el sistema por medio de su número de cédula, retornando la información completa de su perfil y rol académico.
+* **Gestión Académica:** Administración de carreras, facultades y periodos académicos.
+* **Historial de Matrículas:** Consulta y administración del historial de matrícula de los estudiantes.
+* **Información por Rol:** Endpoints específicos para consultar y gestionar los perfiles de estudiantes, coordinadores y decanos.
 
 ## Tecnologías Utilizadas
+| Tecnología | Versión |
+| :--- | :--- |
+| Java | 25 |
+| Spring Boot | 3.5.12 |
+| Spring Data JPA / Hibernate | 6.x |
+| PostgreSQL | 17.x |
+| Lombok | Edge |
+| Maven | Wrapper incluido |
 
-* **Framework:** Spring Boot 3.x (Spring Web, Spring Data JPA, Spring Security)
-* **Base de Datos:** PostgreSQL
-* **Compilación y Empaquetado:** Maven
-* **Otros:** Lombok, JWT (JSON Web Tokens) para seguridad, etc.
+## Base de Datos
+La aplicación se conecta a una instancia de PostgreSQL alojada en Azure (sga-auxiliar01). El esquema es gestionado externamente (`ddl-auto=validate`), lo que significa que Hibernate solo valida que las entidades coincidan con el esquema existente, sin modificarlo.
+
+## Ejecución Local
+```bash
+# Compilar el proyecto
+./mvnw clean package -DskipTests
+
+# Levantar el servidor (puerto 9090)
+./mvnw spring-boot:run
+```
+El servidor se inicia en http://localhost:9090.
+
+## Estructura del Proyecto
+```text
+com.app.auxiliar
+├── controllers/       # Controladores REST
+├── dtos/              # Objetos de transferencia de datos
+├── entities/          # Entidades JPA mapeadas a la BD
+├── exceptions/        # Manejo global de excepciones
+├── repositories/      # Interfaces de acceso a datos (Spring Data)
+└── services/
+    ├── (interfaces)
+    └── implementacion/ # Implementaciones de los servicios
+```
