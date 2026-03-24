@@ -9,7 +9,6 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.app.backend.repositories.sistema.CredencialRepository;
@@ -49,8 +48,7 @@ public class ConfigAplicacion {
     @SuppressWarnings("deprecation")
     @Bean
     public PasswordEncoder passwordEncoder() {
-        PasswordEncoder encoder = NoOpPasswordEncoder.getInstance();
-        return encoder;
+        return org.springframework.security.crypto.password.NoOpPasswordEncoder.getInstance();
     }
 
     @Bean

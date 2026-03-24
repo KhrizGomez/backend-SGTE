@@ -4,12 +4,16 @@ import com.app.backend.dtos.tramites.TipoTramiteDTO;
 import com.app.backend.dtos.tramites.response.PlantillaTramiteDTO;
 import com.app.backend.dtos.tramites.response.PlantillaTramiteResponseDTO;
 import com.app.backend.dtos.tramites.response.RequisitoTramiteResponseDTO;
+import com.app.backend.entities.academico.Estudiante;
 import com.app.backend.entities.tramites.PlantillaTramite;
 import com.app.backend.exceptions.RecursoNoEncontradoException;
 import com.app.backend.repositories.tramites.CategoriaRepository;
 import com.app.backend.repositories.tramites.FlujoTrabajoRepository;
 import com.app.backend.repositories.tramites.PlantillaTramiteRepository;
+import com.app.backend.repositories.academico.EstudianteRepository;
+import com.app.backend.services.externos.IJwtService;
 import com.app.backend.services.tramites.TipoTramiteService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,18 +33,34 @@ public class TipoTramiteServiceImpl implements TipoTramiteService {
     private final PlantillaTramiteRepository plantillaTramiteRepository;
     private final CategoriaRepository categoriaRepository;
     private final FlujoTrabajoRepository flujoTrabajoRepository;
+    private final EstudianteRepository estudianteRepository;
+    private final IJwtService jwtService;
+    private final HttpServletRequest request;
 
-    @Override @Transactional(readOnly = true)
-    public List<TipoTramiteDTO> listarTodos() { return plantillaTramiteRepository.findAll().stream().map(this::toDTO).toList(); }
+    @Override
+    @Transactional(readOnly = true)
+    public List<TipoTramiteDTO> listarTodos() {
+        return plantillaTramiteRepository.findAll().stream().map(this::toDTO).toList();
+    }
 
-    @Override @Transactional(readOnly = true)
-    public List<TipoTramiteDTO> listarActivos() { return plantillaTramiteRepository.findByEstaActivoTrue().stream().map(this::toDTO).toList(); }
+    @Override
+    @Transactional(readOnly = true)
+    public List<TipoTramiteDTO> listarActivos() {
+        return plantillaTramiteRepository.findByEstaActivoTrue().stream().map(this::toDTO).toList();
+    }
 
-    @Override @Transactional(readOnly = true)
-    public List<TipoTramiteDTO> listarPorCategoria(@NonNull Integer idCategoria) { return plantillaTramiteRepository.findByCategoriaIdCategoria(idCategoria).stream().map(this::toDTO).toList(); }
+    @Override
+    @Transactional(readOnly = true)
+    public List<TipoTramiteDTO> listarPorCategoria(@NonNull Integer idCategoria) {
+        return plantillaTramiteRepository.findByCategoriaIdCategoria(idCategoria).stream().map(this::toDTO).toList();
+    }
 
-    @Override @Transactional(readOnly = true)
-    public TipoTramiteDTO obtenerPorId(@NonNull Integer id) { return toDTO(plantillaTramiteRepository.findById(id).orElseThrow(() -> new RecursoNoEncontradoException("Plantilla no encontrada con id: " + id))); }
+    @Override
+    @Transactional(readOnly = true)
+    public TipoTramiteDTO obtenerPorId(@NonNull Integer id) {
+        return toDTO(plantillaTramiteRepository.findById(id)
+                .orElseThrow(() -> new RecursoNoEncontradoException("Plantilla no encontrada con id: " + id)));
+    }
 
     @Override
     public TipoTramiteDTO crear(TipoTramiteDTO dto) {
@@ -50,22 +71,39 @@ public class TipoTramiteServiceImpl implements TipoTramiteService {
                 .estaActivo(dto.getEstaActivo() != null ? dto.getEstaActivo() : true)
                 .disponibleExternos(dto.getDisponibleExternos() != null ? dto.getDisponibleExternos() : false)
                 .build();
-        if (dto.getIdCategoria() != null) t.setCategoria(categoriaRepository.findById(dto.getIdCategoria()).orElseThrow(() -> new RecursoNoEncontradoException("Categoría no encontrada: " + dto.getIdCategoria())));
-        if (dto.getIdFlujo() != null) t.setFlujoTrabajo(flujoTrabajoRepository.findById(dto.getIdFlujo()).orElseThrow(() -> new RecursoNoEncontradoException("Flujo no encontrado: " + dto.getIdFlujo())));
+        if (dto.getIdCategoria() != null)
+            t.setCategoria(categoriaRepository.findById(dto.getIdCategoria()).orElseThrow(
+                    () -> new RecursoNoEncontradoException("Categoría no encontrada: " + dto.getIdCategoria())));
+        if (dto.getIdFlujo() != null)
+            t.setFlujoTrabajo(flujoTrabajoRepository.findById(dto.getIdFlujo())
+                    .orElseThrow(() -> new RecursoNoEncontradoException("Flujo no encontrado: " + dto.getIdFlujo())));
         return toDTO(plantillaTramiteRepository.save(t));
     }
 
     @Override
     public TipoTramiteDTO actualizar(@NonNull Integer id, TipoTramiteDTO dto) {
-        PlantillaTramite t = plantillaTramiteRepository.findById(id).orElseThrow(() -> new RecursoNoEncontradoException("Plantilla no encontrada con id: " + id));
-        t.setNombrePlantilla(dto.getNombreTramite()); t.setDescripcionPlantilla(dto.getDescripcionTramite()); t.setDiasResolucionEstimados(dto.getDiasEstimados()); t.setEstaActivo(dto.getEstaActivo()); t.setDisponibleExternos(dto.getDisponibleExternos());
-        if (dto.getIdCategoria() != null) t.setCategoria(categoriaRepository.findById(dto.getIdCategoria()).orElseThrow(() -> new RecursoNoEncontradoException("Categoría no encontrada: " + dto.getIdCategoria())));
-        if (dto.getIdFlujo() != null) t.setFlujoTrabajo(flujoTrabajoRepository.findById(dto.getIdFlujo()).orElseThrow(() -> new RecursoNoEncontradoException("Flujo no encontrado: " + dto.getIdFlujo())));
+        PlantillaTramite t = plantillaTramiteRepository.findById(id)
+                .orElseThrow(() -> new RecursoNoEncontradoException("Plantilla no encontrada con id: " + id));
+        t.setNombrePlantilla(dto.getNombreTramite());
+        t.setDescripcionPlantilla(dto.getDescripcionTramite());
+        t.setDiasResolucionEstimados(dto.getDiasEstimados());
+        t.setEstaActivo(dto.getEstaActivo());
+        t.setDisponibleExternos(dto.getDisponibleExternos());
+        if (dto.getIdCategoria() != null)
+            t.setCategoria(categoriaRepository.findById(dto.getIdCategoria()).orElseThrow(
+                    () -> new RecursoNoEncontradoException("Categoría no encontrada: " + dto.getIdCategoria())));
+        if (dto.getIdFlujo() != null)
+            t.setFlujoTrabajo(flujoTrabajoRepository.findById(dto.getIdFlujo())
+                    .orElseThrow(() -> new RecursoNoEncontradoException("Flujo no encontrado: " + dto.getIdFlujo())));
         return toDTO(plantillaTramiteRepository.save(t));
     }
 
     @Override
-    public void eliminar(@NonNull Integer id) { if (!plantillaTramiteRepository.existsById(id)) throw new RecursoNoEncontradoException("Plantilla no encontrada con id: " + id); plantillaTramiteRepository.deleteById(id); }
+    public void eliminar(@NonNull Integer id) {
+        if (!plantillaTramiteRepository.existsById(id))
+            throw new RecursoNoEncontradoException("Plantilla no encontrada con id: " + id);
+        plantillaTramiteRepository.deleteById(id);
+    }
 
     private TipoTramiteDTO toDTO(PlantillaTramite t) {
         return TipoTramiteDTO.builder()
@@ -82,8 +120,32 @@ public class TipoTramiteServiceImpl implements TipoTramiteService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<PlantillaTramiteResponseDTO> listarPlantillasTramites() {
-        Map<Integer, List<PlantillaTramiteDTO>> agrupado = plantillaTramiteRepository.listarPlantillas()
+    public List<PlantillaTramiteResponseDTO> listarPlantillasTramites(String categoria, Boolean activo,
+            String busqueda) {
+        Boolean esExternoCalculado = null;
+        String authHeader = request.getHeader("Authorization");
+        System.out.println("Header: " + authHeader);
+        System.out.println("Externo calculado: " + esExternoCalculado);
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            try {
+                String jwt = authHeader.substring(7);
+                Integer idUsuario = jwtService.extractClaim(jwt, claims -> claims.get("idUsuario", Integer.class));
+                System.out.println("ID de Usuario extraído del JWT: " + idUsuario);
+                if (idUsuario != null) {
+                    Optional<Estudiante> estudianteOpt = estudianteRepository.findByUsuarioIdUsuario(idUsuario);
+                    if (estudianteOpt.isPresent()) {
+                        esExternoCalculado = estudianteOpt.get().getEsExterno();
+                    }
+                }
+            } catch (Exception e) {
+                System.out.println("Error al procesar JWT en listarPlantillas: " + e.getMessage());
+            }
+        }
+
+        System.out.println("Externo calculado: " + esExternoCalculado);
+
+        Map<Integer, List<PlantillaTramiteDTO>> agrupado = plantillaTramiteRepository
+                .listarPlantillas(categoria, activo, busqueda, esExternoCalculado)
                 .stream().collect(Collectors.groupingBy(PlantillaTramiteDTO::getIdplantilla));
 
         return agrupado.entrySet().stream().map(entry -> {

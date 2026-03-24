@@ -14,5 +14,5 @@ public interface TipoTramiteService {
     TipoTramiteDTO crear(TipoTramiteDTO dto);
     TipoTramiteDTO actualizar(@NonNull Integer id, TipoTramiteDTO dto);
     void eliminar(@NonNull Integer id);
-    List<PlantillaTramiteResponseDTO> listarPlantillasTramites();
+    List<PlantillaTramiteResponseDTO> listarPlantillasTramites(String categoria, Boolean activo, String busqueda);
 }
