@@ -21,4 +21,5 @@ public class AutenticacionRespuestaDTO {
     private Integer idRol;
     private String rol;
     private String mensaje;
+    private String token;
 }
