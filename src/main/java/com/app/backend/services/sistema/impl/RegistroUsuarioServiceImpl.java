@@ -44,8 +44,25 @@ public class RegistroUsuarioServiceImpl implements RegistroUsuarioService {
     public RegistroUsuarioRespuestaDTO registrarUsuario(RegistroUsuarioDTO dto) {
         log.info("Iniciando registro de usuario con cédula: {}, rol: {}", dto.getCedula(), dto.getRol());
 
+        if (dto.getCedula() == null || dto.getCedula().isBlank()) {
+            throw new IllegalArgumentException("La cédula es obligatoria");
+        }
+        if (dto.getNombres() == null || dto.getNombres().isBlank()) {
+            throw new IllegalArgumentException("Los nombres son obligatorios");
+        }
+        if (dto.getApellidos() == null || dto.getApellidos().isBlank()) {
+            throw new IllegalArgumentException("Los apellidos son obligatorios");
+        }
+        if (dto.getCorreoInstitucional() == null || dto.getCorreoInstitucional().isBlank()) {
+            throw new IllegalArgumentException("El correo institucional es obligatorio");
+        }
+
+        dto.setCedula(dto.getCedula().trim());
+        dto.setNombres(dto.getNombres().trim());
+        dto.setApellidos(dto.getApellidos().trim());
+        dto.setCorreoInstitucional(dto.getCorreoInstitucional().trim());
+
         // 1. Validar que no exista un usuario con la misma cédula o correo
-        // institucional
         if (usuarioRepository.existsByCedula(dto.getCedula())) {
             throw new IllegalArgumentException("Ya existe un usuario registrado con la cédula: " + dto.getCedula());
         }
