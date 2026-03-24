@@ -16,4 +16,13 @@ public class ChatRequest {
 
     /** Mensaje del usuario */
     private String message;
+
+    /** ID del usuario autenticado (para obtener contexto de BD) */
+    private Integer userId;
+
+    /** ID de carrera del coordinador/estudiante (para filtrar contexto) */
+    private Integer idCarrera;
+
+    /** ID de facultad del decano (para filtrar contexto) */
+    private Integer idFacultad;
 }
