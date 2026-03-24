@@ -1,5 +1,6 @@
 package com.app.backend.repositories.tramites;
 
+import com.app.backend.dtos.tramites.response.PlantillaTramiteDTO;
 import com.app.backend.entities.tramites.PlantillaTramite;
 import com.app.backend.repositories.tramites.projections.DetallesTramiteBaseProjection;
 import org.springframework.data.jpa.repository.Query;
@@ -129,4 +130,7 @@ public interface PlantillaTramiteRepository extends JpaRepository<PlantillaTrami
         ORDER BY p.idPlantilla
         """)
     List<DetallesTramiteBaseProjection> findAllDetallesBaseByCarrera(@Param("idCarrera") Integer idCarrera);
+
+    @Query(value = "Select * from tramites.fn_sl_plantillastramites()", nativeQuery = true)
+    List<PlantillaTramiteDTO> listarPlantillas();
 }
