@@ -1,7 +1,10 @@
 package com.app.backend.controllers.tramites;
 
 import com.app.backend.dtos.tramites.DetallesTramiteDTO;
+import com.app.backend.dtos.tramites.response.PlantillaTramiteResponseDTO;
 import com.app.backend.services.tramites.DetallesTramiteService;
+import com.app.backend.services.tramites.TipoTramiteService;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -19,9 +22,15 @@ import java.util.List;
 public class DetallesTramiteController {
 
     private final DetallesTramiteService detallesTramiteService;
+    private final TipoTramiteService tipoTramiteService;
 
     @GetMapping("/detalles/carrera/{idCarrera}")
     public ResponseEntity<List<DetallesTramiteDTO>> listarPorCarrera(@PathVariable Integer idCarrera) {
         return ResponseEntity.ok(detallesTramiteService.listarPorCarrera(idCarrera));
+    }
+
+    @GetMapping("/plantillas")
+    public ResponseEntity<List<PlantillaTramiteResponseDTO>> listarPlantillasTramites() {
+        return ResponseEntity.ok(tipoTramiteService.listarPlantillasTramites());
     }
 }

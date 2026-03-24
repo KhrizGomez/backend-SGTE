@@ -1,0 +1,60 @@
+package com.app.backend.config;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+import com.app.backend.repositories.sistema.CredencialRepository;
+
+import lombok.RequiredArgsConstructor;
+
+@Configuration
+@RequiredArgsConstructor
+public class ConfigAplicacion {
+    private final CredencialRepository credencialRepository;
+
+    @Bean
+    public UserDetailsService userDetailsService() {
+        return username -> credencialRepository.findByNombreUsuario(username)
+                .map(credencial -> {
+                    String rol = credencial.getUsuario().getRoles().stream()
+                            .findFirst()
+                            .map(r -> r.getNombreRol())
+                            .orElse("USER");
+
+                    return User.builder()
+                            .username(credencial.getNombreUsuario())
+                            .password(credencial.getHashContrasena())
+                            .roles(rol)
+                            .build();
+                })
+                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado en la base de datos"));
+    }
+
+    @Bean
+    public AuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(userDetailsService());
+        authProvider.setPasswordEncoder(passwordEncoder());       
+        return authProvider;
+    }
+
+    @SuppressWarnings("deprecation")
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        PasswordEncoder encoder = NoOpPasswordEncoder.getInstance();
+        return encoder;
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
+    }
+}

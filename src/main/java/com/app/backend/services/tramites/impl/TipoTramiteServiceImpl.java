@@ -1,6 +1,9 @@
 package com.app.backend.services.tramites.impl;
 
 import com.app.backend.dtos.tramites.TipoTramiteDTO;
+import com.app.backend.dtos.tramites.response.PlantillaTramiteDTO;
+import com.app.backend.dtos.tramites.response.PlantillaTramiteResponseDTO;
+import com.app.backend.dtos.tramites.response.RequisitoTramiteResponseDTO;
 import com.app.backend.entities.tramites.PlantillaTramite;
 import com.app.backend.exceptions.RecursoNoEncontradoException;
 import com.app.backend.repositories.tramites.CategoriaRepository;
@@ -13,6 +16,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -73,5 +78,41 @@ public class TipoTramiteServiceImpl implements TipoTramiteService {
                 .estaActivo(t.getEstaActivo())
                 .disponibleExternos(t.getDisponibleExternos())
                 .build();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<PlantillaTramiteResponseDTO> listarPlantillasTramites() {
+        Map<Integer, List<PlantillaTramiteDTO>> agrupado = plantillaTramiteRepository.listarPlantillas()
+                .stream().collect(Collectors.groupingBy(PlantillaTramiteDTO::getIdplantilla));
+
+        return agrupado.entrySet().stream().map(entry -> {
+            PlantillaTramiteDTO base = entry.getValue().get(0);
+
+            PlantillaTramiteResponseDTO plantilla = new PlantillaTramiteResponseDTO();
+            plantilla.setIdplantilla(base.getIdplantilla());
+            plantilla.setNombreplantilla(base.getNombreplantilla());
+            plantilla.setDescripcionplantilla(base.getDescripcionplantilla());
+            plantilla.setNombrecategoria(base.getNombrecategoria());
+            plantilla.setDiasresolucionestimados(base.getDiasresolucionestimados());
+            plantilla.setEstaactivo(base.getEstaactivo());
+            plantilla.setDisponiblesexternos(base.getDisponiblesexternos());
+
+            List<RequisitoTramiteResponseDTO> requisitos = entry.getValue().stream()
+                    .filter(req -> req.getNombrerequisito() != null)
+                    .map(req -> {
+                        RequisitoTramiteResponseDTO r = new RequisitoTramiteResponseDTO();
+                        r.setNombrerequisito(req.getNombrerequisito());
+                        r.setDescripcionrequisito(req.getDescripcionrequisito());
+                        r.setEsobligatorio(req.getEsobligatorio());
+                        r.setTipodocumento(req.getTipodocumento());
+                        r.setExtensionespermitidas(req.getExtensionespermitidas());
+                        r.setNumeroorden(req.getNumeroorden());
+                        return r;
+                    }).collect(Collectors.toList());
+
+            plantilla.setRequisitos(requisitos);
+            return plantilla;
+        }).collect(Collectors.toList());
     }
 }
