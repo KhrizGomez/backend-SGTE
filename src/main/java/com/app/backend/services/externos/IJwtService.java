@@ -9,6 +9,8 @@ import io.jsonwebtoken.Claims;
 
 public interface IJwtService {
     String extraerUsuario(String token);
+    Integer extraerIdUsuario(String token);
+    Integer extraerIdCarrera(String token);
     <T> T extractClaim(String token, Function<Claims, T> claimsResolver);
     String generarToken(Map<String, Object> extraClaims,String userName);
     Boolean esTokenValido(String token, UserDetails userDetails);

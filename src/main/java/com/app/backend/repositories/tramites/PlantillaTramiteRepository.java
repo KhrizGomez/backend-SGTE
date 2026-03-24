@@ -131,11 +131,12 @@ public interface PlantillaTramiteRepository extends JpaRepository<PlantillaTrami
         """)
     List<DetallesTramiteBaseProjection> findAllDetallesBaseByCarrera(@Param("idCarrera") Integer idCarrera);
 
-    @Query(value = "Select * from tramites.fn_sl_plantillastramites(:categoria, :activo, :busqueda, :esExterno)", nativeQuery = true)
+    @Query(value = "Select * from tramites.fn_sl_plantillastramites(:categoria, :activo, :busqueda, :esExterno, :idCarrera)", nativeQuery = true)
     List<PlantillaTramiteDTO> listarPlantillas(
             @Param("categoria") String categoria,
             @Param("activo") Boolean activo,
             @Param("busqueda") String busqueda,
-            @Param("esExterno") Boolean esExterno
+            @Param("esExterno") Boolean esExterno,
+            @Param("idCarrera") Integer idCarrera
     );
 }

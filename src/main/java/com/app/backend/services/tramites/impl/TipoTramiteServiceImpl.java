@@ -4,7 +4,6 @@ import com.app.backend.dtos.tramites.TipoTramiteDTO;
 import com.app.backend.dtos.tramites.response.PlantillaTramiteDTO;
 import com.app.backend.dtos.tramites.response.PlantillaTramiteResponseDTO;
 import com.app.backend.dtos.tramites.response.RequisitoTramiteResponseDTO;
-import com.app.backend.entities.academico.Estudiante;
 import com.app.backend.entities.tramites.PlantillaTramite;
 import com.app.backend.exceptions.RecursoNoEncontradoException;
 import com.app.backend.repositories.tramites.CategoriaRepository;
@@ -21,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -123,16 +121,17 @@ public class TipoTramiteServiceImpl implements TipoTramiteService {
     public List<PlantillaTramiteResponseDTO> listarPlantillasTramites(String categoria, Boolean activo,
             String busqueda) {
         Boolean esExternoCalculado = null;
+        Integer idCarreraCalculado = null;
+
         String authHeader = request.getHeader("Authorization");
-        System.out.println("Header: " + authHeader);
-        System.out.println("Externo calculado: " + esExternoCalculado);
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             try {
                 String jwt = authHeader.substring(7);
-                Integer idUsuario = jwtService.extractClaim(jwt, claims -> claims.get("idUsuario", Integer.class));
-                System.out.println("ID de Usuario extraído del JWT: " + idUsuario);
+                Integer idUsuario = jwtService.extraerIdUsuario(jwt);
+                idCarreraCalculado = jwtService.extraerIdCarrera(jwt);
+
                 if (idUsuario != null) {
-                    Optional<Estudiante> estudianteOpt = estudianteRepository.findByUsuarioIdUsuario(idUsuario);
+                    var estudianteOpt = estudianteRepository.findByUsuarioIdUsuario(idUsuario);
                     if (estudianteOpt.isPresent()) {
                         esExternoCalculado = estudianteOpt.get().getEsExterno();
                     }
@@ -142,10 +141,8 @@ public class TipoTramiteServiceImpl implements TipoTramiteService {
             }
         }
 
-        System.out.println("Externo calculado: " + esExternoCalculado);
-
         Map<Integer, List<PlantillaTramiteDTO>> agrupado = plantillaTramiteRepository
-                .listarPlantillas(categoria, activo, busqueda, esExternoCalculado)
+                .listarPlantillas(categoria, activo, busqueda, esExternoCalculado, idCarreraCalculado)
                 .stream().collect(Collectors.groupingBy(PlantillaTramiteDTO::getIdplantilla));
 
         return agrupado.entrySet().stream().map(entry -> {

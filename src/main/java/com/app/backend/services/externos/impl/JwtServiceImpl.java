@@ -32,6 +32,16 @@ public class JwtServiceImpl implements IJwtService {
         return extractClaim(token, Claims::getSubject);
     }
 
+    @Override
+    public Integer extraerIdUsuario(String token) {
+        return extractClaim(token, claims -> claims.get("idUsuario", Integer.class));
+    }
+
+    @Override
+    public Integer extraerIdCarrera(String token) {
+        return extractClaim(token, claims -> claims.get("idCarrera", Integer.class));
+    }
+
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = Jwts.parser()
                 .verifyWith(obtenerClaveInicioSesion())
