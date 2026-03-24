@@ -35,6 +35,7 @@ public class AIChatService {
             // Construir el user prompt combinando contexto + mensaje
             String userPrompt = buildUserPrompt(dbContext, request.getMessage());
 
+            String rawResponse = groqAIService.chatFreeText(systemPrompt, userPrompt);
             if (rawResponse == null || rawResponse.isBlank()) {
                 return ChatResponse.builder()
                         .success(false)
