@@ -2,6 +2,7 @@ package com.app.backend.services.ai;
 
 import com.app.backend.dtos.ai.ChatRequest;
 import com.app.backend.dtos.ai.ChatResponse;
+import com.app.backend.repositories.ai.AIChatContextRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ClassPathResource;
@@ -16,6 +17,7 @@ import java.nio.charset.StandardCharsets;
 public class AIChatService {
 
     private final GroqAIService groqAIService;
+    private final AIChatContextRepository contextRepository;
 
     public ChatResponse chat(ChatRequest request) {
         try {
@@ -27,7 +29,12 @@ public class AIChatService {
                         .build();
             }
 
-            String rawResponse = groqAIService.chatFreeText(systemPrompt, request.getMessage());
+            // Obtener contexto real de la BD según el módulo
+            String dbContext = getDbContext(request);
+
+            // Construir el user prompt combinando contexto + mensaje
+            String userPrompt = buildUserPrompt(dbContext, request.getMessage());
+
             if (rawResponse == null || rawResponse.isBlank()) {
                 return ChatResponse.builder()
                         .success(false)
@@ -48,6 +55,39 @@ public class AIChatService {
                     .error("Error al procesar tu consulta. Intenta nuevamente.")
                     .build();
         }
+    }
+
+    private String getDbContext(ChatRequest request) {
+        try {
+            return switch (request.getModule()) {
+                case "coordinador" -> request.getIdCarrera() != null
+                        ? contextRepository.getCoordinadorContext(request.getIdCarrera())
+                        : "{}";
+                case "decano" -> request.getIdFacultad() != null
+                        ? contextRepository.getDecanoContext(request.getIdFacultad())
+                        : "{}";
+                case "estudiante" -> request.getUserId() != null
+                        ? contextRepository.getEstudianteContext(request.getUserId())
+                        : "{}";
+                default -> "{}";
+            };
+        } catch (Exception e) {
+            log.warn("[AIChatService] No se pudo obtener contexto de BD para módulo '{}': {}", request.getModule(), e.getMessage());
+            return "{}";
+        }
+    }
+
+    private String buildUserPrompt(String contextJson, String userMessage) {
+        if ("{}".equals(contextJson)) {
+            return userMessage;
+        }
+        return """
+                CONTEXTO ACTUAL DEL SISTEMA (datos reales):
+                %s
+
+                PREGUNTA:
+                %s
+                """.formatted(contextJson, userMessage);
     }
 
     private String loadSystemPrompt(String module) {
