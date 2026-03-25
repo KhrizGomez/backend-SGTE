@@ -28,6 +28,7 @@ public class JwtServiceImpl implements IJwtService {
         return Keys.hmacShaKeyFor(secretKey.getBytes());
     }
 
+    @Override
     public String extraerUsuario(String token) {
         return extractClaim(token, Claims::getSubject);
     }
@@ -42,6 +43,7 @@ public class JwtServiceImpl implements IJwtService {
         return extractClaim(token, claims -> claims.get("idCarrera", Integer.class));
     }
 
+    @Override
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = Jwts.parser()
                 .verifyWith(obtenerClaveInicioSesion())
@@ -51,6 +53,7 @@ public class JwtServiceImpl implements IJwtService {
         return claimsResolver.apply(claims);
     }
 
+    @Override
     public String generarToken(Map<String, Object> extraClaims,String username) {
         return Jwts.builder()
                 .claims(extraClaims)
@@ -61,6 +64,7 @@ public class JwtServiceImpl implements IJwtService {
                 .compact();
     }
 
+    @Override
     public Boolean esTokenValido(String token, UserDetails userDetails) {
         final String username = extraerUsuario(token);
         return (username.equals(userDetails.getUsername())) && !esTokenExpirado(token);

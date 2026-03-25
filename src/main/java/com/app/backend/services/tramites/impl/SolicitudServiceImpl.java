@@ -1,6 +1,7 @@
 package com.app.backend.services.tramites.impl;
 
 import com.app.backend.dtos.tramites.SolicitudDTO;
+import com.app.backend.dtos.tramites.response.SolicitudesTramitesVigentesRespuestaDTO;
 import com.app.backend.entities.tramites.Solicitud;
 import com.app.backend.exceptions.RecursoNoEncontradoException;
 import com.app.backend.repositories.academico.CarreraRepository;
@@ -8,7 +9,10 @@ import com.app.backend.repositories.sistema.UsuarioRepository;
 import com.app.backend.repositories.tramites.PasoFlujoRepository;
 import com.app.backend.repositories.tramites.PlantillaTramiteRepository;
 import com.app.backend.repositories.tramites.SolicitudRepository;
+import com.app.backend.services.externos.IJwtService;
 import com.app.backend.services.tramites.SolicitudService;
+
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,6 +31,8 @@ public class SolicitudServiceImpl implements SolicitudService {
     private final UsuarioRepository usuarioRepository;
     private final CarreraRepository carreraRepository;
     private final PasoFlujoRepository pasoFlujoRepository;
+    private final HttpServletRequest request;
+    private final IJwtService jwtService;
 
     @Override @Transactional(readOnly = true)
     public List<SolicitudDTO> listarTodas() { return solicitudRepository.findAll().stream().map(this::toDTO).toList(); }
@@ -74,5 +80,21 @@ public class SolicitudServiceImpl implements SolicitudService {
 
     private SolicitudDTO toDTO(Solicitud s) {
         return SolicitudDTO.builder().idSolicitud(s.getIdSolicitud()).codigoSolicitud(s.getCodigoSolicitud()).idPlantilla(s.getPlantilla().getIdPlantilla()).idUsuario(s.getUsuario().getIdUsuario()).idCarrera(s.getCarrera() != null ? s.getCarrera().getIdCarrera() : null).creadoPorId(s.getCreadoPor() != null ? s.getCreadoPor().getIdUsuario() : null).detallesSolicitud(s.getDetallesSolicitud()).prioridad(s.getPrioridad()).pasoActualId(s.getPasoActual() != null ? s.getPasoActual().getIdPaso() : null).estadoActual(s.getEstadoActual()).fechaCreacion(s.getFechaCreacion()).fechaEstimadaFin(s.getFechaEstimadaFin()).fechaRealFin(s.getFechaRealFin()).resolucion(s.getResolucion()).build();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<SolicitudesTramitesVigentesRespuestaDTO> listarTramitesVigente(){
+        try {
+            Integer idUsuario = null;
+            String encaAuth = request.getHeader("Authorization");
+            if (encaAuth != null && encaAuth.startsWith("Bearer ")){
+                String jwt = encaAuth.substring(7);
+                idUsuario = jwtService.extraerIdUsuario(jwt);
+            }
+            return solicitudRepository.listarTramitesVigentes(idUsuario);
+        } catch (Exception e) {
+            throw new RuntimeException("Error al listar las solicitudes de tramites: " + e.getMessage());
+        } 
     }
 }

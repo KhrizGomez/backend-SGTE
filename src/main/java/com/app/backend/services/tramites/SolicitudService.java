@@ -1,6 +1,8 @@
 package com.app.backend.services.tramites;
 
 import com.app.backend.dtos.tramites.SolicitudDTO;
+import com.app.backend.dtos.tramites.response.SolicitudesTramitesVigentesRespuestaDTO;
+
 import lombok.NonNull;
 import java.util.List;
 
@@ -13,4 +15,5 @@ public interface SolicitudService {
     SolicitudDTO crear(SolicitudDTO dto);
     SolicitudDTO actualizar(@NonNull Integer id, SolicitudDTO dto);
     void eliminar(@NonNull Integer id);
+    List<SolicitudesTramitesVigentesRespuestaDTO> listarTramitesVigente();
 }
