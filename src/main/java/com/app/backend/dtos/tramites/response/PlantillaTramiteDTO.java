@@ -21,4 +21,5 @@ public class PlantillaTramiteDTO {
     private String tipodocumento;
     private String extensionespermitidas;
     private Integer numeroorden;
+    private Long pasos;
 }

@@ -156,6 +156,7 @@ public class TipoTramiteServiceImpl implements TipoTramiteService {
             plantilla.setDiasresolucionestimados(base.getDiasresolucionestimados());
             plantilla.setEstaactivo(base.getEstaactivo());
             plantilla.setDisponiblesexternos(base.getDisponiblesexternos());
+            plantilla.setPasos(base.getPasos());
 
             List<RequisitoTramiteResponseDTO> requisitos = entry.getValue().stream()
                     .filter(req -> req.getNombrerequisito() != null)

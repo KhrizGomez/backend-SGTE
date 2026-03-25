@@ -20,5 +20,6 @@ public class PlantillaTramiteResponseDTO {
     private Integer diasresolucionestimados;
     private Boolean estaactivo;
     private Boolean disponiblesexternos;
+    private Long pasos;
     private List<RequisitoTramiteResponseDTO> requisitos;
 }

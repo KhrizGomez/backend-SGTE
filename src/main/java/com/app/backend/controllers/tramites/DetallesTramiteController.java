@@ -34,8 +34,12 @@ public class DetallesTramiteController {
     public ResponseEntity<List<PlantillaTramiteResponseDTO>> listarPlantillasTramites(
             @RequestParam(required = false) String categoria,
             @RequestParam(required = false) Boolean activo,
-            @RequestParam(required = false) String busqueda
-    ) {
+            @RequestParam(required = false) String busqueda) {
         return ResponseEntity.ok(tipoTramiteService.listarPlantillasTramites(categoria, activo, busqueda));
+    }
+
+    @GetMapping("/detalles/plantilla")
+    public ResponseEntity<DetallesTramiteDTO> obtenerPorTipoTramite(@RequestParam Integer idPlantilla) {
+        return ResponseEntity.ok(detallesTramiteService.obtenerPorTipoTramite(idPlantilla));
     }
 }
