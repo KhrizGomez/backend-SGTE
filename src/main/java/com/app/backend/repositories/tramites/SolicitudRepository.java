@@ -1,7 +1,11 @@
 package com.app.backend.repositories.tramites;
 
+import com.app.backend.dtos.tramites.response.SolicitudesDocumentosRespuestaDTO;
+import com.app.backend.dtos.tramites.response.SolicitudesTramitesVigentesRespuestaDTO;
 import com.app.backend.entities.tramites.Solicitud;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -13,4 +17,10 @@ public interface SolicitudRepository extends JpaRepository<Solicitud, Integer> {
     List<Solicitud> findByUsuarioIdUsuario(Integer idUsuario);
     List<Solicitud> findByEstadoActual(String estadoActual);
     List<Solicitud> findByPlantillaIdPlantilla(Integer idPlantilla);
+
+    @Query(value = "Select * from tramites.fn_sl_solicitudestramitesvigentes(:p_idusuario)", nativeQuery = true)
+    List<SolicitudesTramitesVigentesRespuestaDTO> listarTramitesVigentes(@Param("p_idusuario") Integer idusuario);
+
+    @Query(value = "Select * from tramites.fn_sl_solicitudestramiteshistorial(:p_idsolicitud)", nativeQuery = true)
+    List<SolicitudesDocumentosRespuestaDTO> listarDocumentosTramites(@Param("p_idsolicitud") Integer idsolicitud);
 }
