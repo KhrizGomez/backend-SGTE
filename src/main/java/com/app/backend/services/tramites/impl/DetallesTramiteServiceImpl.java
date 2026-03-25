@@ -1,6 +1,7 @@
 package com.app.backend.services.tramites.impl;
 
 import com.app.backend.dtos.tramites.DetallesTramiteDTO;
+import com.app.backend.dtos.tramites.DetallesTramiteBaseDTO;
 import com.app.backend.dtos.tramites.PasoFlujoTramiteDTO;
 import com.app.backend.dtos.tramites.RequisitoTramiteDTO;
 import com.app.backend.entities.sistema.Usuario;
@@ -10,7 +11,6 @@ import com.app.backend.exceptions.RecursoNoEncontradoException;
 import com.app.backend.repositories.tramites.PasoFlujoRepository;
 import com.app.backend.repositories.tramites.PlantillaTramiteRepository;
 import com.app.backend.repositories.tramites.RequisitoPlantillaRepository;
-import com.app.backend.repositories.tramites.projections.DetallesTramiteBaseProjection;
 import com.app.backend.services.tramites.DetallesTramiteService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -47,13 +47,13 @@ public class DetallesTramiteServiceImpl implements DetallesTramiteService {
 
     @Override
     public DetallesTramiteDTO obtenerPorTipoTramite(@NonNull Integer idPlantilla) {
-        DetallesTramiteBaseProjection base = plantillaTramiteRepository.findDetalleBaseByIdPlantilla(idPlantilla)
+        DetallesTramiteBaseDTO base = plantillaTramiteRepository.findDetalleBaseByIdPlantilla(idPlantilla)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Plantilla no encontrada con id: " + idPlantilla));
 
         return buildDetalle(base);
         }
 
-        private DetallesTramiteDTO buildDetalle(DetallesTramiteBaseProjection base) {
+        private DetallesTramiteDTO buildDetalle(DetallesTramiteBaseDTO base) {
 
         List<PasoFlujoTramiteDTO> pasos = base.getIdFlujo() == null
                 ? List.of()

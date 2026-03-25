@@ -1,8 +1,8 @@
 package com.app.backend.repositories.tramites;
 
 import com.app.backend.dtos.tramites.response.PlantillaTramiteDTO;
+import com.app.backend.dtos.tramites.DetallesTramiteBaseDTO;
 import com.app.backend.entities.tramites.PlantillaTramite;
-import com.app.backend.repositories.tramites.projections.DetallesTramiteBaseProjection;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.query.Param;
@@ -17,27 +17,28 @@ public interface PlantillaTramiteRepository extends JpaRepository<PlantillaTrami
     List<PlantillaTramite> findByCategoriaIdCategoria(Integer idCategoria);
 
     @Query("""
-        SELECT
-            p.idPlantilla AS idPlantilla,
-            p.nombrePlantilla AS nombrePlantilla,
-            p.descripcionPlantilla AS descripcionPlantilla,
-            c.idCategoria AS idCategoria,
-            c.nombreCategoria AS categoria,
-            car.idCarrera AS idCarrera,
-            car.nombreCarrera AS carrera,
-            f.idFlujo AS idFlujo,
-            f.nombreFlujo AS nombreFlujo,
-            f.descripcion AS descripcion,
-            u.idUsuario AS idUsuarioCreador,
-            COALESCE(cr.nombreUsuario, CONCAT(COALESCE(u.nombres, ''), ' ', COALESCE(u.apellidos, ''))) AS usuarioCreador,
-            f.version AS version,
-            v.idVentana AS idVentana,
-            v.fechaApertura AS fechaApertura,
-            v.fechaCierre AS fechaCierre,
-            v.permiteExtension AS permiteExtension,
-            p.diasResolucionEstimados AS diasResolucionEstimados,
-            p.estaActivo AS estaActivo,
-            p.disponibleExternos AS disponibleExternos
+        SELECT new com.app.backend.dtos.tramites.DetallesTramiteBaseDTO(
+            p.idPlantilla,
+            p.nombrePlantilla,
+            p.descripcionPlantilla,
+            c.idCategoria,
+            c.nombreCategoria,
+            car.idCarrera,
+            car.nombreCarrera,
+            f.idFlujo,
+            f.nombreFlujo,
+            f.descripcion,
+            u.idUsuario,
+            COALESCE(cr.nombreUsuario, CONCAT(COALESCE(u.nombres, ''), ' ', COALESCE(u.apellidos, ''))),
+            f.version,
+            v.idVentana,
+            v.fechaApertura,
+            v.fechaCierre,
+            v.permiteExtension,
+            p.diasResolucionEstimados,
+            p.estaActivo,
+            p.disponibleExternos
+        )
         FROM PlantillaTramite p
         LEFT JOIN p.categoria c
         LEFT JOIN p.carrera car
@@ -52,30 +53,31 @@ public interface PlantillaTramiteRepository extends JpaRepository<PlantillaTrami
                )
         ORDER BY p.idPlantilla
         """)
-    List<DetallesTramiteBaseProjection> findAllDetallesBase();
+    List<DetallesTramiteBaseDTO> findAllDetallesBase();
 
     @Query("""
-        SELECT
-            p.idPlantilla AS idPlantilla,
-            p.nombrePlantilla AS nombrePlantilla,
-            p.descripcionPlantilla AS descripcionPlantilla,
-            c.idCategoria AS idCategoria,
-            c.nombreCategoria AS categoria,
-            car.idCarrera AS idCarrera,
-            car.nombreCarrera AS carrera,
-            f.idFlujo AS idFlujo,
-            f.nombreFlujo AS nombreFlujo,
-            f.descripcion AS descripcion,
-            u.idUsuario AS idUsuarioCreador,
-            COALESCE(cr.nombreUsuario, CONCAT(COALESCE(u.nombres, ''), ' ', COALESCE(u.apellidos, ''))) AS usuarioCreador,
-            f.version AS version,
-            v.idVentana AS idVentana,
-            v.fechaApertura AS fechaApertura,
-            v.fechaCierre AS fechaCierre,
-            v.permiteExtension AS permiteExtension,
-            p.diasResolucionEstimados AS diasResolucionEstimados,
-            p.estaActivo AS estaActivo,
-            p.disponibleExternos AS disponibleExternos
+        SELECT new com.app.backend.dtos.tramites.DetallesTramiteBaseDTO(
+            p.idPlantilla,
+            p.nombrePlantilla,
+            p.descripcionPlantilla,
+            c.idCategoria,
+            c.nombreCategoria,
+            car.idCarrera,
+            car.nombreCarrera,
+            f.idFlujo,
+            f.nombreFlujo,
+            f.descripcion,
+            u.idUsuario,
+            COALESCE(cr.nombreUsuario, CONCAT(COALESCE(u.nombres, ''), ' ', COALESCE(u.apellidos, ''))),
+            f.version,
+            v.idVentana,
+            v.fechaApertura,
+            v.fechaCierre,
+            v.permiteExtension,
+            p.diasResolucionEstimados,
+            p.estaActivo,
+            p.disponibleExternos
+        )
         FROM PlantillaTramite p
         LEFT JOIN p.categoria c
         LEFT JOIN p.carrera car
@@ -90,30 +92,31 @@ public interface PlantillaTramiteRepository extends JpaRepository<PlantillaTrami
                )
         WHERE p.idPlantilla = :idPlantilla
         """)
-    Optional<DetallesTramiteBaseProjection> findDetalleBaseByIdPlantilla(@Param("idPlantilla") Integer idPlantilla);
+    Optional<DetallesTramiteBaseDTO> findDetalleBaseByIdPlantilla(@Param("idPlantilla") Integer idPlantilla);
 
     @Query("""
-        SELECT
-            p.idPlantilla AS idPlantilla,
-            p.nombrePlantilla AS nombrePlantilla,
-            p.descripcionPlantilla AS descripcionPlantilla,
-            c.idCategoria AS idCategoria,
-            c.nombreCategoria AS categoria,
-            car.idCarrera AS idCarrera,
-            car.nombreCarrera AS carrera,
-            f.idFlujo AS idFlujo,
-            f.nombreFlujo AS nombreFlujo,
-            f.descripcion AS descripcion,
-            u.idUsuario AS idUsuarioCreador,
-            COALESCE(cr.nombreUsuario, CONCAT(COALESCE(u.nombres, ''), ' ', COALESCE(u.apellidos, ''))) AS usuarioCreador,
-            f.version AS version,
-            v.idVentana AS idVentana,
-            v.fechaApertura AS fechaApertura,
-            v.fechaCierre AS fechaCierre,
-            v.permiteExtension AS permiteExtension,
-            p.diasResolucionEstimados AS diasResolucionEstimados,
-            p.estaActivo AS estaActivo,
-            p.disponibleExternos AS disponibleExternos
+        SELECT new com.app.backend.dtos.tramites.DetallesTramiteBaseDTO(
+            p.idPlantilla,
+            p.nombrePlantilla,
+            p.descripcionPlantilla,
+            c.idCategoria,
+            c.nombreCategoria,
+            car.idCarrera,
+            car.nombreCarrera,
+            f.idFlujo,
+            f.nombreFlujo,
+            f.descripcion,
+            u.idUsuario,
+            COALESCE(cr.nombreUsuario, CONCAT(COALESCE(u.nombres, ''), ' ', COALESCE(u.apellidos, ''))),
+            f.version,
+            v.idVentana,
+            v.fechaApertura,
+            v.fechaCierre,
+            v.permiteExtension,
+            p.diasResolucionEstimados,
+            p.estaActivo,
+            p.disponibleExternos
+        )
         FROM PlantillaTramite p
         LEFT JOIN p.categoria c
         JOIN p.carrera car
@@ -129,7 +132,7 @@ public interface PlantillaTramiteRepository extends JpaRepository<PlantillaTrami
         WHERE car.idCarrera = :idCarrera
         ORDER BY p.idPlantilla
         """)
-    List<DetallesTramiteBaseProjection> findAllDetallesBaseByCarrera(@Param("idCarrera") Integer idCarrera);
+    List<DetallesTramiteBaseDTO> findAllDetallesBaseByCarrera(@Param("idCarrera") Integer idCarrera);
 
     @Query(value = "Select * from tramites.fn_sl_plantillastramites(:categoria, :activo, :busqueda, :esExterno, :idCarrera)", nativeQuery = true)
     List<PlantillaTramiteDTO> listarPlantillas(
