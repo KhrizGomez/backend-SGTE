@@ -31,7 +31,7 @@ La aplicación se conecta a una instancia de PostgreSQL alojada en Azure (sga-au
 # Levantar el servidor (puerto 9090)
 ./mvnw spring-boot:run
 ```
-El servidor se inicia en http://localhost:9090.
+El servidor se inicia en `http://localhost:9090.`
 
 ## Estructura del Proyecto
 ```text
