@@ -22,7 +22,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-@SuppressWarnings("null")
+@SuppressWarnings("")
 public class DetallesTramiteServiceImpl implements DetallesTramiteService {
 
     private final PlantillaTramiteRepository plantillaTramiteRepository;

@@ -18,6 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import lombok.NonNull;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -28,7 +30,8 @@ public class PanelEstudianteServiceImpl implements PanelEstudianteService {
     private final NotificacionRepository notificacionRepository;
 
     @Override
-    public PanelEstudianteDTO obtenerPanel(Integer idUsuario) {
+    @SuppressWarnings("")
+    public PanelEstudianteDTO obtenerPanel(@NonNull Integer idUsuario) {
         Usuario usuario = usuarioRepository.findById(idUsuario)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Usuario no encontrado con id: " + idUsuario));
 

@@ -14,6 +14,7 @@ public class AIChatContextRepository {
 
     private final DataSource dataSource;
 
+    @SuppressWarnings("null")
     private JdbcTemplate jdbc() {
         return new JdbcTemplate(dataSource);
     }

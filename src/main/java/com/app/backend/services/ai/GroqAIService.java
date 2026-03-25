@@ -31,6 +31,7 @@ public class GroqAIService {
      * Envía un prompt al modelo Groq y retorna la respuesta como texto libre.
      * No fuerza formato JSON — ideal para el chatbot conversacional.
      */
+    @SuppressWarnings("null")
     public String chatFreeText(String systemPrompt, String userPrompt) {
         if (!isAvailable()) {
             log.warn("[GroqAIService] API key no configurada, saltando chatFreeText");
