@@ -8,6 +8,8 @@ public interface DetallesTramiteBaseProjection {
     String getDescripcionPlantilla();
     Integer getIdCategoria();
     String getCategoria();
+    Integer getIdCarrera();
+    String getCarrera();
     Integer getIdFlujo();
     String getNombreFlujo();
     String getDescripcion();

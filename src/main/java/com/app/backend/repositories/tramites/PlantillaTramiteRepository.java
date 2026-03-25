@@ -22,6 +22,8 @@ public interface PlantillaTramiteRepository extends JpaRepository<PlantillaTrami
             p.descripcionPlantilla AS descripcionPlantilla,
             c.idCategoria AS idCategoria,
             c.nombreCategoria AS categoria,
+            car.idCarrera AS idCarrera,
+            car.nombreCarrera AS carrera,
             f.idFlujo AS idFlujo,
             f.nombreFlujo AS nombreFlujo,
             f.descripcion AS descripcion,
@@ -37,6 +39,7 @@ public interface PlantillaTramiteRepository extends JpaRepository<PlantillaTrami
             p.disponibleExternos AS disponibleExternos
         FROM PlantillaTramite p
         LEFT JOIN p.categoria c
+        LEFT JOIN p.carrera car
         LEFT JOIN p.flujoTrabajo f
         LEFT JOIN f.creadoPor u
         LEFT JOIN u.credencial cr
@@ -57,6 +60,8 @@ public interface PlantillaTramiteRepository extends JpaRepository<PlantillaTrami
             p.descripcionPlantilla AS descripcionPlantilla,
             c.idCategoria AS idCategoria,
             c.nombreCategoria AS categoria,
+            car.idCarrera AS idCarrera,
+            car.nombreCarrera AS carrera,
             f.idFlujo AS idFlujo,
             f.nombreFlujo AS nombreFlujo,
             f.descripcion AS descripcion,
@@ -72,6 +77,7 @@ public interface PlantillaTramiteRepository extends JpaRepository<PlantillaTrami
             p.disponibleExternos AS disponibleExternos
         FROM PlantillaTramite p
         LEFT JOIN p.categoria c
+        LEFT JOIN p.carrera car
         LEFT JOIN p.flujoTrabajo f
         LEFT JOIN f.creadoPor u
         LEFT JOIN u.credencial cr
@@ -84,4 +90,43 @@ public interface PlantillaTramiteRepository extends JpaRepository<PlantillaTrami
         WHERE p.idPlantilla = :idPlantilla
         """)
     Optional<DetallesTramiteBaseProjection> findDetalleBaseByIdPlantilla(@Param("idPlantilla") Integer idPlantilla);
+
+    @Query("""
+        SELECT
+            p.idPlantilla AS idPlantilla,
+            p.nombrePlantilla AS nombrePlantilla,
+            p.descripcionPlantilla AS descripcionPlantilla,
+            c.idCategoria AS idCategoria,
+            c.nombreCategoria AS categoria,
+            car.idCarrera AS idCarrera,
+            car.nombreCarrera AS carrera,
+            f.idFlujo AS idFlujo,
+            f.nombreFlujo AS nombreFlujo,
+            f.descripcion AS descripcion,
+            u.idUsuario AS idUsuarioCreador,
+            COALESCE(cr.nombreUsuario, CONCAT(COALESCE(u.nombres, ''), ' ', COALESCE(u.apellidos, ''))) AS usuarioCreador,
+            f.version AS version,
+            v.idVentana AS idVentana,
+            v.fechaApertura AS fechaApertura,
+            v.fechaCierre AS fechaCierre,
+            v.permiteExtension AS permiteExtension,
+            p.diasResolucionEstimados AS diasResolucionEstimados,
+            p.estaActivo AS estaActivo,
+            p.disponibleExternos AS disponibleExternos
+        FROM PlantillaTramite p
+        LEFT JOIN p.categoria c
+        JOIN p.carrera car
+        LEFT JOIN p.flujoTrabajo f
+        LEFT JOIN f.creadoPor u
+        LEFT JOIN u.credencial cr
+        LEFT JOIN p.ventanas v
+               ON v.idVentana = (
+                   SELECT MAX(v2.idVentana)
+                   FROM VentanaRecepcion v2
+                   WHERE v2.plantilla.idPlantilla = p.idPlantilla
+               )
+        WHERE car.idCarrera = :idCarrera
+        ORDER BY p.idPlantilla
+        """)
+    List<DetallesTramiteBaseProjection> findAllDetallesBaseByCarrera(@Param("idCarrera") Integer idCarrera);
 }

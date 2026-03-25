@@ -14,6 +14,8 @@ public class DetallesTramiteDTO {
     private String descripcionPlantilla;
     private Integer idCategoria;
     private String categoria;
+    private Integer idCarrera;
+    private String carrera;
     private Integer idFlujo;
     private String nombreFlujo;
     private String descripcion;

@@ -38,6 +38,14 @@ public class DetallesTramiteServiceImpl implements DetallesTramiteService {
         }
 
     @Override
+    public List<DetallesTramiteDTO> listarPorCarrera(@NonNull Integer idCarrera) {
+        return plantillaTramiteRepository.findAllDetallesBaseByCarrera(idCarrera)
+            .stream()
+            .map(this::buildDetalle)
+            .toList();
+    }
+
+    @Override
     public DetallesTramiteDTO obtenerPorTipoTramite(@NonNull Integer idPlantilla) {
         DetallesTramiteBaseProjection base = plantillaTramiteRepository.findDetalleBaseByIdPlantilla(idPlantilla)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Plantilla no encontrada con id: " + idPlantilla));
@@ -66,6 +74,8 @@ public class DetallesTramiteServiceImpl implements DetallesTramiteService {
                 .descripcionPlantilla(base.getDescripcionPlantilla())
                 .idCategoria(base.getIdCategoria())
                 .categoria(base.getCategoria())
+                .idCarrera(base.getIdCarrera())
+                .carrera(base.getCarrera())
                 .idFlujo(base.getIdFlujo())
                 .nombreFlujo(base.getNombreFlujo())
                 .descripcion(base.getDescripcion())

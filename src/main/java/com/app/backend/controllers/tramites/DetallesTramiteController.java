@@ -15,18 +15,13 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/tramites")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://localhost:4200")
 public class DetallesTramiteController {
 
     private final DetallesTramiteService detallesTramiteService;
 
-    @GetMapping("/detalles")
-    public ResponseEntity<List<DetallesTramiteDTO>> listarTodos() {
-        return ResponseEntity.ok(detallesTramiteService.listarTodos());
-    }
-
-    @GetMapping("/detalles/{idCategoria}")
-    public ResponseEntity<DetallesTramiteDTO> obtenerPorTipoTramite(@PathVariable Integer idCategoria) {
-        return ResponseEntity.ok(detallesTramiteService.obtenerPorTipoTramite(idCategoria));
+    @GetMapping("/detalles/carrera/{idCarrera}")
+    public ResponseEntity<List<DetallesTramiteDTO>> listarPorCarrera(@PathVariable Integer idCarrera) {
+        return ResponseEntity.ok(detallesTramiteService.listarPorCarrera(idCarrera));
     }
 }
