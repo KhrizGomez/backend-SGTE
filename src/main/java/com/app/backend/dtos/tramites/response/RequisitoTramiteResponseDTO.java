@@ -1,20 +1,20 @@
 package com.app.backend.dtos.tramites.response;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@AllArgsConstructor
+@Builder
 public class RequisitoTramiteResponseDTO {
-    private String nombrerequisito;
-    private String descripcionrequisito;
-    private Boolean esobligatorio;
-    private String tipodocumento;
-    private String extensionespermitidas;
-    private Integer numeroorden;
+    private Integer idRequisito;
+    private Integer idTipoTramite;
+    private String nombreRequisito;
+    private String descripcionRequisito;
+    private Boolean esObligatorio;
+    private String tipoDocumento;
+    private Integer tamanoMaxMb;
+    private String extensionesPermitidas;
+    private Integer numeroOrden;
 }
+

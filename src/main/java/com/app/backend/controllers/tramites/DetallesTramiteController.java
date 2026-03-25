@@ -1,6 +1,6 @@
 package com.app.backend.controllers.tramites;
 
-import com.app.backend.dtos.tramites.DetallesTramiteDTO;
+import com.app.backend.dtos.tramites.response.DetallesTramiteResponseDTO;
 import com.app.backend.dtos.tramites.response.PlantillaTramiteResponseDTO;
 import com.app.backend.services.tramites.DetallesTramiteService;
 import com.app.backend.services.tramites.TipoTramiteService;
@@ -26,7 +26,7 @@ public class DetallesTramiteController {
     private final TipoTramiteService tipoTramiteService;
 
     @GetMapping("/detalles/carrera/{idCarrera}")
-    public ResponseEntity<List<DetallesTramiteDTO>> listarPorCarrera(@PathVariable Integer idCarrera) {
+    public ResponseEntity<List<DetallesTramiteResponseDTO>> listarPorCarrera(@PathVariable Integer idCarrera) {
         return ResponseEntity.ok(detallesTramiteService.listarPorCarrera(idCarrera));
     }
 
@@ -39,7 +39,7 @@ public class DetallesTramiteController {
     }
 
     @GetMapping("/detalles/plantilla")
-    public ResponseEntity<DetallesTramiteDTO> obtenerPorTipoTramite(@RequestParam Integer idPlantilla) {
+    public ResponseEntity<DetallesTramiteResponseDTO> obtenerPorTipoTramite(@RequestParam Integer idPlantilla) {
         return ResponseEntity.ok(detallesTramiteService.obtenerPorTipoTramite(idPlantilla));
     }
 }

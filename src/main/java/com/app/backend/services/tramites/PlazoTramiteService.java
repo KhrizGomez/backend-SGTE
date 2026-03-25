@@ -1,13 +1,14 @@
 package com.app.backend.services.tramites;
 
-import com.app.backend.dtos.tramites.PlazoTramiteDTO;
+import com.app.backend.dtos.tramites.response.PlazoTramiteResponseDTO;
 import lombok.NonNull;
 import java.util.List;
 
 public interface PlazoTramiteService {
-    List<PlazoTramiteDTO> listarPorTipoTramite(@NonNull Integer idTipoTramite);
-    PlazoTramiteDTO obtenerPorId(@NonNull Integer id);
-    PlazoTramiteDTO crear(PlazoTramiteDTO dto);
-    PlazoTramiteDTO actualizar(@NonNull Integer id, PlazoTramiteDTO dto);
+    List<PlazoTramiteResponseDTO> listarPorTipoTramite(@NonNull Integer idTipoTramite);
+    PlazoTramiteResponseDTO obtenerPorId(@NonNull Integer id);
+    PlazoTramiteResponseDTO crear(PlazoTramiteResponseDTO dto);
+    PlazoTramiteResponseDTO actualizar(@NonNull Integer id, PlazoTramiteResponseDTO dto);
     void eliminar(@NonNull Integer id);
 }
+

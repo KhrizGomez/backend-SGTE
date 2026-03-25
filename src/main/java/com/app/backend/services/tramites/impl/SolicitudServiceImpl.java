@@ -1,8 +1,8 @@
 package com.app.backend.services.tramites.impl;
 
 import com.app.backend.dtos.documentos.DocumentoAdjuntoRequestDTO;
-import com.app.backend.dtos.tramites.CrearSolicitudTramiteDTO;
-import com.app.backend.dtos.tramites.SolicitudDTO;
+import com.app.backend.dtos.tramites.request.CrearSolicitudRequestDTO;
+import com.app.backend.dtos.tramites.response.SolicitudResponseDTO;
 import com.app.backend.dtos.tramites.response.SolicitudesTramitesVigentesRespuestaDTO;
 import com.app.backend.entities.tramites.Solicitud;
 import com.app.backend.exceptions.RecursoNoEncontradoException;
@@ -46,38 +46,38 @@ public class SolicitudServiceImpl implements SolicitudService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<SolicitudDTO> listarTodas() {
+    public List<SolicitudResponseDTO> listarTodas() {
         return solicitudRepository.findAll().stream().map(this::toDTO).toList();
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<SolicitudDTO> listarPorUsuario(@NonNull Integer idUsuario) {
+    public List<SolicitudResponseDTO> listarPorUsuario(@NonNull Integer idUsuario) {
         return solicitudRepository.findByUsuarioIdUsuario(idUsuario).stream().map(this::toDTO).toList();
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<SolicitudDTO> listarPorEstado(String estado) {
+    public List<SolicitudResponseDTO> listarPorEstado(String estado) {
         return solicitudRepository.findByEstadoActual(estado).stream().map(this::toDTO).toList();
     }
 
     @Override
     @Transactional(readOnly = true)
-    public SolicitudDTO obtenerPorId(@NonNull Integer id) {
+    public SolicitudResponseDTO obtenerPorId(@NonNull Integer id) {
         return toDTO(solicitudRepository.findById(id)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Solicitud no encontrada con id: " + id)));
     }
 
     @Override
     @Transactional(readOnly = true)
-    public SolicitudDTO obtenerPorCodigo(String codigo) {
+    public SolicitudResponseDTO obtenerPorCodigo(String codigo) {
         return toDTO(solicitudRepository.findByCodigoSolicitud(codigo)
-                .orElseThrow(() -> new RecursoNoEncontradoException("Solicitud no encontrada con código: " + codigo)));
+                .orElseThrow(() -> new RecursoNoEncontradoException("Solicitud no encontrada con cÃ³digo: " + codigo)));
     }
 
     @Override
-    public SolicitudDTO crear(SolicitudDTO dto) {
+    public SolicitudResponseDTO crear(SolicitudResponseDTO dto) {
         Solicitud s = Solicitud.builder()
                 .codigoSolicitud(dto.getCodigoSolicitud())
                 .plantilla(plantillaTramiteRepository.findById(dto.getIdPlantilla()).orElseThrow(
@@ -102,7 +102,7 @@ public class SolicitudServiceImpl implements SolicitudService {
     }
 
     @Override
-    public SolicitudDTO actualizar(@NonNull Integer id, SolicitudDTO dto) {
+    public SolicitudResponseDTO actualizar(@NonNull Integer id, SolicitudResponseDTO dto) {
         Solicitud s = solicitudRepository.findById(id)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Solicitud no encontrada con id: " + id));
         s.setDetallesSolicitud(dto.getDetallesSolicitud());
@@ -125,7 +125,7 @@ public class SolicitudServiceImpl implements SolicitudService {
     }
 
     @Override
-    public void crearSolicitudConDocumentos(CrearSolicitudTramiteDTO dto, List<MultipartFile> archivos) {
+    public void crearSolicitudConDocumentos(CrearSolicitudRequestDTO dto, List<MultipartFile> archivos) {
         // 1. Extraer idUsuario e idCarrera del JWT
         Integer idUsuario = null;
         Integer idCarrera = null;
@@ -153,7 +153,7 @@ public class SolicitudServiceImpl implements SolicitudService {
                 MultipartFile archivo = archivos.get(i);
                 Integer idRequisito = idsRequisitos.get(i);
 
-                // Generar nombre único para el blob
+                // Generar nombre Ãºnico para el blob
                 String extension = obtenerExtension(archivo.getOriginalFilename());
                 String nombreGenerado = String.format("req_%d_user_%d_%d%s",
                         idRequisito, idUsuario, System.currentTimeMillis(), extension);
@@ -204,12 +204,12 @@ public class SolicitudServiceImpl implements SolicitudService {
         } catch (RuntimeException e) {
             throw e;
         } catch (Exception e) {
-            throw new RuntimeException("Error al crear la solicitud de trámite: " + e.getMessage(), e);
+            throw new RuntimeException("Error al crear la solicitud de trÃ¡mite: " + e.getMessage(), e);
         }
     }
 
-    private SolicitudDTO toDTO(Solicitud s) {
-        return SolicitudDTO.builder().idSolicitud(s.getIdSolicitud()).codigoSolicitud(s.getCodigoSolicitud())
+    private SolicitudResponseDTO toDTO(Solicitud s) {
+        return SolicitudResponseDTO.builder().idSolicitud(s.getIdSolicitud()).codigoSolicitud(s.getCodigoSolicitud())
                 .idPlantilla(s.getPlantilla().getIdPlantilla()).idUsuario(s.getUsuario().getIdUsuario())
                 .idCarrera(s.getCarrera() != null ? s.getCarrera().getIdCarrera() : null)
                 .creadoPorId(s.getCreadoPor() != null ? s.getCreadoPor().getIdUsuario() : null)
@@ -242,3 +242,5 @@ public class SolicitudServiceImpl implements SolicitudService {
         return nombreArchivo.substring(nombreArchivo.lastIndexOf("."));
     }
 }
+
+

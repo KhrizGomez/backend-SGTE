@@ -1,6 +1,6 @@
 package com.app.backend.services.tramites.impl;
 
-import com.app.backend.dtos.tramites.TipoTramiteDTO;
+import com.app.backend.dtos.tramites.response.TipoTramiteResponseDTO;
 import com.app.backend.dtos.tramites.response.PlantillaTramiteDTO;
 import com.app.backend.dtos.tramites.response.PlantillaTramiteResponseDTO;
 import com.app.backend.dtos.tramites.response.RequisitoTramiteResponseDTO;
@@ -37,31 +37,31 @@ public class TipoTramiteServiceImpl implements TipoTramiteService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<TipoTramiteDTO> listarTodos() {
+    public List<TipoTramiteResponseDTO> listarTodos() {
         return plantillaTramiteRepository.findAll().stream().map(this::toDTO).toList();
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<TipoTramiteDTO> listarActivos() {
+    public List<TipoTramiteResponseDTO> listarActivos() {
         return plantillaTramiteRepository.findByEstaActivoTrue().stream().map(this::toDTO).toList();
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<TipoTramiteDTO> listarPorCategoria(@NonNull Integer idCategoria) {
+    public List<TipoTramiteResponseDTO> listarPorCategoria(@NonNull Integer idCategoria) {
         return plantillaTramiteRepository.findByCategoriaIdCategoria(idCategoria).stream().map(this::toDTO).toList();
     }
 
     @Override
     @Transactional(readOnly = true)
-    public TipoTramiteDTO obtenerPorId(@NonNull Integer id) {
+    public TipoTramiteResponseDTO obtenerPorId(@NonNull Integer id) {
         return toDTO(plantillaTramiteRepository.findById(id)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Plantilla no encontrada con id: " + id)));
     }
 
     @Override
-    public TipoTramiteDTO crear(TipoTramiteDTO dto) {
+    public TipoTramiteResponseDTO crear(TipoTramiteResponseDTO dto) {
         PlantillaTramite t = PlantillaTramite.builder()
                 .nombrePlantilla(dto.getNombreTramite())
                 .descripcionPlantilla(dto.getDescripcionTramite())
@@ -71,7 +71,7 @@ public class TipoTramiteServiceImpl implements TipoTramiteService {
                 .build();
         if (dto.getIdCategoria() != null)
             t.setCategoria(categoriaRepository.findById(dto.getIdCategoria()).orElseThrow(
-                    () -> new RecursoNoEncontradoException("Categoría no encontrada: " + dto.getIdCategoria())));
+                    () -> new RecursoNoEncontradoException("CategorÃ­a no encontrada: " + dto.getIdCategoria())));
         if (dto.getIdFlujo() != null)
             t.setFlujoTrabajo(flujoTrabajoRepository.findById(dto.getIdFlujo())
                     .orElseThrow(() -> new RecursoNoEncontradoException("Flujo no encontrado: " + dto.getIdFlujo())));
@@ -79,7 +79,7 @@ public class TipoTramiteServiceImpl implements TipoTramiteService {
     }
 
     @Override
-    public TipoTramiteDTO actualizar(@NonNull Integer id, TipoTramiteDTO dto) {
+    public TipoTramiteResponseDTO actualizar(@NonNull Integer id, TipoTramiteResponseDTO dto) {
         PlantillaTramite t = plantillaTramiteRepository.findById(id)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Plantilla no encontrada con id: " + id));
         t.setNombrePlantilla(dto.getNombreTramite());
@@ -89,7 +89,7 @@ public class TipoTramiteServiceImpl implements TipoTramiteService {
         t.setDisponibleExternos(dto.getDisponibleExternos());
         if (dto.getIdCategoria() != null)
             t.setCategoria(categoriaRepository.findById(dto.getIdCategoria()).orElseThrow(
-                    () -> new RecursoNoEncontradoException("Categoría no encontrada: " + dto.getIdCategoria())));
+                    () -> new RecursoNoEncontradoException("CategorÃ­a no encontrada: " + dto.getIdCategoria())));
         if (dto.getIdFlujo() != null)
             t.setFlujoTrabajo(flujoTrabajoRepository.findById(dto.getIdFlujo())
                     .orElseThrow(() -> new RecursoNoEncontradoException("Flujo no encontrado: " + dto.getIdFlujo())));
@@ -103,8 +103,8 @@ public class TipoTramiteServiceImpl implements TipoTramiteService {
         plantillaTramiteRepository.deleteById(id);
     }
 
-    private TipoTramiteDTO toDTO(PlantillaTramite t) {
-        return TipoTramiteDTO.builder()
+    private TipoTramiteResponseDTO toDTO(PlantillaTramite t) {
+        return TipoTramiteResponseDTO.builder()
                 .idTipoTramite(t.getIdPlantilla())
                 .nombreTramite(t.getNombrePlantilla())
                 .descripcionTramite(t.getDescripcionPlantilla())
@@ -162,12 +162,12 @@ public class TipoTramiteServiceImpl implements TipoTramiteService {
                     .filter(req -> req.getNombrerequisito() != null)
                     .map(req -> {
                         RequisitoTramiteResponseDTO r = new RequisitoTramiteResponseDTO();
-                        r.setNombrerequisito(req.getNombrerequisito());
-                        r.setDescripcionrequisito(req.getDescripcionrequisito());
-                        r.setEsobligatorio(req.getEsobligatorio());
-                        r.setTipodocumento(req.getTipodocumento());
-                        r.setExtensionespermitidas(req.getExtensionespermitidas());
-                        r.setNumeroorden(req.getNumeroorden());
+                        r.setNombreRequisito(req.getNombrerequisito());
+                        r.setDescripcionRequisito(req.getDescripcionrequisito());
+                        r.setEsObligatorio(req.getEsobligatorio());
+                        r.setTipoDocumento(req.getTipodocumento());
+                        r.setExtensionesPermitidas(req.getExtensionespermitidas());
+                        r.setNumeroOrden(req.getNumeroorden());
                         return r;
                     }).collect(Collectors.toList());
 
@@ -176,3 +176,4 @@ public class TipoTramiteServiceImpl implements TipoTramiteService {
         }).collect(Collectors.toList());
     }
 }
+

@@ -1,4 +1,4 @@
-package com.app.backend.dtos.tramites;
+package com.app.backend.dtos.tramites.response;
 
 import lombok.*;
 
@@ -6,7 +6,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class TransicionFlujoDTO {
+public class TransicionFlujoResponseDTO {
     private Integer idTransicion;
     private Integer idFlujo;
     private Integer idPasoOrigen;
@@ -14,3 +14,4 @@ public class TransicionFlujoDTO {
     private Boolean observacion;
     private Boolean documentoGenerado;
 }
+

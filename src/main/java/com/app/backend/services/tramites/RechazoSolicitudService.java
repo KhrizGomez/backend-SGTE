@@ -1,10 +1,11 @@
 package com.app.backend.services.tramites;
 
-import com.app.backend.dtos.tramites.RechazoSolicitudDTO;
+import com.app.backend.dtos.tramites.request.RechazoSolicitudRequestDTO;
 import lombok.NonNull;
 import java.util.List;
 
 public interface RechazoSolicitudService {
-    List<RechazoSolicitudDTO> listarPorSolicitud(@NonNull Integer idSolicitud);
-    RechazoSolicitudDTO crear(RechazoSolicitudDTO dto);
+    List<RechazoSolicitudRequestDTO> listarPorSolicitud(@NonNull Integer idSolicitud);
+    RechazoSolicitudRequestDTO crear(RechazoSolicitudRequestDTO dto);
 }
+

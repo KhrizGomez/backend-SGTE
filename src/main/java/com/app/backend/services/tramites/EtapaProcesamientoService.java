@@ -1,13 +1,14 @@
 package com.app.backend.services.tramites;
 
-import com.app.backend.dtos.tramites.EtapaProcesamientoDTO;
+import com.app.backend.dtos.tramites.response.EtapaProcesamientoResponseDTO;
 import lombok.NonNull;
 import java.util.List;
 
 public interface EtapaProcesamientoService {
-    List<EtapaProcesamientoDTO> listarTodas();
-    EtapaProcesamientoDTO obtenerPorId(@NonNull Integer id);
-    EtapaProcesamientoDTO crear(EtapaProcesamientoDTO dto);
-    EtapaProcesamientoDTO actualizar(@NonNull Integer id, EtapaProcesamientoDTO dto);
+    List<EtapaProcesamientoResponseDTO> listarTodas();
+    EtapaProcesamientoResponseDTO obtenerPorId(@NonNull Integer id);
+    EtapaProcesamientoResponseDTO crear(EtapaProcesamientoResponseDTO dto);
+    EtapaProcesamientoResponseDTO actualizar(@NonNull Integer id, EtapaProcesamientoResponseDTO dto);
     void eliminar(@NonNull Integer id);
 }
+

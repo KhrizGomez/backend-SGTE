@@ -1,4 +1,4 @@
-package com.app.backend.dtos.tramites;
+package com.app.backend.dtos.tramites.request;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -9,7 +9,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CrearSolicitudTramiteDTO {
+public class CrearSolicitudRequestDTO {
 
     @NotNull(message = "El id de la plantilla es obligatorio")
     private Integer idPlantilla;
@@ -24,7 +24,8 @@ public class CrearSolicitudTramiteDTO {
 
     /**
      * Lista de IDs de requisitos, uno por cada archivo adjunto, en el mismo orden.
-     * Si no hay archivos, puede ser null o vacía.
+     * Si no hay archivos, puede ser null o vacÃ­a.
      */
     private List<Integer> idsRequisitos;
 }
+

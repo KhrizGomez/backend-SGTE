@@ -1,4 +1,4 @@
-package com.app.backend.dtos.tramites;
+package com.app.backend.dtos.tramites.response;
 
 import lombok.*;
 
@@ -6,7 +6,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class TipoTramiteDTO {
+public class TipoTramiteResponseDTO {
     private Integer idTipoTramite;
     private String nombreTramite;
     private String descripcionTramite;
@@ -16,3 +16,4 @@ public class TipoTramiteDTO {
     private Boolean estaActivo;
     private Boolean disponibleExternos;
 }
+

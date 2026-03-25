@@ -1,4 +1,4 @@
-package com.app.backend.dtos.tramites;
+package com.app.backend.dtos.tramites.response;
 
 import lombok.*;
 import java.time.LocalDateTime;
@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class SeguimientoSolicitudDTO {
+public class SeguimientoSolicitudResponseDTO {
     private Integer idSeguimiento;
     private Integer idSolicitud;
     private Integer idPaso;
@@ -19,3 +19,4 @@ public class SeguimientoSolicitudDTO {
     private LocalDateTime fechaCompletado;
     private Boolean slaExcedido;
 }
+

@@ -1,14 +1,18 @@
-package com.app.backend.dtos.tramites;
+package com.app.backend.dtos.tramites.response;
 
 import java.time.LocalDate;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+import lombok.*;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class DetallesTramiteBaseDTO {
+@Builder
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class DetallesTramiteResponseDTO {
     private Integer idPlantilla;
     private String nombrePlantilla;
     private String descripcionPlantilla;
@@ -22,6 +26,8 @@ public class DetallesTramiteBaseDTO {
     private Integer idUsuarioCreador;
     private String usuarioCreador;
     private Integer version;
+    private List<PasoFlujoTramiteResponseDTO> pasosTramite;
+    private List<RequisitoTramiteResponseDTO> requisitosTramite;
     private Integer idVentana;
     private LocalDate fechaApertura;
     private LocalDate fechaCierre;
@@ -30,3 +36,4 @@ public class DetallesTramiteBaseDTO {
     private Boolean estaActivo;
     private Boolean disponibleExternos;
 }
+

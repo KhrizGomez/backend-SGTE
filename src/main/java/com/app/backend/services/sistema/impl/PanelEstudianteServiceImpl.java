@@ -2,7 +2,7 @@ package com.app.backend.services.sistema.impl;
 
 import com.app.backend.dtos.sistema.NotificacionDTO;
 import com.app.backend.dtos.sistema.PanelEstudianteDTO;
-import com.app.backend.dtos.tramites.SolicitudDTO;
+import com.app.backend.dtos.tramites.response.SolicitudResponseDTO;
 import com.app.backend.entities.sistema.Notificacion;
 import com.app.backend.entities.sistema.Usuario;
 import com.app.backend.entities.tramites.Solicitud;
@@ -43,8 +43,8 @@ public class PanelEstudianteServiceImpl implements PanelEstudianteService {
                         !s.getEstadoActual().equalsIgnoreCase("rechazado"))
                 .count();
 
-        List<SolicitudDTO> solicitudesRecientes = todasLasSolicitudes.stream()
-                .sorted((s1, s2) -> s2.getIdSolicitud().compareTo(s1.getIdSolicitud())) // Asumiendo que ID mayor es más
+        List<SolicitudResponseDTO> solicitudesRecientes = todasLasSolicitudes.stream()
+                .sorted((s1, s2) -> s2.getIdSolicitud().compareTo(s1.getIdSolicitud())) // Asumiendo que ID mayor es mÃ¡s
                                                                                         // reciente
                 .limit(5)
                 .map(this::mapSolicitudToDTO)
@@ -60,14 +60,14 @@ public class PanelEstudianteServiceImpl implements PanelEstudianteService {
         return PanelEstudianteDTO.builder()
                 .nombreEstudiante(usuario.getNombres() + " " + usuario.getApellidos())
                 .solicitudesActivas((int) solicitudesActivas)
-                .horasAcumuladas(15) // Placeholder como se discutió
+                .horasAcumuladas(15) // Placeholder como se discutiÃ³
                 .solicitudesRecientes(solicitudesRecientes)
                 .notificaciones(notificacionesRecientes)
                 .build();
     }
 
-    private SolicitudDTO mapSolicitudToDTO(Solicitud s) {
-        return SolicitudDTO.builder()
+    private SolicitudResponseDTO mapSolicitudToDTO(Solicitud s) {
+        return SolicitudResponseDTO.builder()
                 .idSolicitud(s.getIdSolicitud())
                 .codigoSolicitud(s.getCodigoSolicitud())
                 .idPlantilla(s.getPlantilla().getIdPlantilla())
@@ -91,3 +91,4 @@ public class PanelEstudianteServiceImpl implements PanelEstudianteService {
                 .build();
     }
 }
+

@@ -1,4 +1,4 @@
-package com.app.backend.dtos.tramites;
+package com.app.backend.dtos.tramites.request;
 
 import lombok.*;
 import java.time.LocalDateTime;
@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class RechazoSolicitudDTO {
+public class RechazoSolicitudRequestDTO {
     private Integer idRechazo;
     private Integer idSolicitud;
     private Integer idMotivo;
@@ -17,3 +17,4 @@ public class RechazoSolicitudDTO {
     private Boolean notificacionEnviada;
     private LocalDateTime fechaNotificacion;
 }
+

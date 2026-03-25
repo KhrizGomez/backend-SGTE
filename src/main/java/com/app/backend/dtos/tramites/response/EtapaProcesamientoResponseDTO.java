@@ -1,4 +1,4 @@
-package com.app.backend.dtos.tramites;
+package com.app.backend.dtos.tramites.response;
 
 import lombok.*;
 
@@ -6,9 +6,10 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class EtapaProcesamientoDTO {
+public class EtapaProcesamientoResponseDTO {
     private Integer idEtapa;
     private String nombreEtapa;
     private String descripcionEtapa;
     private String codigoEtapa;
 }
+

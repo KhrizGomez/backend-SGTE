@@ -1,7 +1,7 @@
 package com.app.backend.services.tramites;
 
-import com.app.backend.dtos.tramites.CrearSolicitudTramiteDTO;
-import com.app.backend.dtos.tramites.SolicitudDTO;
+import com.app.backend.dtos.tramites.request.CrearSolicitudRequestDTO;
+import com.app.backend.dtos.tramites.response.SolicitudResponseDTO;
 import com.app.backend.dtos.tramites.response.SolicitudesTramitesVigentesRespuestaDTO;
 
 import lombok.NonNull;
@@ -10,23 +10,25 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 public interface SolicitudService {
-    List<SolicitudDTO> listarTodas();
+    List<SolicitudResponseDTO> listarTodas();
 
-    List<SolicitudDTO> listarPorUsuario(@NonNull Integer idUsuario);
+    List<SolicitudResponseDTO> listarPorUsuario(@NonNull Integer idUsuario);
 
-    List<SolicitudDTO> listarPorEstado(String estado);
+    List<SolicitudResponseDTO> listarPorEstado(String estado);
 
-    SolicitudDTO obtenerPorId(@NonNull Integer id);
+    SolicitudResponseDTO obtenerPorId(@NonNull Integer id);
 
-    SolicitudDTO obtenerPorCodigo(String codigo);
+    SolicitudResponseDTO obtenerPorCodigo(String codigo);
 
-    SolicitudDTO crear(SolicitudDTO dto);
+    SolicitudResponseDTO crear(SolicitudResponseDTO dto);
 
-    SolicitudDTO actualizar(@NonNull Integer id, SolicitudDTO dto);
+    SolicitudResponseDTO actualizar(@NonNull Integer id, SolicitudResponseDTO dto);
 
     void eliminar(@NonNull Integer id);
 
     List<SolicitudesTramitesVigentesRespuestaDTO> listarTramitesVigente();
 
-    void crearSolicitudConDocumentos(CrearSolicitudTramiteDTO dto, List<MultipartFile> archivos);
+    void crearSolicitudConDocumentos(CrearSolicitudRequestDTO dto, List<MultipartFile> archivos);
 }
+
+

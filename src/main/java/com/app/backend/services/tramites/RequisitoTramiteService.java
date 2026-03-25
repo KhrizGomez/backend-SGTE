@@ -1,13 +1,14 @@
 package com.app.backend.services.tramites;
 
-import com.app.backend.dtos.tramites.RequisitoTramiteDTO;
+import com.app.backend.dtos.tramites.response.RequisitoTramiteResponseDTO;
 import lombok.NonNull;
 import java.util.List;
 
 public interface RequisitoTramiteService {
-    List<RequisitoTramiteDTO> listarPorTipoTramite(@NonNull Integer idTipoTramite);
-    RequisitoTramiteDTO obtenerPorId(@NonNull Integer id);
-    RequisitoTramiteDTO crear(RequisitoTramiteDTO dto);
-    RequisitoTramiteDTO actualizar(@NonNull Integer id, RequisitoTramiteDTO dto);
+    List<RequisitoTramiteResponseDTO> listarPorTipoTramite(@NonNull Integer idTipoTramite);
+    RequisitoTramiteResponseDTO obtenerPorId(@NonNull Integer id);
+    RequisitoTramiteResponseDTO crear(RequisitoTramiteResponseDTO dto);
+    RequisitoTramiteResponseDTO actualizar(@NonNull Integer id, RequisitoTramiteResponseDTO dto);
     void eliminar(@NonNull Integer id);
 }
+

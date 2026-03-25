@@ -1,4 +1,4 @@
-package com.app.backend.dtos.tramites;
+package com.app.backend.dtos.tramites.response;
 
 import lombok.*;
 
@@ -6,7 +6,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class DefinicionFlujoDTO {
+public class DefinicionFlujoResponseDTO {
     private Integer idFlujo;
     private String nombreFlujo;
     private String descripcionFlujo;
@@ -14,3 +14,4 @@ public class DefinicionFlujoDTO {
     private Integer version;
     private Integer creadoPorId;
 }
+

@@ -1,4 +1,4 @@
-package com.app.backend.dtos.tramites;
+package com.app.backend.dtos.tramites.response;
 
 import lombok.*;
 
@@ -6,7 +6,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class PasoFlujoTramiteDTO {
+public class PasoFlujoTramiteResponseDTO {
     private Integer idPaso;
     private Integer idFlujo;
     private Integer ordenPaso;
@@ -20,3 +20,4 @@ public class PasoFlujoTramiteDTO {
     private String usuarioEncargado;
     private Integer horasSla;
 }
+

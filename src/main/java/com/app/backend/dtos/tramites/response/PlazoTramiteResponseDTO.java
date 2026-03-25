@@ -1,4 +1,4 @@
-package com.app.backend.dtos.tramites;
+package com.app.backend.dtos.tramites.response;
 
 import lombok.*;
 import java.time.LocalDate;
@@ -7,7 +7,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class PlazoTramiteDTO {
+public class PlazoTramiteResponseDTO {
     private Integer idPlazo;
     private Integer idTipoTramite;
     private LocalDate fechaApertura;
@@ -15,3 +15,4 @@ public class PlazoTramiteDTO {
     private Boolean permiteExtension;
     private Integer diasMaxExtension;
 }
+

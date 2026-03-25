@@ -1,4 +1,4 @@
-package com.app.backend.dtos.tramites;
+package com.app.backend.dtos.tramites.response;
 
 import lombok.*;
 import java.time.LocalDate;
@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class SolicitudDTO {
+public class SolicitudResponseDTO {
     private Integer idSolicitud;
     private String codigoSolicitud;
     private Integer idPlantilla;
@@ -24,3 +24,4 @@ public class SolicitudDTO {
     private LocalDateTime fechaRealFin;
     private String resolucion;
 }
+

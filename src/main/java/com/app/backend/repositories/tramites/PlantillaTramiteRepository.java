@@ -1,7 +1,7 @@
 package com.app.backend.repositories.tramites;
 
 import com.app.backend.dtos.tramites.response.PlantillaTramiteDTO;
-import com.app.backend.dtos.tramites.DetallesTramiteBaseDTO;
+import com.app.backend.dtos.tramites.response.DetallesTramiteBaseResponseDTO;
 import com.app.backend.entities.tramites.PlantillaTramite;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -17,7 +17,7 @@ public interface PlantillaTramiteRepository extends JpaRepository<PlantillaTrami
     List<PlantillaTramite> findByCategoriaIdCategoria(Integer idCategoria);
 
     @Query("""
-        SELECT new com.app.backend.dtos.tramites.DetallesTramiteBaseDTO(
+        SELECT new com.app.backend.dtos.tramites.response.DetallesTramiteBaseResponseDTO(
             p.idPlantilla,
             p.nombrePlantilla,
             p.descripcionPlantilla,
@@ -53,10 +53,10 @@ public interface PlantillaTramiteRepository extends JpaRepository<PlantillaTrami
                )
         ORDER BY p.idPlantilla
         """)
-    List<DetallesTramiteBaseDTO> findAllDetallesBase();
+    List<DetallesTramiteBaseResponseDTO> findAllDetallesBase();
 
     @Query("""
-        SELECT new com.app.backend.dtos.tramites.DetallesTramiteBaseDTO(
+        SELECT new com.app.backend.dtos.tramites.response.DetallesTramiteBaseResponseDTO(
             p.idPlantilla,
             p.nombrePlantilla,
             p.descripcionPlantilla,
@@ -92,10 +92,10 @@ public interface PlantillaTramiteRepository extends JpaRepository<PlantillaTrami
                )
         WHERE p.idPlantilla = :idPlantilla
         """)
-    Optional<DetallesTramiteBaseDTO> findDetalleBaseByIdPlantilla(@Param("idPlantilla") Integer idPlantilla);
+    Optional<DetallesTramiteBaseResponseDTO> findDetalleBaseByIdPlantilla(@Param("idPlantilla") Integer idPlantilla);
 
     @Query("""
-        SELECT new com.app.backend.dtos.tramites.DetallesTramiteBaseDTO(
+        SELECT new com.app.backend.dtos.tramites.response.DetallesTramiteBaseResponseDTO(
             p.idPlantilla,
             p.nombrePlantilla,
             p.descripcionPlantilla,
@@ -132,7 +132,7 @@ public interface PlantillaTramiteRepository extends JpaRepository<PlantillaTrami
         WHERE car.idCarrera = :idCarrera
         ORDER BY p.idPlantilla
         """)
-    List<DetallesTramiteBaseDTO> findAllDetallesBaseByCarrera(@Param("idCarrera") Integer idCarrera);
+    List<DetallesTramiteBaseResponseDTO> findAllDetallesBaseByCarrera(@Param("idCarrera") Integer idCarrera);
 
     @Query(value = "Select * from tramites.fn_sl_plantillastramites(:categoria, :activo, :busqueda, :esExterno, :idCarrera)", nativeQuery = true)
     List<PlantillaTramiteDTO> listarPlantillas(
@@ -143,3 +143,4 @@ public interface PlantillaTramiteRepository extends JpaRepository<PlantillaTrami
             @Param("idCarrera") Integer idCarrera
     );
 }
+

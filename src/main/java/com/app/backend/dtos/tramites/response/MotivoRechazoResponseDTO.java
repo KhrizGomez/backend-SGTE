@@ -1,4 +1,4 @@
-package com.app.backend.dtos.tramites;
+package com.app.backend.dtos.tramites.response;
 
 import lombok.*;
 
@@ -6,7 +6,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class MotivoRechazoDTO {
+public class MotivoRechazoResponseDTO {
     private Integer idMotivo;
     private String codigoMotivo;
     private String nombreMotivo;
@@ -14,3 +14,4 @@ public class MotivoRechazoDTO {
     private Integer idCategoria;
     private Boolean estaActivo;
 }
+

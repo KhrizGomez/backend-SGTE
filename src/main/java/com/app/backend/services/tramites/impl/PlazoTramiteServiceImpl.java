@@ -1,6 +1,6 @@
 package com.app.backend.services.tramites.impl;
 
-import com.app.backend.dtos.tramites.PlazoTramiteDTO;
+import com.app.backend.dtos.tramites.response.PlazoTramiteResponseDTO;
 import com.app.backend.entities.tramites.VentanaRecepcion;
 import com.app.backend.exceptions.RecursoNoEncontradoException;
 import com.app.backend.repositories.tramites.VentanaRecepcionRepository;
@@ -23,13 +23,13 @@ public class PlazoTramiteServiceImpl implements PlazoTramiteService {
     private final PlantillaTramiteRepository plantillaTramiteRepository;
 
     @Override @Transactional(readOnly = true)
-    public List<PlazoTramiteDTO> listarPorTipoTramite(@NonNull Integer idTipoTramite) { return ventanaRecepcionRepository.findByPlantillaIdPlantilla(idTipoTramite).stream().map(this::toDTO).toList(); }
+    public List<PlazoTramiteResponseDTO> listarPorTipoTramite(@NonNull Integer idTipoTramite) { return ventanaRecepcionRepository.findByPlantillaIdPlantilla(idTipoTramite).stream().map(this::toDTO).toList(); }
 
     @Override @Transactional(readOnly = true)
-    public PlazoTramiteDTO obtenerPorId(@NonNull Integer id) { return toDTO(ventanaRecepcionRepository.findById(id).orElseThrow(() -> new RecursoNoEncontradoException("Ventana no encontrada con id: " + id))); }
+    public PlazoTramiteResponseDTO obtenerPorId(@NonNull Integer id) { return toDTO(ventanaRecepcionRepository.findById(id).orElseThrow(() -> new RecursoNoEncontradoException("Ventana no encontrada con id: " + id))); }
 
     @Override
-    public PlazoTramiteDTO crear(PlazoTramiteDTO dto) {
+    public PlazoTramiteResponseDTO crear(PlazoTramiteResponseDTO dto) {
         VentanaRecepcion p = VentanaRecepcion.builder()
                 .plantilla(plantillaTramiteRepository.findById(dto.getIdTipoTramite()).orElseThrow(() -> new RecursoNoEncontradoException("Plantilla no encontrada: " + dto.getIdTipoTramite())))
                 .fechaApertura(dto.getFechaApertura()).fechaCierre(dto.getFechaCierre())
@@ -39,7 +39,7 @@ public class PlazoTramiteServiceImpl implements PlazoTramiteService {
     }
 
     @Override
-    public PlazoTramiteDTO actualizar(@NonNull Integer id, PlazoTramiteDTO dto) {
+    public PlazoTramiteResponseDTO actualizar(@NonNull Integer id, PlazoTramiteResponseDTO dto) {
         VentanaRecepcion p = ventanaRecepcionRepository.findById(id).orElseThrow(() -> new RecursoNoEncontradoException("Ventana no encontrada con id: " + id));
         p.setFechaApertura(dto.getFechaApertura()); p.setFechaCierre(dto.getFechaCierre()); p.setPermiteExtension(dto.getPermiteExtension()); p.setDiasMaxExtension(dto.getDiasMaxExtension());
         return toDTO(ventanaRecepcionRepository.save(p));
@@ -48,5 +48,6 @@ public class PlazoTramiteServiceImpl implements PlazoTramiteService {
     @Override
     public void eliminar(@NonNull Integer id) { if (!ventanaRecepcionRepository.existsById(id)) throw new RecursoNoEncontradoException("Ventana no encontrada con id: " + id); ventanaRecepcionRepository.deleteById(id); }
 
-    private PlazoTramiteDTO toDTO(VentanaRecepcion p) { return PlazoTramiteDTO.builder().idPlazo(p.getIdVentana()).idTipoTramite(p.getPlantilla().getIdPlantilla()).fechaApertura(p.getFechaApertura()).fechaCierre(p.getFechaCierre()).permiteExtension(p.getPermiteExtension()).diasMaxExtension(p.getDiasMaxExtension()).build(); }
+    private PlazoTramiteResponseDTO toDTO(VentanaRecepcion p) { return PlazoTramiteResponseDTO.builder().idPlazo(p.getIdVentana()).idTipoTramite(p.getPlantilla().getIdPlantilla()).fechaApertura(p.getFechaApertura()).fechaCierre(p.getFechaCierre()).permiteExtension(p.getPermiteExtension()).diasMaxExtension(p.getDiasMaxExtension()).build(); }
 }
+

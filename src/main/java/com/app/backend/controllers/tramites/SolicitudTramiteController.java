@@ -1,6 +1,6 @@
 package com.app.backend.controllers.tramites;
 
-import com.app.backend.dtos.tramites.CrearSolicitudTramiteDTO;
+import com.app.backend.dtos.tramites.request.CrearSolicitudRequestDTO;
 import com.app.backend.services.tramites.SolicitudService;
 
 import jakarta.validation.Valid;
@@ -24,10 +24,11 @@ public class SolicitudTramiteController {
 
     @PostMapping(value = "/crear", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Map<String, String>> crearSolicitud(
-            @Valid @RequestPart("solicitud") CrearSolicitudTramiteDTO solicitud,
+            @Valid @RequestPart("solicitud") CrearSolicitudRequestDTO solicitud,
             @RequestPart(value = "archivos", required = false) List<MultipartFile> archivos) {
         solicitudService.crearSolicitudConDocumentos(solicitud, archivos);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(Map.of("mensaje", "Solicitud creada exitosamente"));
     }
 }
+

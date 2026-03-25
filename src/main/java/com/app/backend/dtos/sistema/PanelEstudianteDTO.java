@@ -1,6 +1,6 @@
 package com.app.backend.dtos.sistema;
 
-import com.app.backend.dtos.tramites.SolicitudDTO;
+import com.app.backend.dtos.tramites.response.SolicitudResponseDTO;
 import lombok.*;
 import java.util.List;
 
@@ -12,6 +12,7 @@ public class PanelEstudianteDTO {
     private String nombreEstudiante;
     private Integer solicitudesActivas;
     private Integer horasAcumuladas;
-    private List<SolicitudDTO> solicitudesRecientes;
+    private List<SolicitudResponseDTO> solicitudesRecientes;
     private List<NotificacionDTO> notificaciones;
 }
+
