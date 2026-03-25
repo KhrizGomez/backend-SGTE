@@ -16,5 +16,6 @@ public class RegistroUsuarioRespuestaDTO {
     private String apellidos;
     private String correoInstitucional;
     private String rol;
+    private String nombreUsuario;
     private String mensaje;
 }

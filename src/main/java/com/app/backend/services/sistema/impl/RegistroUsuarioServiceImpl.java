@@ -114,11 +114,8 @@ public class RegistroUsuarioServiceImpl implements RegistroUsuarioService {
 
         usuario = usuarioRepository.save(usuario);
 
-        // 6. Crear la Credencial con la cédula como contraseña por defecto
-        String correoInst = dto.getCorreoInstitucional();
-        String nombreUsuario = (correoInst != null && !correoInst.isBlank())
-                ? correoInst.split("@")[0]
-                : dto.getCedula();
+        // 6. Crear la Credencial con la cédula como contraseña por defecto y nombre generado
+        String nombreUsuario = generarNombreUsuario(dto.getNombres(), dto.getApellidos(), dto.getCedula());
 
         log.info("nombreUsuario calculado para credencial: {}", nombreUsuario);
 
@@ -201,7 +198,40 @@ public class RegistroUsuarioServiceImpl implements RegistroUsuarioService {
                 .apellidos(usuario.getApellidos())
                 .correoInstitucional(usuario.getCorreoInstitucional())
                 .rol(dto.getRol())
+                .nombreUsuario(nombreUsuario)
                 .mensaje("Usuario registrado exitosamente")
                 .build();
+    }
+
+    private String generarNombreUsuario(String nombres, String apellidos, String cedula) {
+        if (nombres == null || apellidos == null || nombres.isBlank() || apellidos.isBlank()) {
+            return cedula;
+        }
+
+        String[] nombresArray = nombres.trim().toLowerCase().split("\\s+");
+        String[] apellidosArray = apellidos.trim().toLowerCase().split("\\s+");
+
+        String inicialNombre = nombresArray.length > 0 && !nombresArray[0].isEmpty() ? nombresArray[0].substring(0, 1) : "";
+        String primerApellido = apellidosArray.length > 0 ? apellidosArray[0] : "";
+        String inicialSegundoApellido = apellidosArray.length > 1 && !apellidosArray[1].isEmpty() ? apellidosArray[1].substring(0, 1) : "";
+
+        String base = inicialNombre + primerApellido + inicialSegundoApellido;
+
+        // Quitar acentos y caracteres especiales
+        base = java.text.Normalizer.normalize(base, java.text.Normalizer.Form.NFD);
+        base = base.replaceAll("\\p{M}", "");
+        base = base.replaceAll("[^a-z0-9]", "");
+
+        if (base.isEmpty()) {
+            return cedula;
+        }
+
+        String username = base;
+        int counter = 1;
+        while (credencialRepository.findByNombreUsuario(username).isPresent()) {
+            username = base + counter;
+            counter++;
+        }
+        return username;
     }
 }

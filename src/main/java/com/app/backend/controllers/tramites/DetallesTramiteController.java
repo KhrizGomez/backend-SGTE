@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/tramites/tipos")
+@RequestMapping("/api/tramites")
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*")
 public class DetallesTramiteController {
@@ -25,8 +25,8 @@ public class DetallesTramiteController {
         return ResponseEntity.ok(detallesTramiteService.listarTodos());
     }
 
-    @GetMapping("/{idTipoTramite}/detalles")
-    public ResponseEntity<DetallesTramiteDTO> obtenerPorTipoTramite(@PathVariable Integer idTipoTramite) {
-        return ResponseEntity.ok(detallesTramiteService.obtenerPorTipoTramite(idTipoTramite));
+    @GetMapping("/detalles/{idCategoria}")
+    public ResponseEntity<DetallesTramiteDTO> obtenerPorTipoTramite(@PathVariable Integer idCategoria) {
+        return ResponseEntity.ok(detallesTramiteService.obtenerPorTipoTramite(idCategoria));
     }
 }
