@@ -1,7 +1,7 @@
 package com.app.backend.controllers.sistema;
 
-import com.app.backend.dtos.sistema.AutenticacionRequestDTO;
-import com.app.backend.dtos.sistema.AutenticacionRespuestaDTO;
+import com.app.backend.dtos.sistema.request.AutenticacionRequestDTO;
+import com.app.backend.dtos.sistema.response.AutenticacionRespuestaDTO;
 import com.app.backend.services.sistema.AutenticacionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

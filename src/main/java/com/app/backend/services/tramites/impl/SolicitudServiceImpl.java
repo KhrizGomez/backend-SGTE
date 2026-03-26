@@ -1,9 +1,9 @@
 package com.app.backend.services.tramites.impl;
 
-import com.app.backend.dtos.documentos.DocumentoAdjuntoRequestDTO;
+import com.app.backend.dtos.documentos.request.DocumentoAdjuntoRequestDTO;
 import com.app.backend.dtos.tramites.request.CrearSolicitudRequestDTO;
 import com.app.backend.dtos.tramites.response.SolicitudResponseDTO;
-import com.app.backend.dtos.tramites.response.SolicitudesTramitesVigentesRespuestaDTO;
+import com.app.backend.dtos.tramites.response.SolicitudesPlantillasVigentesRespuestaDTO;
 import com.app.backend.entities.tramites.Solicitud;
 import com.app.backend.exceptions.RecursoNoEncontradoException;
 import com.app.backend.repositories.academico.CarreraRepository;
@@ -222,7 +222,7 @@ public class SolicitudServiceImpl implements SolicitudService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<SolicitudesTramitesVigentesRespuestaDTO> listarTramitesVigente() {
+    public List<SolicitudesPlantillasVigentesRespuestaDTO> listarPlantillasVigente() {
         try {
             Integer idUsuario = null;
             String encaAuth = request.getHeader("Authorization");
@@ -230,9 +230,9 @@ public class SolicitudServiceImpl implements SolicitudService {
                 String jwt = encaAuth.substring(7);
                 idUsuario = jwtService.extraerIdUsuario(jwt);
             }
-            return solicitudRepository.listarTramitesVigentes(idUsuario);
+            return solicitudRepository.listarPlantillasVigentes(idUsuario);
         } catch (Exception e) {
-            throw new RuntimeException("Error al listar las solicitudes de tramites: " + e.getMessage());
+            throw new RuntimeException("Error al listar las solicitudes de plantillas: " + e.getMessage());
         }
     }
 

@@ -1,6 +1,7 @@
 package com.app.backend.services.sistema.impl;
 
-import com.app.backend.dtos.sistema.UsuarioDTO;
+import com.app.backend.dtos.sistema.request.UsuarioRequestDTO;
+import com.app.backend.dtos.sistema.response.UsuarioResponseDTO;
 import com.app.backend.entities.sistema.Rol;
 import com.app.backend.entities.sistema.Usuario;
 import com.app.backend.exceptions.RecursoNoEncontradoException;
@@ -25,26 +26,26 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<UsuarioDTO> listarTodos() {
+    public List<UsuarioResponseDTO> listarTodos() {
         return usuarioRepository.findAll().stream().map(this::toDTO).toList();
     }
 
     @Override
     @Transactional(readOnly = true)
-    public UsuarioDTO obtenerPorId(@NonNull Integer id) {
+    public UsuarioResponseDTO obtenerPorId(@NonNull Integer id) {
         return toDTO(usuarioRepository.findById(id)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Usuario no encontrado con id: " + id)));
     }
 
     @Override
     @Transactional(readOnly = true)
-    public UsuarioDTO obtenerPorCedula(String cedula) {
+    public UsuarioResponseDTO obtenerPorCedula(String cedula) {
         return toDTO(usuarioRepository.findByCedula(cedula)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Usuario no encontrado con cédula: " + cedula)));
     }
 
     @Override
-    public UsuarioDTO crear(UsuarioDTO dto) {
+    public UsuarioResponseDTO crear(UsuarioRequestDTO dto) {
         Usuario usuario = Usuario.builder()
                 .cedula(dto.getCedula())
                 .nombres(dto.getNombres())
@@ -67,7 +68,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
-    public UsuarioDTO actualizar(@NonNull Integer id, UsuarioDTO dto) {
+    public UsuarioResponseDTO actualizar(@NonNull Integer id, UsuarioRequestDTO dto) {
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Usuario no encontrado con id: " + id));
         usuario.setNombres(dto.getNombres());
@@ -96,8 +97,8 @@ public class UsuarioServiceImpl implements UsuarioService {
         usuarioRepository.deleteById(id);
     }
 
-    private UsuarioDTO toDTO(Usuario u) {
-        return UsuarioDTO.builder()
+    private UsuarioResponseDTO toDTO(Usuario u) {
+        return UsuarioResponseDTO.builder()
                 .idUsuario(u.getIdUsuario())
                 .cedula(u.getCedula())
                 .nombres(u.getNombres())

@@ -1,6 +1,6 @@
 package com.app.backend.services.sistema;
 
-import com.app.backend.dtos.sistema.RolDTO;
+import com.app.backend.dtos.sistema.response.RolDTO;
 import lombok.NonNull;
 import java.util.List;
 

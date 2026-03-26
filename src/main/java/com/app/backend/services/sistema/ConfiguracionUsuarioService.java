@@ -1,9 +1,10 @@
 package com.app.backend.services.sistema;
 
-import com.app.backend.dtos.sistema.ConfiguracionUsuarioDTO;
+import com.app.backend.dtos.sistema.request.ConfiguracionUsuarioRequestDTO;
+import com.app.backend.dtos.sistema.response.ConfiguracionUsuarioResponseDTO;
 import lombok.NonNull;
 
 public interface ConfiguracionUsuarioService {
-    ConfiguracionUsuarioDTO obtenerPorUsuario(@NonNull Integer idUsuario);
-    ConfiguracionUsuarioDTO guardar(ConfiguracionUsuarioDTO dto);
+    ConfiguracionUsuarioResponseDTO obtenerPorUsuario(@NonNull Integer idUsuario);
+    ConfiguracionUsuarioResponseDTO guardar(ConfiguracionUsuarioRequestDTO dto);
 }

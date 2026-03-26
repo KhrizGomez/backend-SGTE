@@ -1,6 +1,6 @@
 package com.app.backend.services.academico.impl;
 
-import com.app.backend.dtos.academico.SemestreDTO;
+import com.app.backend.dtos.academico.response.SemestreDTO;
 import com.app.backend.entities.academico.Periodo;
 import com.app.backend.exceptions.RecursoNoEncontradoException;
 import com.app.backend.repositories.academico.PeriodoRepository;

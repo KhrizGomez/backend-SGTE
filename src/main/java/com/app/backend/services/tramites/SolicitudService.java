@@ -2,7 +2,7 @@ package com.app.backend.services.tramites;
 
 import com.app.backend.dtos.tramites.request.CrearSolicitudRequestDTO;
 import com.app.backend.dtos.tramites.response.SolicitudResponseDTO;
-import com.app.backend.dtos.tramites.response.SolicitudesTramitesVigentesRespuestaDTO;
+import com.app.backend.dtos.tramites.response.SolicitudesPlantillasVigentesRespuestaDTO;
 
 import lombok.NonNull;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,7 +26,7 @@ public interface SolicitudService {
 
     void eliminar(@NonNull Integer id);
 
-    List<SolicitudesTramitesVigentesRespuestaDTO> listarTramitesVigente();
+    List<SolicitudesPlantillasVigentesRespuestaDTO> listarPlantillasVigente();
 
     void crearSolicitudConDocumentos(CrearSolicitudRequestDTO dto, List<MultipartFile> archivos);
 }

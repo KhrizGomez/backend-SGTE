@@ -1,7 +1,7 @@
 package com.app.backend.controllers.ai;
 
-import com.app.backend.dtos.ai.ChatRequest;
-import com.app.backend.dtos.ai.ChatResponse;
+import com.app.backend.dtos.ai.request.ChatRequest;
+import com.app.backend.dtos.ai.response.ChatResponse;
 import com.app.backend.services.ai.AIChatService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

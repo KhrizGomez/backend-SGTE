@@ -1,7 +1,7 @@
 package com.app.backend.controllers.sistema;
 
-import com.app.backend.dtos.sistema.RegistroUsuarioDTO;
-import com.app.backend.dtos.sistema.RegistroUsuarioRespuestaDTO;
+import com.app.backend.dtos.sistema.request.RegistroUsuarioDTO;
+import com.app.backend.dtos.sistema.response.RegistroUsuarioRespuestaDTO;
 import com.app.backend.services.sistema.RegistroUsuarioService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

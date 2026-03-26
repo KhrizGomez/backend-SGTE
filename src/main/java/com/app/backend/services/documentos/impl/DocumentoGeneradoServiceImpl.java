@@ -1,6 +1,6 @@
 package com.app.backend.services.documentos.impl;
 
-import com.app.backend.dtos.documentos.DocumentoGeneradoDTO;
+import com.app.backend.dtos.documentos.response.DocumentoGeneradoDTO;
 import com.app.backend.entities.documentos.DocumentoGenerado;
 import com.app.backend.exceptions.RecursoNoEncontradoException;
 import com.app.backend.repositories.documentos.DocumentoGeneradoRepository;

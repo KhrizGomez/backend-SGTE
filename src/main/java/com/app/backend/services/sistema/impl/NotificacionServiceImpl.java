@@ -1,6 +1,7 @@
 package com.app.backend.services.sistema.impl;
 
-import com.app.backend.dtos.sistema.NotificacionDTO;
+import com.app.backend.dtos.sistema.request.NotificacionRequestDTO;
+import com.app.backend.dtos.sistema.response.NotificacionResponseDTO;
 import com.app.backend.entities.sistema.Notificacion;
 import com.app.backend.entities.sistema.TipoNotificacion;
 import com.app.backend.entities.sistema.Usuario;
@@ -32,25 +33,25 @@ public class NotificacionServiceImpl implements NotificacionService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<NotificacionDTO> listarPorUsuario(@NonNull Integer idUsuario) {
+    public List<NotificacionResponseDTO> listarPorUsuario(@NonNull Integer idUsuario) {
         return notificacionRepository.findByUsuarioIdUsuario(idUsuario).stream().map(this::toDTO).toList();
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<NotificacionDTO> listarNoLeidasPorUsuario(@NonNull Integer idUsuario) {
+    public List<NotificacionResponseDTO> listarNoLeidasPorUsuario(@NonNull Integer idUsuario) {
         return notificacionRepository.findByUsuarioIdUsuarioAndEstaLeidaFalse(idUsuario).stream().map(this::toDTO).toList();
     }
 
     @Override
     @Transactional(readOnly = true)
-    public NotificacionDTO obtenerPorId(@NonNull Integer id) {
+    public NotificacionResponseDTO obtenerPorId(@NonNull Integer id) {
         return toDTO(notificacionRepository.findById(id)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Notificación no encontrada con id: " + id)));
     }
 
     @Override
-    public NotificacionDTO crear(NotificacionDTO dto) {
+    public NotificacionResponseDTO crear(NotificacionRequestDTO dto) {
         TipoNotificacion tipo = tipoNotificacionRepository.findById(dto.getIdTipo())
                 .orElseThrow(() -> new RecursoNoEncontradoException("Tipo notificación no encontrado: " + dto.getIdTipo()));
         Usuario usuario = usuarioRepository.findById(dto.getIdUsuario())
@@ -77,7 +78,7 @@ public class NotificacionServiceImpl implements NotificacionService {
     }
 
     @Override
-    public NotificacionDTO marcarComoLeida(@NonNull Integer id) {
+    public NotificacionResponseDTO marcarComoLeida(@NonNull Integer id) {
         Notificacion notificacion = notificacionRepository.findById(id)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Notificación no encontrada con id: " + id));
         notificacion.setEstaLeida(true);
@@ -85,8 +86,8 @@ public class NotificacionServiceImpl implements NotificacionService {
         return toDTO(notificacionRepository.save(notificacion));
     }
 
-    private NotificacionDTO toDTO(Notificacion n) {
-        return NotificacionDTO.builder()
+    private NotificacionResponseDTO toDTO(Notificacion n) {
+        return NotificacionResponseDTO.builder()
                 .idNotificacion(n.getIdNotificacion())
                 .idTipo(n.getTipoNotificacion().getIdTipo())
                 .idUsuario(n.getUsuario().getIdUsuario())

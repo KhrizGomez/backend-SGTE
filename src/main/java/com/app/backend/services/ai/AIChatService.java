@@ -1,7 +1,7 @@
 package com.app.backend.services.ai;
 
-import com.app.backend.dtos.ai.ChatRequest;
-import com.app.backend.dtos.ai.ChatResponse;
+import com.app.backend.dtos.ai.request.ChatRequest;
+import com.app.backend.dtos.ai.response.ChatResponse;
 import com.app.backend.repositories.ai.AIChatContextRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

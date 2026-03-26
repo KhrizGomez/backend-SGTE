@@ -1,6 +1,7 @@
 package com.app.backend.services.sistema.impl;
 
-import com.app.backend.dtos.sistema.TipoNotificacionDTO;
+import com.app.backend.dtos.sistema.request.TipoNotificacionRequestDTO;
+import com.app.backend.dtos.sistema.response.TipoNotificacionResponseDTO;
 import com.app.backend.entities.sistema.TipoNotificacion;
 import com.app.backend.exceptions.RecursoNoEncontradoException;
 import com.app.backend.repositories.sistema.TipoNotificacionRepository;
@@ -22,19 +23,19 @@ public class TipoNotificacionServiceImpl implements TipoNotificacionService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<TipoNotificacionDTO> listarTodos() {
+    public List<TipoNotificacionResponseDTO> listarTodos() {
         return tipoNotificacionRepository.findAll().stream().map(this::toDTO).toList();
     }
 
     @Override
     @Transactional(readOnly = true)
-    public TipoNotificacionDTO obtenerPorId(@NonNull Integer id) {
+    public TipoNotificacionResponseDTO obtenerPorId(@NonNull Integer id) {
         return toDTO(tipoNotificacionRepository.findById(id)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Tipo notificación no encontrado con id: " + id)));
     }
 
     @Override
-    public TipoNotificacionDTO crear(TipoNotificacionDTO dto) {
+    public TipoNotificacionResponseDTO crear(TipoNotificacionRequestDTO dto) {
         TipoNotificacion tipo = TipoNotificacion.builder()
                 .codigoTipo(dto.getCodigoTipo())
                 .nombreTipo(dto.getNombreTipo())
@@ -45,7 +46,7 @@ public class TipoNotificacionServiceImpl implements TipoNotificacionService {
     }
 
     @Override
-    public TipoNotificacionDTO actualizar(@NonNull Integer id, TipoNotificacionDTO dto) {
+    public TipoNotificacionResponseDTO actualizar(@NonNull Integer id, TipoNotificacionRequestDTO dto) {
         TipoNotificacion tipo = tipoNotificacionRepository.findById(id)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Tipo notificación no encontrado con id: " + id));
         tipo.setCodigoTipo(dto.getCodigoTipo());
@@ -63,8 +64,8 @@ public class TipoNotificacionServiceImpl implements TipoNotificacionService {
         tipoNotificacionRepository.deleteById(id);
     }
 
-    private TipoNotificacionDTO toDTO(TipoNotificacion t) {
-        return TipoNotificacionDTO.builder()
+    private TipoNotificacionResponseDTO toDTO(TipoNotificacion t) {
+        return TipoNotificacionResponseDTO.builder()
                 .idTipo(t.getIdTipo())
                 .codigoTipo(t.getCodigoTipo())
                 .nombreTipo(t.getNombreTipo())

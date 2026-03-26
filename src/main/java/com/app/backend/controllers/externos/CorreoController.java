@@ -1,6 +1,6 @@
 package com.app.backend.controllers.externos;
 
-import com.app.backend.dtos.externos.CorreoRequestDTO;
+import com.app.backend.dtos.externos.request.CorreoRequestDTO;
 import com.app.backend.services.externos.ICorreoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

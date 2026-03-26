@@ -1,7 +1,7 @@
 package com.app.backend.services.sistema.impl;
 
-import com.app.backend.dtos.sistema.AutenticacionRequestDTO;
-import com.app.backend.dtos.sistema.AutenticacionRespuestaDTO;
+import com.app.backend.dtos.sistema.request.AutenticacionRequestDTO;
+import com.app.backend.dtos.sistema.response.AutenticacionRespuestaDTO;
 import com.app.backend.entities.academico.Coordinador;
 import com.app.backend.entities.academico.Decano;
 import com.app.backend.entities.academico.Estudiante;
@@ -84,12 +84,18 @@ public class AutenticacionServiceImpl implements AutenticacionService {
                         carrera = coordinador.getCarrera().getNombreCarrera();
                 }
 
-                Integer idFacultad = decano != null && decano.getFacultad() != null
-                                ? decano.getFacultad().getIdFacultad()
-                                : null;
-                String facultad = decano != null && decano.getFacultad() != null
-                                ? decano.getFacultad().getNombreFacultad()
-                                : null;
+                Integer idFacultad = null;
+                String facultad = null;
+                if (estudiante != null && estudiante.getCarrera() != null && estudiante.getCarrera().getFacultad() != null) {
+                        idFacultad = estudiante.getCarrera().getFacultad().getIdFacultad();
+                        facultad = estudiante.getCarrera().getFacultad().getNombreFacultad();
+                } else if (coordinador != null && coordinador.getCarrera() != null && coordinador.getCarrera().getFacultad() != null) {
+                        idFacultad = coordinador.getCarrera().getFacultad().getIdFacultad();
+                        facultad = coordinador.getCarrera().getFacultad().getNombreFacultad();
+                } else if (decano != null && decano.getFacultad() != null) {
+                        idFacultad = decano.getFacultad().getIdFacultad();
+                        facultad = decano.getFacultad().getNombreFacultad();
+                }
                 
                 Map<String, Object> claimsExtras = new HashMap<>();
                 claimsExtras.put("idUsuario", usuario.getIdUsuario());

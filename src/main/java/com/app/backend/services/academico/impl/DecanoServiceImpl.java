@@ -1,6 +1,6 @@
 package com.app.backend.services.academico.impl;
 
-import com.app.backend.dtos.academico.DecanoDTO;
+import com.app.backend.dtos.academico.response.DecanoDTO;
 import com.app.backend.entities.academico.Decano;
 import com.app.backend.entities.sistema.Usuario;
 import com.app.backend.exceptions.RecursoNoEncontradoException;

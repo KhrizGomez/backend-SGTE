@@ -1,14 +1,15 @@
 package com.app.backend.services.sistema;
 
-import com.app.backend.dtos.sistema.UsuarioDTO;
+import com.app.backend.dtos.sistema.request.UsuarioRequestDTO;
+import com.app.backend.dtos.sistema.response.UsuarioResponseDTO;
 import lombok.NonNull;
 import java.util.List;
 
 public interface UsuarioService {
-    List<UsuarioDTO> listarTodos();
-    UsuarioDTO obtenerPorId(@NonNull Integer id);
-    UsuarioDTO obtenerPorCedula(String cedula);
-    UsuarioDTO crear(UsuarioDTO dto);
-    UsuarioDTO actualizar(@NonNull Integer id, UsuarioDTO dto);
+    List<UsuarioResponseDTO> listarTodos();
+    UsuarioResponseDTO obtenerPorId(@NonNull Integer id);
+    UsuarioResponseDTO obtenerPorCedula(String cedula);
+    UsuarioResponseDTO crear(UsuarioRequestDTO dto);
+    UsuarioResponseDTO actualizar(@NonNull Integer id, UsuarioRequestDTO dto);
     void eliminar(@NonNull Integer id);
 }

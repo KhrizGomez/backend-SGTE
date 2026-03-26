@@ -1,19 +1,20 @@
 package com.app.backend.services.tramites;
 
-import com.app.backend.dtos.tramites.response.TipoTramiteResponseDTO;
-import com.app.backend.dtos.tramites.response.PlantillaTramiteResponseDTO;
+import com.app.backend.dtos.tramites.request.PlantillaRequestDTO;
+import com.app.backend.dtos.tramites.response.PlantillaResponseDTO;
+import com.app.backend.dtos.tramites.response.TipoPlantillaResponseDTO;
 
 import lombok.NonNull;
 import java.util.List;
 
 public interface TipoTramiteService {
-    List<TipoTramiteResponseDTO> listarTodos();
-    List<TipoTramiteResponseDTO> listarActivos();
-    List<TipoTramiteResponseDTO> listarPorCategoria(@NonNull Integer idCategoria);
-    TipoTramiteResponseDTO obtenerPorId(@NonNull Integer id);
-    TipoTramiteResponseDTO crear(TipoTramiteResponseDTO dto);
-    TipoTramiteResponseDTO actualizar(@NonNull Integer id, TipoTramiteResponseDTO dto);
+    List<TipoPlantillaResponseDTO> listarTodos();
+    List<TipoPlantillaResponseDTO> listarActivos();
+    List<TipoPlantillaResponseDTO> listarPorCategoria(@NonNull Integer idCategoria);
+    TipoPlantillaResponseDTO obtenerPorId(@NonNull Integer id);
+    TipoPlantillaResponseDTO crear(PlantillaRequestDTO dto);
+    TipoPlantillaResponseDTO actualizar(@NonNull Integer id, PlantillaRequestDTO dto);
     void eliminar(@NonNull Integer id);
-    List<PlantillaTramiteResponseDTO> listarPlantillasTramites(String categoria, Boolean activo, String busqueda);
+    List<PlantillaResponseDTO> listarPlantillas(String categoria, Boolean activo, String busqueda);
 }
 

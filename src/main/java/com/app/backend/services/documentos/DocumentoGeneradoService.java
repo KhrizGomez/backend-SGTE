@@ -1,6 +1,6 @@
 package com.app.backend.services.documentos;
 
-import com.app.backend.dtos.documentos.DocumentoGeneradoDTO;
+import com.app.backend.dtos.documentos.response.DocumentoGeneradoDTO;
 import lombok.NonNull;
 import java.util.List;
 

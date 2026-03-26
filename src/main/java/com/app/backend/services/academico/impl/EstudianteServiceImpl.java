@@ -1,6 +1,6 @@
 package com.app.backend.services.academico.impl;
 
-import com.app.backend.dtos.academico.EstudianteDTO;
+import com.app.backend.dtos.academico.response.EstudianteDTO;
 import com.app.backend.entities.academico.Carrera;
 import com.app.backend.entities.academico.Estudiante;
 import com.app.backend.entities.sistema.Usuario;

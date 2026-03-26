@@ -1,7 +1,7 @@
 package com.app.backend.services.sistema.impl;
 
-import com.app.backend.dtos.sistema.NotificacionDTO;
-import com.app.backend.dtos.sistema.PanelEstudianteDTO;
+import com.app.backend.dtos.sistema.response.NotificacionResponseDTO;
+import com.app.backend.dtos.sistema.response.PanelEstudianteDTO;
 import com.app.backend.dtos.tramites.response.SolicitudResponseDTO;
 import com.app.backend.entities.sistema.Notificacion;
 import com.app.backend.entities.sistema.Usuario;
@@ -50,7 +50,7 @@ public class PanelEstudianteServiceImpl implements PanelEstudianteService {
                 .map(this::mapSolicitudToDTO)
                 .collect(Collectors.toList());
 
-        List<NotificacionDTO> notificacionesRecientes = notificacionRepository.findByUsuarioIdUsuario(idUsuario)
+        List<NotificacionResponseDTO> notificacionesRecientes = notificacionRepository.findByUsuarioIdUsuario(idUsuario)
                 .stream()
                 .sorted((n1, n2) -> n2.getIdNotificacion().compareTo(n1.getIdNotificacion()))
                 .limit(5)
@@ -79,8 +79,8 @@ public class PanelEstudianteServiceImpl implements PanelEstudianteService {
                 .build();
     }
 
-    private NotificacionDTO mapNotificacionToDTO(Notificacion n) {
-        return NotificacionDTO.builder()
+        private NotificacionResponseDTO mapNotificacionToDTO(Notificacion n) {
+                return NotificacionResponseDTO.builder()
                 .idNotificacion(n.getIdNotificacion())
                 .idTipo(n.getTipoNotificacion().getIdTipo())
                 .idUsuario(n.getUsuario().getIdUsuario())

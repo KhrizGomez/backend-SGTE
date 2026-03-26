@@ -1,6 +1,6 @@
 package com.app.backend.services.sistema.impl;
 
-import com.app.backend.dtos.sistema.RolDTO;
+import com.app.backend.dtos.sistema.response.RolDTO;
 import com.app.backend.entities.sistema.Rol;
 import com.app.backend.exceptions.RecursoNoEncontradoException;
 import com.app.backend.repositories.sistema.RolRepository;

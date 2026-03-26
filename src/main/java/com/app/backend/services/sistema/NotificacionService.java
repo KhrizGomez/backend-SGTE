@@ -1,13 +1,14 @@
 package com.app.backend.services.sistema;
 
-import com.app.backend.dtos.sistema.NotificacionDTO;
+import com.app.backend.dtos.sistema.request.NotificacionRequestDTO;
+import com.app.backend.dtos.sistema.response.NotificacionResponseDTO;
 import lombok.NonNull;
 import java.util.List;
 
 public interface NotificacionService {
-    List<NotificacionDTO> listarPorUsuario(@NonNull Integer idUsuario);
-    List<NotificacionDTO> listarNoLeidasPorUsuario(@NonNull Integer idUsuario);
-    NotificacionDTO obtenerPorId(@NonNull Integer id);
-    NotificacionDTO crear(NotificacionDTO dto);
-    NotificacionDTO marcarComoLeida(@NonNull Integer id);
+    List<NotificacionResponseDTO> listarPorUsuario(@NonNull Integer idUsuario);
+    List<NotificacionResponseDTO> listarNoLeidasPorUsuario(@NonNull Integer idUsuario);
+    NotificacionResponseDTO obtenerPorId(@NonNull Integer id);
+    NotificacionResponseDTO crear(NotificacionRequestDTO dto);
+    NotificacionResponseDTO marcarComoLeida(@NonNull Integer id);
 }

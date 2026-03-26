@@ -1,6 +1,7 @@
 package com.app.backend.services.sistema.impl;
 
-import com.app.backend.dtos.sistema.CredencialDTO;
+import com.app.backend.dtos.sistema.request.CredencialRequestDTO;
+import com.app.backend.dtos.sistema.response.CredencialResponseDTO;
 import com.app.backend.entities.sistema.Credencial;
 import com.app.backend.entities.sistema.Usuario;
 import com.app.backend.exceptions.RecursoNoEncontradoException;
@@ -23,13 +24,13 @@ public class CredencialServiceImpl implements CredencialService {
 
     @Override
     @Transactional(readOnly = true)
-    public CredencialDTO obtenerPorUsuario(@NonNull Integer idUsuario) {
+    public CredencialResponseDTO obtenerPorUsuario(@NonNull Integer idUsuario) {
         return toDTO(credencialRepository.findByUsuarioIdUsuario(idUsuario)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Credencial no encontrada para usuario: " + idUsuario)));
     }
 
     @Override
-    public CredencialDTO guardar(CredencialDTO dto) {
+    public CredencialResponseDTO guardar(CredencialRequestDTO dto) {
         Usuario usuario = usuarioRepository.findById(dto.getIdUsuario())
                 .orElseThrow(() -> new RecursoNoEncontradoException("Usuario no encontrado con id: " + dto.getIdUsuario()));
 
@@ -43,8 +44,8 @@ public class CredencialServiceImpl implements CredencialService {
         return toDTO(credencialRepository.save(credencial));
     }
 
-    private CredencialDTO toDTO(Credencial c) {
-        return CredencialDTO.builder()
+    private CredencialResponseDTO toDTO(Credencial c) {
+        return CredencialResponseDTO.builder()
                 .idCredencial(c.getIdCredencial())
                 .idUsuario(c.getUsuario().getIdUsuario())
                 .estado(c.getEstado())

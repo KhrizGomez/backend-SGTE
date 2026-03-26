@@ -1,6 +1,7 @@
 package com.app.backend.services.sistema.impl;
 
-import com.app.backend.dtos.sistema.ConfiguracionUsuarioDTO;
+import com.app.backend.dtos.sistema.request.ConfiguracionUsuarioRequestDTO;
+import com.app.backend.dtos.sistema.response.ConfiguracionUsuarioResponseDTO;
 import com.app.backend.entities.sistema.ConfiguracionUsuario;
 import com.app.backend.entities.sistema.Usuario;
 import com.app.backend.exceptions.RecursoNoEncontradoException;
@@ -23,13 +24,13 @@ public class ConfiguracionUsuarioServiceImpl implements ConfiguracionUsuarioServ
 
     @Override
     @Transactional(readOnly = true)
-    public ConfiguracionUsuarioDTO obtenerPorUsuario(@NonNull Integer idUsuario) {
+    public ConfiguracionUsuarioResponseDTO obtenerPorUsuario(@NonNull Integer idUsuario) {
         return toDTO(configuracionRepository.findByUsuarioIdUsuario(idUsuario)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Configuración no encontrada para usuario: " + idUsuario)));
     }
 
     @Override
-    public ConfiguracionUsuarioDTO guardar(ConfiguracionUsuarioDTO dto) {
+    public ConfiguracionUsuarioResponseDTO guardar(ConfiguracionUsuarioRequestDTO dto) {
         Usuario usuario = usuarioRepository.findById(dto.getIdUsuario())
                 .orElseThrow(() -> new RecursoNoEncontradoException("Usuario no encontrado con id: " + dto.getIdUsuario()));
 
@@ -49,8 +50,8 @@ public class ConfiguracionUsuarioServiceImpl implements ConfiguracionUsuarioServ
         return toDTO(configuracionRepository.save(config));
     }
 
-    private ConfiguracionUsuarioDTO toDTO(ConfiguracionUsuario c) {
-        return ConfiguracionUsuarioDTO.builder()
+    private ConfiguracionUsuarioResponseDTO toDTO(ConfiguracionUsuario c) {
+        return ConfiguracionUsuarioResponseDTO.builder()
                 .idConfiguracion(c.getIdConfiguracion())
                 .idUsuario(c.getUsuario().getIdUsuario())
                 .rutaFotoPerfil(c.getRutaFotoPerfil())

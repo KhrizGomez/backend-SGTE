@@ -1,6 +1,6 @@
 package com.app.backend.services.academico;
 
-import com.app.backend.dtos.academico.EstudianteDTO;
+import com.app.backend.dtos.academico.response.EstudianteDTO;
 import lombok.NonNull;
 import java.util.List;
 

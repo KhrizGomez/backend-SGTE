@@ -1,6 +1,6 @@
 package com.app.backend.services.academico;
 
-import com.app.backend.dtos.academico.CarreraDTO;
+import com.app.backend.dtos.academico.response.CarreraDTO;
 import lombok.NonNull;
 import java.util.List;
 

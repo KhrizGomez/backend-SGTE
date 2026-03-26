@@ -1,9 +1,10 @@
 package com.app.backend.services.sistema;
 
-import com.app.backend.dtos.sistema.CredencialDTO;
+import com.app.backend.dtos.sistema.request.CredencialRequestDTO;
+import com.app.backend.dtos.sistema.response.CredencialResponseDTO;
 import lombok.NonNull;
 
 public interface CredencialService {
-    CredencialDTO obtenerPorUsuario(@NonNull Integer idUsuario);
-    CredencialDTO guardar(CredencialDTO dto);
+    CredencialResponseDTO obtenerPorUsuario(@NonNull Integer idUsuario);
+    CredencialResponseDTO guardar(CredencialRequestDTO dto);
 }
