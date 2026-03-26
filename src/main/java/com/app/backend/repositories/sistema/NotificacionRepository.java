@@ -8,7 +8,8 @@ import java.util.List;
 
 @Repository
 public interface NotificacionRepository extends JpaRepository<Notificacion, Integer> {
-    List<Notificacion> findByUsuarioIdUsuario(Integer idUsuario);
-    List<Notificacion> findByUsuarioIdUsuarioAndEstaLeidaFalse(Integer idUsuario);
+    List<Notificacion> findByUsuarioIdUsuarioOrderByFechaCreacionDesc(Integer idUsuario);
+    List<Notificacion> findByUsuarioIdUsuarioAndEstaLeidaFalseOrderByFechaCreacionDesc(Integer idUsuario);
     List<Notificacion> findBySolicitudIdSolicitud(Integer idSolicitud);
+    long countByUsuarioIdUsuarioAndEstaLeidaFalse(Integer idUsuario);
 }

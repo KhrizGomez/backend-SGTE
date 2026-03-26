@@ -46,7 +46,16 @@ public class FiltroAutenticacionJwt extends OncePerRequestFilter{
         }
 
         jwt = authHeader.substring(7);
-        username = jwtService.extraerUsuario(jwt);
+
+        try {
+            username = jwtService.extraerUsuario(jwt);
+        } catch (io.jsonwebtoken.ExpiredJwtException e) {
+            filterChain.doFilter(request, response);
+            return;
+        } catch (Exception e) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);

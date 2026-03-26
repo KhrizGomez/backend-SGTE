@@ -1,5 +1,7 @@
 package com.app.backend.dtos.tramites.request;
 
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,4 +20,5 @@ public class PlantillaRequestDTO {
     private Integer diasEstimados;
     private Boolean estaActivo;
     private Boolean disponibleExternos;
+    private List<RequisitoPlantillaRequestDTO> requisitos;
 }

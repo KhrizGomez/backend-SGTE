@@ -2,10 +2,13 @@ package com.app.backend.services.tramites.impl;
 
 import com.app.backend.dtos.tramites.request.PlantillaRequestDTO;
 import com.app.backend.dtos.tramites.request.PlantillaEditarRequestDTO;
+import com.app.backend.dtos.tramites.request.ActualizarRequisitosPlantillaRequestDTO;
+import com.app.backend.dtos.tramites.request.RequisitoPlantillaRequestDTO;
 import com.app.backend.dtos.tramites.response.PlantillaDTO;
 import com.app.backend.dtos.tramites.response.PlantillaResponseDTO;
 import com.app.backend.dtos.tramites.response.RequisitoPlantillaResponseDTO;
 import com.app.backend.dtos.tramites.response.TipoPlantillaResponseDTO;
+import com.app.backend.entities.tramites.RequisitoPlantilla;
 import com.app.backend.entities.tramites.PlantillaTramite;
 import com.app.backend.exceptions.RecursoNoEncontradoException;
 import com.app.backend.repositories.tramites.CategoriaRepository;
@@ -90,7 +93,17 @@ public class TipoTramiteServiceImpl implements TipoTramiteService {
         if (dto.getIdFlujo() != null)
             t.setFlujoTrabajo(flujoTrabajoRepository.findById(dto.getIdFlujo())
                     .orElseThrow(() -> new RecursoNoEncontradoException("Flujo no encontrado: " + dto.getIdFlujo())));
-        return toDTO(plantillaTramiteRepository.save(t));
+
+        PlantillaTramite plantillaGuardada = plantillaTramiteRepository.save(t);
+
+        if (dto.getRequisitos() != null && !dto.getRequisitos().isEmpty()) {
+            List<RequisitoPlantilla> requisitos = dto.getRequisitos().stream()
+                    .map(requisito -> toEntity(requisito, plantillaGuardada))
+                    .toList();
+            requisitoPlantillaRepository.saveAll(requisitos);
+        }
+
+        return toDTO(plantillaGuardada);
     }
 
     @Override
@@ -112,6 +125,23 @@ public class TipoTramiteServiceImpl implements TipoTramiteService {
             t.setFlujoTrabajo(flujoTrabajoRepository.findById(dto.getIdFlujo())
                     .orElseThrow(() -> new RecursoNoEncontradoException("Flujo no encontrado: " + dto.getIdFlujo())));
         return toDTO(plantillaTramiteRepository.save(t));
+    }
+
+    @Override
+    public TipoPlantillaResponseDTO actualizarRequisitos(@NonNull Integer id, ActualizarRequisitosPlantillaRequestDTO dto) {
+        PlantillaTramite plantilla = plantillaTramiteRepository.findById(id)
+                .orElseThrow(() -> new RecursoNoEncontradoException("Plantilla no encontrada con id: " + id));
+
+        requisitoPlantillaRepository.deleteByPlantillaIdPlantilla(id);
+
+        if (dto.getRequisitos() != null && !dto.getRequisitos().isEmpty()) {
+            List<RequisitoPlantilla> requisitos = dto.getRequisitos().stream()
+                    .map(requisito -> toEntity(requisito, plantilla))
+                    .toList();
+            requisitoPlantillaRepository.saveAll(requisitos);
+        }
+
+        return toDTO(plantilla);
     }
 
     @Override
@@ -155,6 +185,19 @@ public class TipoTramiteServiceImpl implements TipoTramiteService {
                 .diasEstimados(t.getDiasResolucionEstimados())
                 .estaActivo(t.getEstaActivo())
                 .disponibleExternos(t.getDisponibleExternos())
+                .build();
+    }
+
+    private RequisitoPlantilla toEntity(RequisitoPlantillaRequestDTO dto, PlantillaTramite plantilla) {
+        return RequisitoPlantilla.builder()
+                .plantilla(plantilla)
+                .nombreRequisito(dto.getNombreRequisito())
+                .descripcionRequisito(dto.getDescripcionRequisito())
+                .esObligatorio(dto.getEsObligatorio() != null ? dto.getEsObligatorio() : true)
+                .tipoDocumento(dto.getTipoDocumento())
+                .tamanoMaxMb(dto.getTamanoMaxMb() != null ? dto.getTamanoMaxMb() : 10)
+                .extensionesPermitidas(dto.getExtensionesPermitidas() != null ? dto.getExtensionesPermitidas() : "pdf,jpg,png")
+                .numeroOrden(dto.getNumeroOrden() != null ? dto.getNumeroOrden() : 0)
                 .build();
     }
 

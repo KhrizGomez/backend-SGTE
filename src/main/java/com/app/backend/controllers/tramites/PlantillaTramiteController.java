@@ -2,6 +2,7 @@ package com.app.backend.controllers.tramites;
 
 import com.app.backend.dtos.tramites.request.PlantillaRequestDTO;
 import com.app.backend.dtos.tramites.request.PlantillaEditarRequestDTO;
+import com.app.backend.dtos.tramites.request.ActualizarRequisitosPlantillaRequestDTO;
 import com.app.backend.dtos.tramites.response.DetallesPlantillaResponseDTO;
 import com.app.backend.dtos.tramites.response.PlantillaResponseDTO;
 import com.app.backend.dtos.tramites.response.TipoPlantillaResponseDTO;
@@ -65,6 +66,13 @@ public class PlantillaTramiteController {
     public ResponseEntity<Void> eliminarPlantilla(@PathVariable Integer id) {
         plantillaTramiteService.eliminarCompleto(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/plantillas/{id}/requisitos")
+    public ResponseEntity<TipoPlantillaResponseDTO> actualizarRequisitos(
+            @PathVariable Integer id,
+            @RequestBody ActualizarRequisitosPlantillaRequestDTO dto) {
+        return ResponseEntity.ok(plantillaTramiteService.actualizarRequisitos(id, dto));
     }
 
     @GetMapping("/detalles/plantilla")

@@ -21,4 +21,5 @@ public class NotificacionResponseDTO {
     private LocalDateTime fechaEnvio;
     private String errorEnvio;
     private LocalDateTime programadaPara;
+    private LocalDateTime fechaCreacion;
 }

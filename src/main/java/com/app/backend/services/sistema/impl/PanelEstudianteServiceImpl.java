@@ -50,9 +50,8 @@ public class PanelEstudianteServiceImpl implements PanelEstudianteService {
                 .map(this::mapSolicitudToDTO)
                 .collect(Collectors.toList());
 
-        List<NotificacionResponseDTO> notificacionesRecientes = notificacionRepository.findByUsuarioIdUsuario(idUsuario)
+        List<NotificacionResponseDTO> notificacionesRecientes = notificacionRepository.findByUsuarioIdUsuarioOrderByFechaCreacionDesc(idUsuario)
                 .stream()
-                .sorted((n1, n2) -> n2.getIdNotificacion().compareTo(n1.getIdNotificacion()))
                 .limit(5)
                 .map(this::mapNotificacionToDTO)
                 .collect(Collectors.toList());

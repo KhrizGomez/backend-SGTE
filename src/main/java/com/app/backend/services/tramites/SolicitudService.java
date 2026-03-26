@@ -1,6 +1,8 @@
 package com.app.backend.services.tramites;
 
+import com.app.backend.dtos.tramites.request.AccionPasoRequestDTO;
 import com.app.backend.dtos.tramites.request.CrearSolicitudRequestDTO;
+import com.app.backend.dtos.tramites.response.SolicitudDetalleResponseDTO;
 import com.app.backend.dtos.tramites.response.SolicitudResponseDTO;
 import com.app.backend.dtos.tramites.response.SolicitudesPlantillasVigentesRespuestaDTO;
 
@@ -29,6 +31,16 @@ public interface SolicitudService {
     List<SolicitudesPlantillasVigentesRespuestaDTO> listarPlantillasVigente();
 
     void crearSolicitudConDocumentos(CrearSolicitudRequestDTO dto, List<MultipartFile> archivos);
+
+    List<SolicitudDetalleResponseDTO> listarSolicitudesUsuarioAutenticado();
+
+    SolicitudDetalleResponseDTO obtenerDetalleSolicitud(@NonNull Integer idSolicitud);
+
+    List<SolicitudDetalleResponseDTO> listarSolicitudesPorRol(String nombreRol);
+
+    void aprobarPasoActual(AccionPasoRequestDTO dto);
+
+    void rechazarSolicitud(AccionPasoRequestDTO dto);
 }
 
 

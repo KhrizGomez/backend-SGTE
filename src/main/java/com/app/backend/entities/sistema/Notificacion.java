@@ -57,4 +57,13 @@ public class Notificacion {
 
     @Column(name = "programada_para")
     private LocalDateTime programadaPara;
+
+    @Column(name = "fecha_creacion", updatable = false)
+    @Builder.Default
+    private LocalDateTime fechaCreacion = LocalDateTime.now();
+
+    @PrePersist
+    protected void onCreate() {
+        if (fechaCreacion == null) fechaCreacion = LocalDateTime.now();
+    }
 }

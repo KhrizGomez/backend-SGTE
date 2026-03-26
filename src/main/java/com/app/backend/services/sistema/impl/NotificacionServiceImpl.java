@@ -34,13 +34,13 @@ public class NotificacionServiceImpl implements NotificacionService {
     @Override
     @Transactional(readOnly = true)
     public List<NotificacionResponseDTO> listarPorUsuario(@NonNull Integer idUsuario) {
-        return notificacionRepository.findByUsuarioIdUsuario(idUsuario).stream().map(this::toDTO).toList();
+        return notificacionRepository.findByUsuarioIdUsuarioOrderByFechaCreacionDesc(idUsuario).stream().map(this::toDTO).toList();
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<NotificacionResponseDTO> listarNoLeidasPorUsuario(@NonNull Integer idUsuario) {
-        return notificacionRepository.findByUsuarioIdUsuarioAndEstaLeidaFalse(idUsuario).stream().map(this::toDTO).toList();
+        return notificacionRepository.findByUsuarioIdUsuarioAndEstaLeidaFalseOrderByFechaCreacionDesc(idUsuario).stream().map(this::toDTO).toList();
     }
 
     @Override
@@ -101,6 +101,7 @@ public class NotificacionServiceImpl implements NotificacionService {
                 .fechaEnvio(n.getFechaEnvio())
                 .errorEnvio(n.getErrorEnvio())
                 .programadaPara(n.getProgramadaPara())
+                .fechaCreacion(n.getFechaCreacion())
                 .build();
     }
 }

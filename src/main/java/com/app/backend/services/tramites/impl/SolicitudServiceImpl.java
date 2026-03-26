@@ -1,33 +1,52 @@
 package com.app.backend.services.tramites.impl;
 
-import com.app.backend.dtos.documentos.request.DocumentoAdjuntoRequestDTO;
+import com.app.backend.dtos.tramites.request.AccionPasoRequestDTO;
 import com.app.backend.dtos.tramites.request.CrearSolicitudRequestDTO;
+import com.app.backend.dtos.tramites.response.SolicitudDetalleResponseDTO;
 import com.app.backend.dtos.tramites.response.SolicitudResponseDTO;
 import com.app.backend.dtos.tramites.response.SolicitudesPlantillasVigentesRespuestaDTO;
+import com.app.backend.entities.documentos.DocumentoAdjunto;
+import com.app.backend.entities.tramites.HistorialSolicitud;
+import com.app.backend.entities.tramites.MotivoRechazo;
+import com.app.backend.entities.tramites.PasoFlujo;
+import com.app.backend.entities.tramites.PlantillaTramite;
+import com.app.backend.entities.tramites.Rechazo;
 import com.app.backend.entities.tramites.Solicitud;
+import com.app.backend.entities.sistema.Usuario;
+import com.app.backend.entities.academico.Carrera;
 import com.app.backend.exceptions.RecursoNoEncontradoException;
+import com.app.backend.exceptions.SolicitudAdjuntosInvalidosException;
+import com.app.backend.repositories.sistema.CredencialRepository;
 import com.app.backend.repositories.academico.CarreraRepository;
+import com.app.backend.repositories.documentos.DocumentoAdjuntoRepository;
 import com.app.backend.repositories.sistema.UsuarioRepository;
+import com.app.backend.repositories.tramites.HistorialSolicitudRepository;
+import com.app.backend.repositories.tramites.MotivoRechazoRepository;
 import com.app.backend.repositories.tramites.PasoFlujoRepository;
 import com.app.backend.repositories.tramites.PlantillaTramiteRepository;
+import com.app.backend.repositories.tramites.RechazoRepository;
+import com.app.backend.repositories.tramites.RequisitoPlantillaRepository;
 import com.app.backend.repositories.tramites.SolicitudRepository;
 import com.app.backend.services.externos.IAlmacenamientoService;
 import com.app.backend.services.externos.IJwtService;
+import com.app.backend.services.tramites.NotificacionTramiteService;
 import com.app.backend.services.tramites.SolicitudService;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
+import java.time.LocalDateTime;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -37,12 +56,18 @@ public class SolicitudServiceImpl implements SolicitudService {
     private final SolicitudRepository solicitudRepository;
     private final PlantillaTramiteRepository plantillaTramiteRepository;
     private final UsuarioRepository usuarioRepository;
+    private final CredencialRepository credencialRepository;
     private final CarreraRepository carreraRepository;
     private final PasoFlujoRepository pasoFlujoRepository;
+    private final RequisitoPlantillaRepository requisitoPlantillaRepository;
+    private final DocumentoAdjuntoRepository documentoAdjuntoRepository;
+    private final HistorialSolicitudRepository historialSolicitudRepository;
+    private final RechazoRepository rechazoRepository;
+    private final MotivoRechazoRepository motivoRechazoRepository;
     private final HttpServletRequest request;
     private final IJwtService jwtService;
     private final IAlmacenamientoService almacenamientoService;
-    private final ObjectMapper objectMapper;
+    private final NotificacionTramiteService notificacionTramiteService;
 
     @Override
     @Transactional(readOnly = true)
@@ -127,25 +152,57 @@ public class SolicitudServiceImpl implements SolicitudService {
     @Override
     public void crearSolicitudConDocumentos(CrearSolicitudRequestDTO dto, List<MultipartFile> archivos) {
         // 1. Extraer idUsuario e idCarrera del JWT
-        Integer idUsuario = null;
-        Integer idCarrera = null;
-        String encaAuth = request.getHeader("Authorization");
-        if (encaAuth != null && encaAuth.startsWith("Bearer ")) {
-            String jwt = encaAuth.substring(7);
-            idUsuario = jwtService.extraerIdUsuario(jwt);
-            idCarrera = jwtService.extraerIdCarrera(jwt);
-        }
+        Integer idUsuario = extraerIdUsuarioAutenticado();
+        Integer idCarrera = extraerIdCarreraDelToken();
         if (idUsuario == null) {
-            throw new RuntimeException("No se pudo extraer el usuario del token JWT");
+            throw new RuntimeException("No se encontró un usuario autenticado válido para crear la solicitud");
         }
 
-        // 2. Subir archivos a Azure y construir la lista de documentos adjuntos
-        List<DocumentoAdjuntoRequestDTO> documentosAdjuntos = new ArrayList<>();
+        // 2. Obtener entidades necesarias
+        PlantillaTramite plantilla = plantillaTramiteRepository.findById(dto.getIdPlantilla())
+                .orElseThrow(() -> new RecursoNoEncontradoException("Plantilla no encontrada: " + dto.getIdPlantilla()));
+        Usuario usuario = usuarioRepository.findById(idUsuario)
+                .orElseThrow(() -> new RecursoNoEncontradoException("Usuario no encontrado: " + idUsuario));
 
+        Carrera carrera = null;
+        if (idCarrera != null) {
+            carrera = carreraRepository.findById(idCarrera).orElse(null);
+        }
+
+        // 3. Obtener el primer paso del flujo como paso actual
+        PasoFlujo primerPaso = null;
+        if (plantilla.getFlujoTrabajo() != null) {
+            List<PasoFlujo> pasos = pasoFlujoRepository
+                    .findByFlujoTrabajoIdFlujoOrderByOrdenPasoAsc(plantilla.getFlujoTrabajo().getIdFlujo());
+            if (!pasos.isEmpty()) {
+                primerPaso = pasos.get(0);
+            }
+        }
+
+        // 4. Generar código de solicitud y crear la entidad
+        String codigoSolicitud = generarCodigoSolicitud();
+
+        Solicitud solicitud = Solicitud.builder()
+                .codigoSolicitud(codigoSolicitud)
+                .plantilla(plantilla)
+                .usuario(usuario)
+                .carrera(carrera)
+                .creadoPor(usuario)
+                .detallesSolicitud(dto.getDetallesSolicitud())
+                .prioridad(dto.getPrioridad() != null ? dto.getPrioridad() : "Normal")
+                .pasoActual(primerPaso)
+                .estadoActual("pendiente")
+                .fechaCreacion(LocalDateTime.now())
+                .build();
+
+        solicitud = solicitudRepository.save(solicitud);
+        log.info("Solicitud creada con id: {}", solicitud.getIdSolicitud());
+
+        // 5. Subir archivos a Azure y guardar documentos adjuntos
         if (archivos != null && !archivos.isEmpty()) {
             List<Integer> idsRequisitos = dto.getIdsRequisitos();
             if (idsRequisitos == null || idsRequisitos.size() != archivos.size()) {
-                throw new IllegalArgumentException(
+                throw new SolicitudAdjuntosInvalidosException(
                         "La cantidad de idsRequisitos debe coincidir con la cantidad de archivos adjuntos");
             }
 
@@ -153,58 +210,73 @@ public class SolicitudServiceImpl implements SolicitudService {
                 MultipartFile archivo = archivos.get(i);
                 Integer idRequisito = idsRequisitos.get(i);
 
-                // Generar nombre Ãºnico para el blob
                 String extension = obtenerExtension(archivo.getOriginalFilename());
                 String nombreGenerado = String.format("req_%d_user_%d_%d%s",
                         idRequisito, idUsuario, System.currentTimeMillis(), extension);
 
-                // Subir a Azure Storage
                 String urlArchivo = almacenamientoService.subirArchivos(archivo);
 
-                documentosAdjuntos.add(DocumentoAdjuntoRequestDTO.builder()
-                        .idRequisito(idRequisito)
+                DocumentoAdjunto documento = DocumentoAdjunto.builder()
+                        .solicitud(solicitud)
+                        .requisitoPlantilla(requisitoPlantillaRepository.findById(idRequisito).orElse(null))
                         .nombreArchivo(nombreGenerado)
                         .nombreOriginal(archivo.getOriginalFilename())
                         .rutaArchivo(urlArchivo)
                         .tamanoBytes(archivo.getSize())
-                        .build());
+                        .tipoMime(archivo.getContentType())
+                        .subidoPor(usuario)
+                        .fechaSubida(LocalDateTime.now())
+                        .build();
+
+                documentoAdjuntoRepository.save(documento);
+                log.info("Documento adjunto guardado: {}", nombreGenerado);
             }
         }
 
-        // 3. Construir el JSON para el SP
-        try {
-            ObjectNode jsonRoot = objectMapper.createObjectNode();
-            jsonRoot.put("idplantilla", dto.getIdPlantilla());
-            jsonRoot.put("idusuario", idUsuario);
-            if (idCarrera != null) {
-                jsonRoot.put("idcarrera", idCarrera);
-            }
-            jsonRoot.put("detallessolicitud", dto.getDetallesSolicitud());
-            jsonRoot.put("prioridad", dto.getPrioridad() != null ? dto.getPrioridad() : "Normal");
-            jsonRoot.put("pasoactual", dto.getPasoActual() != null ? dto.getPasoActual() : 1);
+        // Notificar al estudiante y al gestor del primer paso
+        notificacionTramiteService.notificarSolicitudCreada(solicitud.getIdSolicitud());
+    }
 
-            if (!documentosAdjuntos.isEmpty()) {
-                ArrayNode docsArray = jsonRoot.putArray("documentosadjuntos");
-                for (DocumentoAdjuntoRequestDTO doc : documentosAdjuntos) {
-                    ObjectNode docNode = objectMapper.createObjectNode();
-                    docNode.put("idrequisito", doc.getIdRequisito());
-                    docNode.put("nombrearchivo", doc.getNombreArchivo());
-                    docNode.put("nombreoriginal", doc.getNombreOriginal());
-                    docNode.put("rutaarchivo", doc.getRutaArchivo());
-                    docNode.put("tamanobytes", doc.getTamanoBytes());
-                    docsArray.add(docNode);
+    private Integer extraerIdUsuarioAutenticado() {
+        String encaAuth = request.getHeader("Authorization");
+        if (encaAuth != null && encaAuth.startsWith("Bearer ")) {
+            try {
+                String jwt = encaAuth.substring(7);
+                Integer idUsuario = jwtService.extraerIdUsuario(jwt);
+                if (idUsuario != null) {
+                    return idUsuario;
                 }
+            } catch (Exception ignored) {
+                // Se intenta el respaldo con el contexto de seguridad.
             }
+        }
 
-            String jsonSolicitud = objectMapper.writeValueAsString(jsonRoot);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return null;
+        }
 
-            // 4. Llamar al stored procedure
-            solicitudRepository.crearSolicitudTramite(jsonSolicitud);
+        Object principal = authentication.getPrincipal();
+        if (principal instanceof UserDetails userDetails) {
+            return credencialRepository.findByNombreUsuario(userDetails.getUsername())
+                    .map(credencial -> credencial.getUsuario().getIdUsuario())
+                    .orElse(null);
+        }
 
-        } catch (RuntimeException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new RuntimeException("Error al crear la solicitud de trÃ¡mite: " + e.getMessage(), e);
+        return null;
+    }
+
+    private Integer extraerIdCarreraDelToken() {
+        String encaAuth = request.getHeader("Authorization");
+        if (encaAuth == null || !encaAuth.startsWith("Bearer ")) {
+            return null;
+        }
+
+        try {
+            String jwt = encaAuth.substring(7);
+            return jwtService.extraerIdCarrera(jwt);
+        } catch (Exception ignored) {
+            return null;
         }
     }
 
@@ -236,11 +308,324 @@ public class SolicitudServiceImpl implements SolicitudService {
         }
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public List<SolicitudDetalleResponseDTO> listarSolicitudesUsuarioAutenticado() {
+        Integer idUsuario = extraerIdUsuarioAutenticado();
+        if (idUsuario == null) {
+            throw new RuntimeException("No se encontró un usuario autenticado");
+        }
+
+        List<Solicitud> solicitudes = solicitudRepository.findByUsuarioIdUsuario(idUsuario);
+        return solicitudes.stream().map(this::toDetalleDTO).toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public SolicitudDetalleResponseDTO obtenerDetalleSolicitud(@NonNull Integer idSolicitud) {
+        Solicitud solicitud = solicitudRepository.findById(idSolicitud)
+                .orElseThrow(() -> new RecursoNoEncontradoException("Solicitud no encontrada con id: " + idSolicitud));
+        return toDetalleDTO(solicitud);
+    }
+
+    private SolicitudDetalleResponseDTO toDetalleDTO(Solicitud s) {
+        // Calcular etapa actual, total y pasos del flujo
+        int totalEtapas = 0;
+        int etapaActual = 0;
+        List<SolicitudDetalleResponseDTO.PasoFlujoItemDTO> pasosFlujoDTO = List.of();
+
+        if (s.getPlantilla() != null && s.getPlantilla().getFlujoTrabajo() != null) {
+            List<PasoFlujo> pasos = pasoFlujoRepository
+                    .findByFlujoTrabajoIdFlujoOrderByOrdenPasoAsc(s.getPlantilla().getFlujoTrabajo().getIdFlujo());
+            totalEtapas = pasos.size();
+            if (s.getPasoActual() != null) {
+                etapaActual = s.getPasoActual().getOrdenPaso();
+            }
+
+            pasosFlujoDTO = pasos.stream()
+                    .map(p -> SolicitudDetalleResponseDTO.PasoFlujoItemDTO.builder()
+                            .idPaso(p.getIdPaso())
+                            .ordenPaso(p.getOrdenPaso())
+                            .nombreEtapa(p.getEtapa() != null ? p.getEtapa().getNombreEtapa() : null)
+                            .codigoEtapa(p.getEtapa() != null ? p.getEtapa().getCodigo() : null)
+                            .descripcionEtapa(p.getEtapa() != null ? p.getEtapa().getDescripcion() : null)
+                            .rolRequerido(p.getRolRequerido() != null ? p.getRolRequerido().getNombreRol() : null)
+                            .idRolRequerido(p.getRolRequerido() != null ? p.getRolRequerido().getIdRol() : null)
+                            .usuarioEncargado(p.getUsuarioEncargado() != null
+                                    ? p.getUsuarioEncargado().getNombres() + " " + p.getUsuarioEncargado().getApellidos()
+                                    : null)
+                            .horasSla(p.getHorasSla())
+                            .build())
+                    .toList();
+        }
+
+        // Historial
+        List<HistorialSolicitud> historiales = historialSolicitudRepository
+                .findBySolicitudIdSolicitudOrderByFechaEntradaAsc(s.getIdSolicitud());
+
+        List<SolicitudDetalleResponseDTO.HistorialItemDTO> historialDTOs = historiales.stream()
+                .map(h -> SolicitudDetalleResponseDTO.HistorialItemDTO.builder()
+                        .idHistorial(h.getIdHistorial())
+                        .nombreEtapa(h.getEtapa() != null ? h.getEtapa().getNombreEtapa() : null)
+                        .codigoEtapa(h.getEtapa() != null ? h.getEtapa().getCodigo() : null)
+                        .estado(h.getEstado())
+                        .tipoAccion(h.getTipoAccion())
+                        .procesadoPor(h.getProcesadoPor() != null
+                                ? h.getProcesadoPor().getNombres() + " " + h.getProcesadoPor().getApellidos()
+                                : null)
+                        .comentarios(h.getComentarios())
+                        .fechaEntrada(h.getFechaEntrada())
+                        .fechaCompletado(h.getFechaCompletado())
+                        .slaExcedido(h.getSlaExcedido())
+                        .ordenPaso(h.getPasoFlujo() != null ? h.getPasoFlujo().getOrdenPaso() : null)
+                        .build())
+                .toList();
+
+        // Documentos adjuntos
+        List<DocumentoAdjunto> documentos = documentoAdjuntoRepository
+                .findBySolicitudIdSolicitud(s.getIdSolicitud());
+
+        List<SolicitudDetalleResponseDTO.DocumentoItemDTO> documentoDTOs = documentos.stream()
+                .map(d -> SolicitudDetalleResponseDTO.DocumentoItemDTO.builder()
+                        .idDocumento(d.getIdDocumento())
+                        .nombreOriginal(d.getNombreOriginal())
+                        .nombreArchivo(d.getNombreArchivo())
+                        .rutaArchivo(d.getRutaArchivo())
+                        .tamanoBytes(d.getTamanoBytes())
+                        .tipoMime(d.getTipoMime())
+                        .esValido(d.getEsValido())
+                        .fechaSubida(d.getFechaSubida())
+                        .nombreRequisito(d.getRequisitoPlantilla() != null
+                                ? d.getRequisitoPlantilla().getNombreRequisito()
+                                : null)
+                        .build())
+                .toList();
+
+        return SolicitudDetalleResponseDTO.builder()
+                .idSolicitud(s.getIdSolicitud())
+                .codigoSolicitud(s.getCodigoSolicitud())
+                .nombrePlantilla(s.getPlantilla() != null ? s.getPlantilla().getNombrePlantilla() : null)
+                .categoria(s.getPlantilla() != null && s.getPlantilla().getCategoria() != null
+                        ? s.getPlantilla().getCategoria().getNombreCategoria() : null)
+                .carrera(s.getCarrera() != null ? s.getCarrera().getNombreCarrera() : null)
+                .nombreUsuario(s.getUsuario() != null
+                        ? s.getUsuario().getNombres() + " " + s.getUsuario().getApellidos() : null)
+                .prioridad(s.getPrioridad())
+                .estadoActual(s.getEstadoActual())
+                .detallesSolicitud(s.getDetallesSolicitud())
+                .resolucion(s.getResolucion())
+                .fechaCreacion(s.getFechaCreacion())
+                .fechaEstimadaFin(s.getFechaEstimadaFin())
+                .fechaRealFin(s.getFechaRealFin())
+                .etapaActual(etapaActual)
+                .totalEtapas(totalEtapas)
+                .idPasoActual(s.getPasoActual() != null ? s.getPasoActual().getIdPaso() : null)
+                .pasosFlujo(pasosFlujoDTO)
+                .historial(historialDTOs)
+                .documentos(documentoDTOs)
+                .build();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<SolicitudDetalleResponseDTO> listarSolicitudesPorRol(String nombreRol) {
+        // Obtener todas las solicitudes que no estén finalizadas ni rechazadas
+        List<Solicitud> todas = solicitudRepository.findAll();
+
+        return todas.stream()
+                .filter(s -> {
+                    if (s.getPlantilla() == null || s.getPlantilla().getFlujoTrabajo() == null) return false;
+                    // Incluir si algún paso del flujo tiene el rol indicado
+                    List<PasoFlujo> pasos = pasoFlujoRepository
+                            .findByFlujoTrabajoIdFlujoOrderByOrdenPasoAsc(s.getPlantilla().getFlujoTrabajo().getIdFlujo());
+                    return pasos.stream().anyMatch(p ->
+                            p.getRolRequerido() != null &&
+                            p.getRolRequerido().getNombreRol().equalsIgnoreCase(nombreRol));
+                })
+                .map(this::toDetalleDTO)
+                .toList();
+    }
+
+    @Override
+    public void aprobarPasoActual(AccionPasoRequestDTO dto) {
+        Integer idUsuario = extraerIdUsuarioAutenticado();
+        if (idUsuario == null) {
+            throw new RuntimeException("No se encontró un usuario autenticado");
+        }
+
+        Solicitud solicitud = solicitudRepository.findById(dto.getIdSolicitud())
+                .orElseThrow(() -> new RecursoNoEncontradoException("Solicitud no encontrada: " + dto.getIdSolicitud()));
+
+        if ("finalizado".equals(solicitud.getEstadoActual()) || "rechazado".equals(solicitud.getEstadoActual())) {
+            throw new IllegalArgumentException("La solicitud ya está en estado final: " + solicitud.getEstadoActual());
+        }
+
+        PasoFlujo pasoActual = solicitud.getPasoActual();
+        if (pasoActual == null) {
+            throw new IllegalArgumentException("La solicitud no tiene un paso actual asignado");
+        }
+
+        // Validar que el usuario tiene el rol requerido para este paso
+        Usuario usuario = usuarioRepository.findById(idUsuario)
+                .orElseThrow(() -> new RecursoNoEncontradoException("Usuario no encontrado"));
+        validarRolUsuarioEnPaso(usuario, pasoActual);
+
+        // Registrar historial del paso completado
+        HistorialSolicitud historial = HistorialSolicitud.builder()
+                .solicitud(solicitud)
+                .pasoFlujo(pasoActual)
+                .etapa(pasoActual.getEtapa())
+                .estado("aprobado")
+                .tipoAccion("aprobacion")
+                .procesadoPor(usuario)
+                .comentarios(dto.getComentarios())
+                .fechaEntrada(solicitud.getFechaCreacion())
+                .fechaCompletado(LocalDateTime.now())
+                .slaExcedido(false)
+                .build();
+        historialSolicitudRepository.save(historial);
+
+        // Buscar el siguiente paso
+        List<PasoFlujo> pasos = pasoFlujoRepository
+                .findByFlujoTrabajoIdFlujoOrderByOrdenPasoAsc(
+                        solicitud.getPlantilla().getFlujoTrabajo().getIdFlujo());
+
+        int indexActual = -1;
+        for (int i = 0; i < pasos.size(); i++) {
+            if (pasos.get(i).getIdPaso().equals(pasoActual.getIdPaso())) {
+                indexActual = i;
+                break;
+            }
+        }
+
+        PasoFlujo siguientePaso = null;
+        if (indexActual + 1 < pasos.size()) {
+            // Avanzar al siguiente paso
+            siguientePaso = pasos.get(indexActual + 1);
+            solicitud.setPasoActual(siguientePaso);
+            solicitud.setEstadoActual("en_proceso");
+        } else {
+            // No hay más pasos, finalizar
+            solicitud.setPasoActual(null);
+            solicitud.setEstadoActual("finalizado");
+            solicitud.setFechaRealFin(LocalDateTime.now());
+        }
+
+        solicitudRepository.save(solicitud);
+        log.info("Paso aprobado para solicitud {} por usuario {}", dto.getIdSolicitud(), idUsuario);
+
+        // Notificaciones (email + WhatsApp + gestor del siguiente paso)
+        if ("finalizado".equals(solicitud.getEstadoActual())) {
+            notificacionTramiteService.notificarSolicitudFinalizada(solicitud.getIdSolicitud(), usuario.getIdUsuario());
+        } else {
+            notificacionTramiteService.notificarPasoAprobado(solicitud.getIdSolicitud(), pasoActual.getIdPaso(), usuario.getIdUsuario(), siguientePaso != null ? siguientePaso.getIdPaso() : null);
+        }
+    }
+
+    @Override
+    public void rechazarSolicitud(AccionPasoRequestDTO dto) {
+        Integer idUsuario = extraerIdUsuarioAutenticado();
+        if (idUsuario == null) {
+            throw new RuntimeException("No se encontró un usuario autenticado");
+        }
+
+        Solicitud solicitud = solicitudRepository.findById(dto.getIdSolicitud())
+                .orElseThrow(() -> new RecursoNoEncontradoException("Solicitud no encontrada: " + dto.getIdSolicitud()));
+
+        if ("finalizado".equals(solicitud.getEstadoActual()) || "rechazado".equals(solicitud.getEstadoActual())) {
+            throw new IllegalArgumentException("La solicitud ya está en estado final: " + solicitud.getEstadoActual());
+        }
+
+        PasoFlujo pasoActual = solicitud.getPasoActual();
+        if (pasoActual == null) {
+            throw new IllegalArgumentException("La solicitud no tiene un paso actual asignado");
+        }
+
+        Usuario usuario = usuarioRepository.findById(idUsuario)
+                .orElseThrow(() -> new RecursoNoEncontradoException("Usuario no encontrado"));
+        validarRolUsuarioEnPaso(usuario, pasoActual);
+
+        // Registrar historial
+        HistorialSolicitud historial = HistorialSolicitud.builder()
+                .solicitud(solicitud)
+                .pasoFlujo(pasoActual)
+                .etapa(pasoActual.getEtapa())
+                .estado("rechazado")
+                .tipoAccion("rechazo")
+                .procesadoPor(usuario)
+                .comentarios(dto.getComentarios())
+                .fechaEntrada(solicitud.getFechaCreacion())
+                .fechaCompletado(LocalDateTime.now())
+                .slaExcedido(false)
+                .build();
+        historialSolicitudRepository.save(historial);
+
+        // Registrar rechazo
+        if (dto.getIdMotivo() != null) {
+            MotivoRechazo motivo = motivoRechazoRepository.findById(dto.getIdMotivo()).orElse(null);
+            if (motivo != null) {
+                Rechazo rechazo = Rechazo.builder()
+                        .solicitud(solicitud)
+                        .motivoRechazo(motivo)
+                        .rechazadoPor(usuario)
+                        .comentarios(dto.getComentarios() != null ? dto.getComentarios() : "")
+                        .fechaRechazo(LocalDateTime.now())
+                        .notificacionEnviada(false)
+                        .build();
+                rechazoRepository.save(rechazo);
+            }
+        }
+
+        solicitud.setEstadoActual("rechazado");
+        solicitudRepository.save(solicitud);
+        log.info("Solicitud {} rechazada por usuario {}", dto.getIdSolicitud(), idUsuario);
+
+        // Notificaciones (email + WhatsApp al estudiante)
+        notificacionTramiteService.notificarSolicitudRechazada(solicitud.getIdSolicitud(), pasoActual.getIdPaso(), usuario.getIdUsuario(), dto.getComentarios());
+    }
+
+    private void validarRolUsuarioEnPaso(Usuario usuario, PasoFlujo paso) {
+        if (paso.getRolRequerido() == null) return;
+
+        Integer idRolDelToken = extraerIdRolDelToken();
+        Integer idRolRequerido = paso.getRolRequerido().getIdRol();
+
+        log.info("Validando rol - Usuario: {} (id: {}), rol del JWT: {}, rol requerido: {} (id: {})",
+                usuario.getNombres(), usuario.getIdUsuario(), idRolDelToken,
+                paso.getRolRequerido().getNombreRol(), idRolRequerido);
+
+        boolean tieneRol = idRolDelToken != null && idRolDelToken.equals(idRolRequerido);
+
+        if (!tieneRol) {
+            throw new IllegalArgumentException(
+                    "No tiene el rol requerido (" + paso.getRolRequerido().getNombreRol() + ") para gestionar este paso");
+        }
+    }
+
+    private Integer extraerIdRolDelToken() {
+        String encaAuth = request.getHeader("Authorization");
+        if (encaAuth == null || !encaAuth.startsWith("Bearer ")) return null;
+        try {
+            String jwt = encaAuth.substring(7);
+            return jwtService.extraerIdRol(jwt);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private String generarCodigoSolicitud() {
+        String prefijo = "SOL";
+        String anio = String.valueOf(java.time.Year.now().getValue());
+        long count = solicitudRepository.count() + 1;
+        return String.format("%s-%s-%05d", prefijo, anio, count);
+    }
+
     private String obtenerExtension(String nombreArchivo) {
         if (nombreArchivo == null || !nombreArchivo.contains("."))
             return "";
         return nombreArchivo.substring(nombreArchivo.lastIndexOf("."));
     }
+
 }
 
 

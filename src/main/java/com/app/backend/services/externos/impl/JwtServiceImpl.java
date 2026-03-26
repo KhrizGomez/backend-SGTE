@@ -44,6 +44,16 @@ public class JwtServiceImpl implements IJwtService {
     }
 
     @Override
+    public Integer extraerIdRol(String token) {
+        return extractClaim(token, claims -> claims.get("idRol", Integer.class));
+    }
+
+    @Override
+    public String extraerRol(String token) {
+        return extractClaim(token, claims -> claims.get("rol", String.class));
+    }
+
+    @Override
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = Jwts.parser()
                 .verifyWith(obtenerClaveInicioSesion())

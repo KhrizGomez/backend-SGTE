@@ -27,6 +27,6 @@ public interface SolicitudRepository extends JpaRepository<Solicitud, Integer> {
     List<SolicitudesDocumentosRespuestaDTO> listarDocumentosTramites(@Param("p_idsolicitud") Integer idsolicitud);
 
     @Modifying
-    @Query(value = "CALL tramites.sp_in_solicitudtramite(:p_jsonsolicitud)", nativeQuery = true)
+    @Query(value = "CALL tramites.sp_in_solicitudtramite(CAST(:p_jsonsolicitud AS json))", nativeQuery = true)
     void crearSolicitudTramite(@Param("p_jsonsolicitud") String jsonSolicitud);
 }

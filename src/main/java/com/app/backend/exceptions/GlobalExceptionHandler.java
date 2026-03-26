@@ -38,6 +38,12 @@ public class GlobalExceptionHandler {
                 .body(buildErrorBody(400, "Solicitud inválida", ex.getMessage()));
     }
 
+    @ExceptionHandler(SolicitudAdjuntosInvalidosException.class)
+    public ResponseEntity<Map<String, Object>> handleSolicitudAdjuntosInvalidos(SolicitudAdjuntosInvalidosException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(buildErrorBody(400, "Adjuntos inválidos", ex.getMessage()));
+    }
+
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<Map<String, Object>> handleMessageNotReadable(HttpMessageNotReadableException ex) {
         log.error("Error al deserializar el JSON de la solicitud: ", ex);
