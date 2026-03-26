@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface VentanaRecepcionRepository extends JpaRepository<VentanaRecepcion, Integer> {
     List<VentanaRecepcion> findByPlantillaIdPlantilla(Integer idPlantilla);
+    void deleteByPlantillaIdPlantilla(Integer idPlantilla);
 }

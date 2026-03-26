@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface RequisitoPlantillaRepository extends JpaRepository<RequisitoPlantilla, Integer> {
     List<RequisitoPlantilla> findByPlantillaIdPlantillaOrderByNumeroOrdenAsc(Integer idPlantilla);
+        void deleteByPlantillaIdPlantilla(Integer idPlantilla);
 }

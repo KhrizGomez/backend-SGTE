@@ -1,6 +1,7 @@
 package com.app.backend.services.tramites.impl;
 
 import com.app.backend.dtos.tramites.request.PlantillaRequestDTO;
+import com.app.backend.dtos.tramites.request.PlantillaEditarRequestDTO;
 import com.app.backend.dtos.tramites.response.PlantillaDTO;
 import com.app.backend.dtos.tramites.response.PlantillaResponseDTO;
 import com.app.backend.dtos.tramites.response.RequisitoPlantillaResponseDTO;
@@ -12,6 +13,10 @@ import com.app.backend.repositories.tramites.FlujoTrabajoRepository;
 import com.app.backend.repositories.tramites.PlantillaTramiteRepository;
 import com.app.backend.repositories.academico.CarreraRepository;
 import com.app.backend.repositories.academico.EstudianteRepository;
+import com.app.backend.repositories.tramites.RechazoRepository;
+import com.app.backend.repositories.tramites.RequisitoPlantillaRepository;
+import com.app.backend.repositories.tramites.SolicitudRepository;
+import com.app.backend.repositories.tramites.VentanaRecepcionRepository;
 import com.app.backend.services.externos.IJwtService;
 import com.app.backend.services.tramites.TipoTramiteService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -35,6 +40,10 @@ public class TipoTramiteServiceImpl implements TipoTramiteService {
     private final CarreraRepository carreraRepository;
     private final FlujoTrabajoRepository flujoTrabajoRepository;
     private final EstudianteRepository estudianteRepository;
+    private final RequisitoPlantillaRepository requisitoPlantillaRepository;
+    private final VentanaRecepcionRepository ventanaRecepcionRepository;
+    private final SolicitudRepository solicitudRepository;
+    private final RechazoRepository rechazoRepository;
     private final IJwtService jwtService;
     private final HttpServletRequest request;
 
@@ -85,14 +94,14 @@ public class TipoTramiteServiceImpl implements TipoTramiteService {
     }
 
     @Override
-    public TipoPlantillaResponseDTO actualizar(@NonNull Integer id, PlantillaRequestDTO dto) {
+    public TipoPlantillaResponseDTO actualizar(@NonNull Integer id, PlantillaEditarRequestDTO dto) {
         PlantillaTramite t = plantillaTramiteRepository.findById(id)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Plantilla no encontrada con id: " + id));
-        t.setNombrePlantilla(dto.getNombrePlantilla());
-        t.setDescripcionPlantilla(dto.getDescripcionPlantilla());
-        t.setDiasResolucionEstimados(dto.getDiasEstimados());
-        t.setEstaActivo(dto.getEstaActivo());
-        t.setDisponibleExternos(dto.getDisponibleExternos());
+        if (dto.getNombrePlantilla() != null) t.setNombrePlantilla(dto.getNombrePlantilla());
+        if (dto.getDescripcionPlantilla() != null) t.setDescripcionPlantilla(dto.getDescripcionPlantilla());
+        if (dto.getDiasEstimados() != null) t.setDiasResolucionEstimados(dto.getDiasEstimados());
+        if (dto.getEstaActivo() != null) t.setEstaActivo(dto.getEstaActivo());
+        if (dto.getDisponibleExternos() != null) t.setDisponibleExternos(dto.getDisponibleExternos());
         if (dto.getIdCategoria() != null)
             t.setCategoria(categoriaRepository.findById(dto.getIdCategoria()).orElseThrow(
                     () -> new RecursoNoEncontradoException("CategorÃ­a no encontrada: " + dto.getIdCategoria())));
@@ -110,6 +119,29 @@ public class TipoTramiteServiceImpl implements TipoTramiteService {
         if (!plantillaTramiteRepository.existsById(id))
             throw new RecursoNoEncontradoException("Plantilla no encontrada con id: " + id);
         plantillaTramiteRepository.deleteById(id);
+    }
+
+    @Override
+    public void eliminarCompleto(@NonNull Integer id) {
+        PlantillaTramite plantilla = plantillaTramiteRepository.findById(id)
+                .orElseThrow(() -> new RecursoNoEncontradoException("Plantilla no encontrada con id: " + id));
+
+        List<Integer> solicitudesIds = solicitudRepository.findByPlantillaIdPlantilla(id).stream()
+                .map(solicitud -> solicitud.getIdSolicitud())
+                .toList();
+
+        for (Integer solicitudId : solicitudesIds) {
+            rechazoRepository.deleteAll(rechazoRepository.findBySolicitudIdSolicitud(solicitudId));
+        }
+
+        solicitudRepository.deleteAllByPlantillaIdPlantilla(id);
+        ventanaRecepcionRepository.deleteAll(ventanaRecepcionRepository.findByPlantillaIdPlantilla(id));
+
+        if (plantilla.getRequisitos() != null && !plantilla.getRequisitos().isEmpty()) {
+            requisitoPlantillaRepository.deleteAll(plantilla.getRequisitos());
+        }
+
+        plantillaTramiteRepository.delete(plantilla);
     }
 
     private TipoPlantillaResponseDTO toDTO(PlantillaTramite t) {

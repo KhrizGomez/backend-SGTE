@@ -1,6 +1,7 @@
 package com.app.backend.controllers.tramites;
 
 import com.app.backend.dtos.tramites.request.PlantillaRequestDTO;
+import com.app.backend.dtos.tramites.request.PlantillaEditarRequestDTO;
 import com.app.backend.dtos.tramites.response.DetallesPlantillaResponseDTO;
 import com.app.backend.dtos.tramites.response.PlantillaResponseDTO;
 import com.app.backend.dtos.tramites.response.TipoPlantillaResponseDTO;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -55,8 +57,14 @@ public class PlantillaTramiteController {
 
     @PutMapping("/plantillas/editar/{id}")
     public ResponseEntity<TipoPlantillaResponseDTO> editarPlantilla(@PathVariable Integer id,
-            @RequestBody PlantillaRequestDTO dto) {
+            @RequestBody PlantillaEditarRequestDTO dto) {
         return ResponseEntity.ok(plantillaTramiteService.actualizar(id, dto));
+    }
+
+    @DeleteMapping("/plantillas/eliminar/{id}")
+    public ResponseEntity<Void> eliminarPlantilla(@PathVariable Integer id) {
+        plantillaTramiteService.eliminarCompleto(id);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/detalles/plantilla")
