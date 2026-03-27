@@ -10,6 +10,7 @@ import java.util.List;
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
 @Builder
+// Define el circuito de etapas por donde avanza una solicitud.
 public class FlujoTrabajo {
 
     @Id

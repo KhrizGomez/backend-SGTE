@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+// Datos de alta de una plantilla de tramite y sus requisitos iniciales.
 public class PlantillaRequestDTO {
     private String nombrePlantilla;
     private String descripcionPlantilla;

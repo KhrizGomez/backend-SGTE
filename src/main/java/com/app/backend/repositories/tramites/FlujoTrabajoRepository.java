@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
+// Persistencia de definiciones de flujo de trabajo.
 public interface FlujoTrabajoRepository extends JpaRepository<FlujoTrabajo, Integer> {
     List<FlujoTrabajo> findByEstaActivoTrue();
 }

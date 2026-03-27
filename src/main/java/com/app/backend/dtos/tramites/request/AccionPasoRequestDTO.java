@@ -7,6 +7,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+// Solicitud de accion sobre el paso actual: aprobar o rechazar.
 public class AccionPasoRequestDTO {
 
     @NotNull(message = "El id de la solicitud es obligatorio")

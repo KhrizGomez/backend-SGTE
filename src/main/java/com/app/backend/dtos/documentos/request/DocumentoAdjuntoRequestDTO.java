@@ -6,6 +6,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+// Payload minimo para registrar un adjunto asociado a un requisito.
 public class DocumentoAdjuntoRequestDTO {
     private Integer idRequisito;
     private String nombreArchivo;

@@ -9,6 +9,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+// Payload de creacion de solicitud desde el frontend (con adjuntos opcionales).
 public class CrearSolicitudRequestDTO {
 
     @NotNull(message = "El id de la plantilla es obligatorio")

@@ -6,6 +6,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+// Vista de paso embebida en el detalle completo de una plantilla.
 public class PasoFlujoPlantillaResponseDTO {
     private Integer idPaso;
     private Integer idFlujo;

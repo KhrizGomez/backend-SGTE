@@ -7,6 +7,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+// DTO de ventana de recepcion y extension por plantilla.
 public class PlazoPlantillaResponseDTO {
     private Integer idPlazo;
     private Integer idPlantilla;

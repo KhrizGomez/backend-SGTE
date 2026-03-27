@@ -16,6 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional
 @SuppressWarnings("null")
+// CRUD de categorias para clasificar plantillas de tramite.
 public class CategoriaTramiteServiceImpl implements CategoriaTramiteService {
 
     private final CategoriaRepository categoriaRepository;

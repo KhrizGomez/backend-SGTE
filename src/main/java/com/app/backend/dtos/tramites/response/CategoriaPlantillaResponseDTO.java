@@ -6,6 +6,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+// DTO del catalogo de categorias de tramite.
 public class CategoriaPlantillaResponseDTO {
     private Integer idCategoria;
     private String nombreCategoria;

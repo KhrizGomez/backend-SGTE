@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+// Respuesta breve tras crear una solicitud desde formulario multipart.
 public class SolicitudCreadaResponseDTO {
     private String mensaje;
     private Integer idPlantilla;

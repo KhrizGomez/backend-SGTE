@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+// Detalle de paso dentro de un flujo, incluyendo etapa y asignacion.
 public class PasoFlujoDetalleResponseDTO {
     private Integer idPaso;
     private Integer ordenPaso;

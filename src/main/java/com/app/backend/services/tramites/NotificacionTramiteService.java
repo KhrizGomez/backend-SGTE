@@ -1,5 +1,6 @@
 package com.app.backend.services.tramites;
 
+// Contrato de eventos de notificacion ligados al ciclo de vida de solicitudes.
 public interface NotificacionTramiteService {
 
     void notificarSolicitudCreada(Integer idSolicitud);

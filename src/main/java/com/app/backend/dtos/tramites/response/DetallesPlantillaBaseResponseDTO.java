@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+// Proyeccion base de plantilla usada como insumo para armar el detalle extendido.
 public class DetallesPlantillaBaseResponseDTO {
     private Integer idPlantilla;
     private String nombrePlantilla;

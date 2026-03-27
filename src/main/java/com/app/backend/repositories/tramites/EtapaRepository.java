@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
+// Etapas de flujo consultables por ID o por codigo funcional.
 public interface EtapaRepository extends JpaRepository<Etapa, Integer> {
     Optional<Etapa> findByCodigo(String codigo);
 }

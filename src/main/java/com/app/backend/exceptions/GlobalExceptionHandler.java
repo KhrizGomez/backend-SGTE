@@ -15,9 +15,11 @@ import java.util.Map;
 
 @Slf4j
 @RestControllerAdvice
+// Centraliza errores del backend para devolver un formato JSON uniforme al frontend.
 public class GlobalExceptionHandler {
 
     private Map<String, Object> buildErrorBody(int status, String error, String message) {
+        // Contrato de error comun para facilitar manejo en cliente y trazabilidad.
         Map<String, Object> body = new HashMap<>();
         body.put("timestamp", LocalDateTime.now().toString());
         body.put("status", status);

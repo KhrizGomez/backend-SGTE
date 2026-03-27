@@ -21,6 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional
 @SuppressWarnings("null")
+// Gestiona el historial cronologico de acciones por solicitud.
 public class SeguimientoSolicitudServiceImpl implements SeguimientoSolicitudService {
 
     private final HistorialSolicitudRepository historialSolicitudRepository;
@@ -36,6 +37,7 @@ public class SeguimientoSolicitudServiceImpl implements SeguimientoSolicitudServ
 
     @Override
     public SeguimientoSolicitudResponseDTO crear(SeguimientoSolicitudResponseDTO dto) {
+        // Inserta un evento de seguimiento enlazado a solicitud/paso/etapa/usuario.
         HistorialSolicitud s = HistorialSolicitud.builder()
                 .solicitud(solicitudRepository.findById(dto.getIdSolicitud()).orElseThrow(() -> new RecursoNoEncontradoException("Solicitud no encontrada: " + dto.getIdSolicitud())))
                 .estado(dto.getEstado())

@@ -17,6 +17,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional
 @SuppressWarnings("null")
+// Catalogo de motivos de rechazo reutilizables en el flujo de aprobacion.
 public class MotivoRechazoServiceImpl implements MotivoRechazoService {
 
     private final MotivoRechazoRepository motivoRechazoRepository;

@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
 @Builder
+// Registro formal de rechazo con motivo, responsable y estado de notificacion.
 public class Rechazo {
 
     @Id

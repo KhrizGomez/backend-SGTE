@@ -16,6 +16,7 @@ import java.util.List;
 @RequestMapping("/api/tramites/etapas")
 @RequiredArgsConstructor
 @CrossOrigin(origins = "http://localhost:4200")
+// Catalogo de etapas reutilizables dentro de los flujos de tramite.
 public class EtapaProcesamientoController {
 
     private final EtapaProcesamientoService etapaProcesamientoService;

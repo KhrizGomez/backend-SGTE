@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+// Request puntual para asignar un usuario encargado a un paso del flujo.
 public class AsignarPasoUsuarioRequestDTO {
     private Integer idUsuarioEncargado;
 }

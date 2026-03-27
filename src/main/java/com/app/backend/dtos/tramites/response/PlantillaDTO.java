@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+    // Proyeccion de consulta para listados filtrados de plantillas.
 public class PlantillaDTO {
     private Integer idplantilla;
     private String nombreplantilla;

@@ -4,6 +4,7 @@ import com.app.backend.dtos.tramites.response.PlazoPlantillaResponseDTO;
 import lombok.NonNull;
 import java.util.List;
 
+// Define ventanas y plazos de recepcion de solicitudes por plantilla.
 public interface PlazoTramiteService {
     List<PlazoPlantillaResponseDTO> listarPorPlantilla(@NonNull Integer idPlantilla);
     PlazoPlantillaResponseDTO obtenerPorId(@NonNull Integer id);

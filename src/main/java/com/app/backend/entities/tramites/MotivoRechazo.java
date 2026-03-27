@@ -8,6 +8,7 @@ import lombok.*;
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
 @Builder
+// Catalogo de razones estandar para justificar rechazos de solicitudes.
 public class MotivoRechazo {
 
     @Id

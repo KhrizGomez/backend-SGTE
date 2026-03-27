@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
+// Categorias de tramite disponibles para clasificacion de plantillas.
 public interface CategoriaRepository extends JpaRepository<Categoria, Integer> {
     List<Categoria> findByEstaActivoTrue();
 }

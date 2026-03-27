@@ -7,6 +7,7 @@ import com.app.backend.dtos.tramites.response.PasoFlujoDetalleResponseDTO;
 
 import java.util.List;
 
+// Operaciones de alto nivel para crear y consultar flujos completos.
 public interface GestionFlujoService {
     List<FlujoTrabajoDetalleResponseDTO> listarFlujosCompletos();
     FlujoTrabajoDetalleResponseDTO obtenerFlujoCompleto(Integer idFlujo);

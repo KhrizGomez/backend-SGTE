@@ -10,6 +10,7 @@ import java.util.List;
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
 @Builder
+// Plantilla base de un tipo de tramite: define categoria, flujo, requisitos y reglas.
 public class PlantillaTramite {
 
     @Id

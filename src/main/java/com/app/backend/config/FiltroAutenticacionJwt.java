@@ -19,6 +19,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 
 @Component
+// Filtro ejecutado una vez por request para poblar el SecurityContext desde un JWT.
 public class FiltroAutenticacionJwt extends OncePerRequestFilter{
     private final IJwtService jwtService;
     private final UserDetailsService userDetailsService;
@@ -35,7 +36,8 @@ public class FiltroAutenticacionJwt extends OncePerRequestFilter{
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
-        
+
+        // Si no hay bearer token, el request continua sin autenticacion.
         final String authHeader = request.getHeader("Authorization");
         final String jwt;
         final String username;
@@ -48,6 +50,7 @@ public class FiltroAutenticacionJwt extends OncePerRequestFilter{
         jwt = authHeader.substring(7);
 
         try {
+            // Se extrae el subject; si el token no es valido o expiro, no rompe el request.
             username = jwtService.extraerUsuario(jwt);
         } catch (io.jsonwebtoken.ExpiredJwtException e) {
             filterChain.doFilter(request, response);
@@ -61,6 +64,7 @@ public class FiltroAutenticacionJwt extends OncePerRequestFilter{
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
 
             if (jwtService.esTokenValido(jwt, userDetails)) {
+                // Registra al usuario autenticado para que servicios posteriores lean el contexto.
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userDetails,
                         null,

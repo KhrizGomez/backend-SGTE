@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+// DTO base de solicitud usado en operaciones CRUD generales.
 public class SolicitudResponseDTO {
     private Integer idSolicitud;
     private String codigoSolicitud;

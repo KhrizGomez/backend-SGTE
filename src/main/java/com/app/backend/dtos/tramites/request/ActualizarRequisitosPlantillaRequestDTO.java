@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+// Reemplazo completo de la lista de requisitos de una plantilla.
 public class ActualizarRequisitosPlantillaRequestDTO {
     private List<RequisitoPlantillaRequestDTO> requisitos;
 }

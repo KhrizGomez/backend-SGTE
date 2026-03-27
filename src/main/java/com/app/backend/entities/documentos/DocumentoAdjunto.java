@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
 @Builder
+// Archivo cargado por el usuario como respaldo de un requisito de solicitud.
 public class DocumentoAdjunto {
 
     @Id

@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
+// Fila de listado de solicitudes vigentes en panel del usuario.
 public class SolicitudesPlantillasVigentesRespuestaDTO {
     private Integer idsolicitud;
     private String codigosolicitud;

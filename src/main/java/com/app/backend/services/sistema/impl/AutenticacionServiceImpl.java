@@ -27,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+// Orquesta el proceso de login y la construccion de claims para JWT.
 public class AutenticacionServiceImpl implements AutenticacionService {
 
         private final CredencialRepository credencialRepository;
@@ -98,6 +99,7 @@ public class AutenticacionServiceImpl implements AutenticacionService {
                 }
                 
                 Map<String, Object> claimsExtras = new HashMap<>();
+                // Claims consumidos por filtros/servicios para autorizacion contextual.
                 claimsExtras.put("idUsuario", usuario.getIdUsuario());
                 claimsExtras.put("rol", rol);
                 claimsExtras.put("idRol", idRol);

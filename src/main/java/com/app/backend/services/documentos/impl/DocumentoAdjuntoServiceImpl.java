@@ -20,6 +20,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional
 @SuppressWarnings("null")
+// Implementa operaciones CRUD de adjuntos vinculados al tramite.
 public class DocumentoAdjuntoServiceImpl implements DocumentoAdjuntoService {
 
     private final DocumentoAdjuntoRepository documentoAdjuntoRepository;

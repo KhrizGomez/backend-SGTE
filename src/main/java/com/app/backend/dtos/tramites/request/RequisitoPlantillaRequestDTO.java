@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+// Estructura de un requisito documental dentro de la configuracion de plantilla.
 public class RequisitoPlantillaRequestDTO {
     private String nombreRequisito;
     private String descripcionRequisito;

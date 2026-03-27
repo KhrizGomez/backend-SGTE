@@ -6,6 +6,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+// DTO de salida para gestion administrativa de plantillas.
 public class TipoPlantillaResponseDTO {
     private Integer idPlantilla;
     private String nombrePlantilla;

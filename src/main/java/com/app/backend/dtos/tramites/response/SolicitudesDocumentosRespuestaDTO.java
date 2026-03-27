@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
+// DTO de documentos adjuntos asociados a una solicitud.
 public class SolicitudesDocumentosRespuestaDTO {
     private Integer iddocumento;
     private String nombreoriginal;

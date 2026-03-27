@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+// Datos persistidos cuando una solicitud es rechazada en el flujo.
 public class RechazoSolicitudRequestDTO {
     private Integer idRechazo;
     private Integer idSolicitud;

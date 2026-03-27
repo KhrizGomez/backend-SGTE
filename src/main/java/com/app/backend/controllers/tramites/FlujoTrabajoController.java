@@ -22,6 +22,7 @@ import java.util.List;
 @RequestMapping("/api/tramites/flujos")
 @RequiredArgsConstructor
 @CrossOrigin(origins = "http://localhost:4200")
+// API para definir y consultar flujos de trabajo de tramites.
 public class FlujoTrabajoController {
 
     private final GestionFlujoService gestionFlujoService;
@@ -38,6 +39,7 @@ public class FlujoTrabajoController {
 
     @PostMapping
     public ResponseEntity<FlujoTrabajoDetalleResponseDTO> crearFlujo(@RequestBody FlujoTrabajoCompletoRequestDTO request) {
+        // Crea flujo + pasos en una sola operacion.
         return ResponseEntity.ok(gestionFlujoService.crearFlujoCompleto(request));
     }
 
@@ -45,6 +47,7 @@ public class FlujoTrabajoController {
     public ResponseEntity<PasoFlujoDetalleResponseDTO> asignarUsuarioPaso(
             @PathVariable Integer idPaso,
             @PathVariable Integer idUsuario) {
+        // Vincula un usuario gestor al paso indicado del flujo.
         AsignarPasoUsuarioRequestDTO request = AsignarPasoUsuarioRequestDTO.builder()
                 .idUsuarioEncargado(idUsuario)
                 .build();

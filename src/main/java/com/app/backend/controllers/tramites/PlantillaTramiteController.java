@@ -28,6 +28,7 @@ import java.util.List;
 @RequestMapping("/api/tramites")
 @RequiredArgsConstructor
 @CrossOrigin(origins = "http://localhost:4200")
+// Endpoints de administracion de plantillas y sus vistas de detalle.
 public class PlantillaTramiteController {
 
     private final DetallesTramiteService detallesTramiteService;
@@ -48,6 +49,7 @@ public class PlantillaTramiteController {
             @RequestParam(required = false) String categoria,
             @RequestParam(required = false) Boolean activo,
             @RequestParam(required = false) String busqueda) {
+        // Devuelve catalogo filtrable de plantillas para panel de tramites.
         return ResponseEntity.ok(plantillaTramiteService.listarPlantillas(categoria, activo, busqueda));
     }
 
@@ -64,6 +66,7 @@ public class PlantillaTramiteController {
 
     @DeleteMapping("/plantillas/eliminar/{id}")
     public ResponseEntity<Void> eliminarPlantilla(@PathVariable Integer id) {
+        // Eliminacion en cascada de plantilla y dependencias de negocio.
         plantillaTramiteService.eliminarCompleto(id);
         return ResponseEntity.noContent().build();
     }

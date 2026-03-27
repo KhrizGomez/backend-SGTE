@@ -8,6 +8,7 @@ import lombok.*;
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
 @Builder
+// Etapa reutilizable del flujo, identificada tambien por un codigo unico.
 public class Etapa {
 
     @Id

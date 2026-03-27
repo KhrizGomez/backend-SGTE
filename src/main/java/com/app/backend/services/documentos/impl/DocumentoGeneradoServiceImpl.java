@@ -19,6 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional
 @SuppressWarnings("null")
+// Implementa operaciones CRUD de documentos finales generados por el flujo.
 public class DocumentoGeneradoServiceImpl implements DocumentoGeneradoService {
 
     private final DocumentoGeneradoRepository documentoGeneradoRepository;

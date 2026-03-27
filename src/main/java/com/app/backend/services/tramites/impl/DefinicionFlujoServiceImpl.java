@@ -17,6 +17,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional
 @SuppressWarnings("null")
+// CRUD basico de definiciones de flujo (metadatos sin pasos).
 public class DefinicionFlujoServiceImpl implements DefinicionFlujoService {
 
     private final FlujoTrabajoRepository flujoTrabajoRepository;

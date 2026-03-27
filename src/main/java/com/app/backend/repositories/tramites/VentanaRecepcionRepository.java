@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
+// Ventanas temporales de recepcion de solicitudes por plantilla.
 public interface VentanaRecepcionRepository extends JpaRepository<VentanaRecepcion, Integer> {
     List<VentanaRecepcion> findByPlantillaIdPlantilla(Integer idPlantilla);
     void deleteByPlantillaIdPlantilla(Integer idPlantilla);

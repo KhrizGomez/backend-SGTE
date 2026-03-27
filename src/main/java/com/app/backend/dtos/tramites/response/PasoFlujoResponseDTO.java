@@ -6,6 +6,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+// DTO basico de paso de flujo para operaciones CRUD.
 public class PasoFlujoResponseDTO {
     private Integer idPaso;
     private Integer idFlujo;

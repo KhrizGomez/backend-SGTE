@@ -17,11 +17,14 @@ import lombok.RequiredArgsConstructor;
 
 @Configuration
 @RequiredArgsConstructor
+// Configura los componentes base de autenticacion para Spring Security.
+// Este archivo conecta credenciales en BD con el modelo UserDetails.
 public class ConfigAplicacion {
     private final CredencialRepository credencialRepository;
 
     @Bean
     public UserDetailsService userDetailsService() {
+        // Traduce la credencial propia del dominio al UserDetails de Spring.
         return username -> credencialRepository.findByNombreUsuario(username)
                 .map(credencial -> {
                     String rol = credencial.getUsuario().getRoles().stream()
@@ -40,6 +43,7 @@ public class ConfigAplicacion {
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
+        // Proveedor basado en DAO que usa el UserDetailsService anterior.
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(userDetailsService());
         authProvider.setPasswordEncoder(passwordEncoder());       
         return authProvider;
@@ -48,6 +52,8 @@ public class ConfigAplicacion {
     @SuppressWarnings("deprecation")
     @Bean
     public PasswordEncoder passwordEncoder() {
+        // Nota: NoOpPasswordEncoder se mantiene por compatibilidad actual.
+        // En produccion se recomienda BCryptPasswordEncoder.
         return org.springframework.security.crypto.password.NoOpPasswordEncoder.getInstance();
     }
 

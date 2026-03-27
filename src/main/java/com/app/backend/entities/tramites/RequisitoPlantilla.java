@@ -8,6 +8,7 @@ import lombok.*;
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
 @Builder
+// Requisito documental que una solicitud debe adjuntar segun su plantilla.
 public class RequisitoPlantilla {
 
     @Id

@@ -5,6 +5,7 @@ import lombok.NonNull;
 
 import java.util.List;
 
+// Expone vistas de detalle de plantillas para paneles y consultas.
 public interface DetallesTramiteService {
     List<DetallesPlantillaResponseDTO> listarTodos();
     List<DetallesPlantillaResponseDTO> listarPorCarrera(@NonNull Integer idCarrera);

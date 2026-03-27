@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
+// Acceso a registros de rechazo asociados a una solicitud.
 public interface RechazoRepository extends JpaRepository<Rechazo, Integer> {
     List<Rechazo> findBySolicitudIdSolicitud(Integer idSolicitud);
 }

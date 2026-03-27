@@ -8,6 +8,7 @@ import lombok.*;
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
 @Builder
+// Reglas de transicion entre pasos de un flujo con banderas de negocio.
 public class TransicionFlujo {
 
     @Id

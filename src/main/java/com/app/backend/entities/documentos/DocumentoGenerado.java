@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
 @Builder
+// Documento emitido por el sistema durante o al finalizar el tramite.
 public class DocumentoGenerado {
 
     @Id

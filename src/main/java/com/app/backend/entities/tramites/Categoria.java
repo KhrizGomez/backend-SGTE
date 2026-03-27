@@ -9,6 +9,7 @@ import java.util.List;
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
 @Builder
+// Categoria funcional para agrupar plantillas y motivos de rechazo.
 public class Categoria {
 
     @Id

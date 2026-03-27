@@ -4,6 +4,7 @@ import com.app.backend.dtos.tramites.response.EtapaProcesamientoResponseDTO;
 import lombok.NonNull;
 import java.util.List;
 
+// CRUD del catalogo de etapas de procesamiento.
 public interface EtapaProcesamientoService {
     List<EtapaProcesamientoResponseDTO> listarTodas();
     EtapaProcesamientoResponseDTO obtenerPorId(@NonNull Integer id);

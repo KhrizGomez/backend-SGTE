@@ -43,14 +43,21 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
 @SuppressWarnings("null")
+// Servicio central del modulo de coordinacion para gestionar solicitudes de tramite.
+// Aqui vive la logica de creacion, detalle, aprobacion/rechazo y notificaciones.
 public class SolicitudServiceImpl implements SolicitudService {
 
     private final SolicitudRepository solicitudRepository;
@@ -151,6 +158,7 @@ public class SolicitudServiceImpl implements SolicitudService {
 
     @Override
     public void crearSolicitudConDocumentos(CrearSolicitudRequestDTO dto, List<MultipartFile> archivos) {
+        // Flujo principal de ingreso de una solicitud desde el portal del estudiante.
         // 1. Extraer idUsuario e idCarrera del JWT
         Integer idUsuario = extraerIdUsuarioAutenticado();
         Integer idCarrera = extraerIdCarreraDelToken();
@@ -238,6 +246,7 @@ public class SolicitudServiceImpl implements SolicitudService {
     }
 
     private Integer extraerIdUsuarioAutenticado() {
+        // Prioriza idUsuario del JWT y, como respaldo, intenta resolverlo del SecurityContext.
         String encaAuth = request.getHeader("Authorization");
         if (encaAuth != null && encaAuth.startsWith("Bearer ")) {
             try {
@@ -296,16 +305,93 @@ public class SolicitudServiceImpl implements SolicitudService {
     @Transactional(readOnly = true)
     public List<SolicitudesPlantillasVigentesRespuestaDTO> listarPlantillasVigente() {
         try {
+            // Reconstruye la vista de "vigentes" unicamente con entidades JPA.
             Integer idUsuario = null;
             String encaAuth = request.getHeader("Authorization");
             if (encaAuth != null && encaAuth.startsWith("Bearer ")) {
                 String jwt = encaAuth.substring(7);
                 idUsuario = jwtService.extraerIdUsuario(jwt);
             }
-            return solicitudRepository.listarPlantillasVigentes(idUsuario);
+            if (idUsuario == null) {
+                return List.of();
+            }
+
+            List<Solicitud> solicitudes = solicitudRepository.findByUsuarioIdUsuario(idUsuario).stream()
+                    .filter(this::esSolicitudVigente)
+                    .toList();
+
+            Map<Integer, Long> totalEtapasPorFlujo = new HashMap<>();
+            for (Solicitud solicitud : solicitudes) {
+                if (solicitud.getPlantilla() == null || solicitud.getPlantilla().getFlujoTrabajo() == null) {
+                    continue;
+                }
+                Integer idFlujo = solicitud.getPlantilla().getFlujoTrabajo().getIdFlujo();
+                totalEtapasPorFlujo.computeIfAbsent(idFlujo,
+                        key -> (long) pasoFlujoRepository.findByFlujoTrabajoIdFlujoOrderByOrdenPasoAsc(key).size());
+            }
+
+            return solicitudes.stream()
+                    .sorted((a, b) -> {
+                        LocalDateTime fechaA = a.getFechaCreacion();
+                        LocalDateTime fechaB = b.getFechaCreacion();
+                        if (fechaA == null && fechaB == null) {
+                            return 0;
+                        }
+                        if (fechaA == null) {
+                            return 1;
+                        }
+                        if (fechaB == null) {
+                            return -1;
+                        }
+                        return fechaB.compareTo(fechaA);
+                    })
+                    .map(s -> {
+                        Integer etapaActual = s.getPasoActual() != null ? s.getPasoActual().getOrdenPaso() : null;
+                        Long totalEtapas = null;
+                        if (s.getPlantilla() != null && s.getPlantilla().getFlujoTrabajo() != null) {
+                            totalEtapas = totalEtapasPorFlujo.get(s.getPlantilla().getFlujoTrabajo().getIdFlujo());
+                        }
+
+                        return new SolicitudesPlantillasVigentesRespuestaDTO(
+                                s.getIdSolicitud(),
+                                s.getCodigoSolicitud(),
+                                s.getPlantilla() != null ? s.getPlantilla().getNombrePlantilla() : null,
+                                s.getPlantilla() != null && s.getPlantilla().getCategoria() != null
+                                        ? s.getPlantilla().getCategoria().getNombreCategoria()
+                                        : null,
+                                s.getPrioridad(),
+                                s.getEstadoActual(),
+                                toDate(s.getFechaCreacion()),
+                                toDate(s.getFechaEstimadaFin()),
+                                etapaActual,
+                                totalEtapas);
+                    })
+                    .toList();
         } catch (Exception e) {
             throw new RuntimeException("Error al listar las solicitudes de plantillas: " + e.getMessage());
         }
+    }
+
+    private boolean esSolicitudVigente(Solicitud solicitud) {
+        if (solicitud.getEstadoActual() == null) {
+            return true;
+        }
+        String estado = solicitud.getEstadoActual().toLowerCase();
+        return !"finalizado".equals(estado) && !"rechazado".equals(estado);
+    }
+
+    private Date toDate(LocalDateTime fecha) {
+        if (fecha == null) {
+            return null;
+        }
+        return Date.from(fecha.atZone(ZoneId.systemDefault()).toInstant());
+    }
+
+    private Date toDate(LocalDate fecha) {
+        if (fecha == null) {
+            return null;
+        }
+        return Date.from(fecha.atStartOfDay(ZoneId.systemDefault()).toInstant());
     }
 
     @Override
@@ -329,6 +415,7 @@ public class SolicitudServiceImpl implements SolicitudService {
     }
 
     private SolicitudDetalleResponseDTO toDetalleDTO(Solicitud s) {
+        // Ensambla una vista completa para seguimiento (flujo, historial y adjuntos).
         // Calcular etapa actual, total y pasos del flujo
         int totalEtapas = 0;
         int etapaActual = 0;
@@ -448,6 +535,7 @@ public class SolicitudServiceImpl implements SolicitudService {
 
     @Override
     public void aprobarPasoActual(AccionPasoRequestDTO dto) {
+        // Cambia el estado de la solicitud al aprobar un paso y registra historial.
         Integer idUsuario = extraerIdUsuarioAutenticado();
         if (idUsuario == null) {
             throw new RuntimeException("No se encontró un usuario autenticado");
@@ -524,6 +612,7 @@ public class SolicitudServiceImpl implements SolicitudService {
 
     @Override
     public void rechazarSolicitud(AccionPasoRequestDTO dto) {
+        // Cierra la solicitud como rechazada y guarda trazabilidad de la decision.
         Integer idUsuario = extraerIdUsuarioAutenticado();
         if (idUsuario == null) {
             throw new RuntimeException("No se encontró un usuario autenticado");
@@ -585,6 +674,7 @@ public class SolicitudServiceImpl implements SolicitudService {
     }
 
     private void validarRolUsuarioEnPaso(Usuario usuario, PasoFlujo paso) {
+        // El control de autorizacion por etapa se valida contra el rol embebido en JWT.
         if (paso.getRolRequerido() == null) return;
 
         Integer idRolDelToken = extraerIdRolDelToken();
@@ -614,6 +704,7 @@ public class SolicitudServiceImpl implements SolicitudService {
     }
 
     private String generarCodigoSolicitud() {
+        // Formato esperado: SOL-AAAA-#####
         String prefijo = "SOL";
         String anio = String.valueOf(java.time.Year.now().getValue());
         long count = solicitudRepository.count() + 1;

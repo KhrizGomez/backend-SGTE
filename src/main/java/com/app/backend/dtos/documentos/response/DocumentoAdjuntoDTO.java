@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+// DTO de salida de adjuntos con metadata de validacion y subida.
 public class DocumentoAdjuntoDTO {
     private Integer idDocumento;
     private Integer idSolicitud;

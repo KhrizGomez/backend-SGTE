@@ -36,6 +36,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Transactional
 @SuppressWarnings("null")
+// Gestion de plantillas: alta, edicion, requisitos y listado filtrado para estudiantes.
 public class TipoTramiteServiceImpl implements TipoTramiteService {
 
     private final PlantillaTramiteRepository plantillaTramiteRepository;
@@ -77,6 +78,7 @@ public class TipoTramiteServiceImpl implements TipoTramiteService {
 
     @Override
     public TipoPlantillaResponseDTO crear(PlantillaRequestDTO dto) {
+        // Crea la cabecera de plantilla y luego persiste requisitos asociados.
         PlantillaTramite t = PlantillaTramite.builder()
                 .nombrePlantilla(dto.getNombrePlantilla())
                 .descripcionPlantilla(dto.getDescripcionPlantilla())
@@ -153,6 +155,7 @@ public class TipoTramiteServiceImpl implements TipoTramiteService {
 
     @Override
     public void eliminarCompleto(@NonNull Integer id) {
+        // Eliminacion funcional: limpia rechazos, solicitudes, ventanas y requisitos antes de borrar plantilla.
         PlantillaTramite plantilla = plantillaTramiteRepository.findById(id)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Plantilla no encontrada con id: " + id));
 
@@ -205,6 +208,7 @@ public class TipoTramiteServiceImpl implements TipoTramiteService {
     @Transactional(readOnly = true)
     public List<PlantillaResponseDTO> listarPlantillas(String categoria, Boolean activo,
             String busqueda) {
+        // Aplica filtros de negocio usando contexto del JWT (externo/interno y carrera).
         Boolean esExternoCalculado = null;
         Integer idCarreraCalculado = null;
 

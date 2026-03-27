@@ -20,6 +20,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional
 @SuppressWarnings("null")
+// CRUD de pasos dentro de un flujo, incluyendo rol requerido y encargado.
 public class PasoFlujoServiceImpl implements PasoFlujoService {
 
     private final PasoFlujoRepository pasoFlujoRepository;

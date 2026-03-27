@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
+// Repositorio central de plantillas.
+// Incluye proyecciones DTO para vistas de detalle y filtros avanzados.
 public interface PlantillaTramiteRepository extends JpaRepository<PlantillaTramite, Integer> {
     List<PlantillaTramite> findByEstaActivoTrue();
     List<PlantillaTramite> findByCategoriaIdCategoria(Integer idCategoria);
@@ -56,6 +58,7 @@ public interface PlantillaTramiteRepository extends JpaRepository<PlantillaTrami
                )
         ORDER BY p.idPlantilla
         """)
+    // Base de detalle para dashboard general de plantillas.
     List<DetallesPlantillaBaseResponseDTO> findAllDetallesBase();
 
     @Query("""
@@ -187,6 +190,7 @@ public interface PlantillaTramiteRepository extends JpaRepository<PlantillaTrami
     List<DetallesPlantillaBaseResponseDTO> findAllDetallesBaseByFacultad(@Param("idFacultad") Integer idFacultad);
 
     @Query(value = "Select * from tramites.fn_sl_plantillastramites(:categoria, :activo, :busqueda, :esExterno, :idCarrera)", nativeQuery = true)
+    // Funcion SQL legacy usada para listado filtrado de plantillas en catalogo.
     List<PlantillaDTO> listarPlantillas(
             @Param("categoria") String categoria,
             @Param("activo") Boolean activo,

@@ -9,6 +9,7 @@ import com.app.backend.dtos.tramites.response.TipoPlantillaResponseDTO;
 import lombok.NonNull;
 import java.util.List;
 
+// Contrato de administracion de plantillas de tramite.
 public interface TipoTramiteService {
     List<TipoPlantillaResponseDTO> listarTodos();
     List<TipoPlantillaResponseDTO> listarActivos();

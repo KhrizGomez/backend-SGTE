@@ -11,12 +11,14 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/sistema/autenticacion")
 @RequiredArgsConstructor
 @CrossOrigin(origins = "http://localhost:4200")
+// Expone endpoints de login y delega la logica de autenticacion al servicio.
 public class AutenticacionController {
 
     private final AutenticacionService autenticacionService;
     
     @PostMapping("/iniciar-sesion")
     public ResponseEntity<AutenticacionRespuestaDTO> iniciarSesion(@RequestBody AutenticacionRequestDTO peticion) {
+        // El servicio valida usuario/contrasena y construye el JWT de sesion.
         AutenticacionRespuestaDTO respuesta = autenticacionService.iniciarSesion(peticion);
         return ResponseEntity.ok(respuesta);
     }

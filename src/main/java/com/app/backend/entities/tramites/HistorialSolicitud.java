@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
 @Builder
+// Bitacora de eventos y cambios de estado de cada solicitud.
 public class HistorialSolicitud {
 
     @Id

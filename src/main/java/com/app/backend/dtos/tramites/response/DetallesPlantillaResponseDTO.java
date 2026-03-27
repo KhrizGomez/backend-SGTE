@@ -12,6 +12,7 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
+// Detalle expandido de plantilla para vistas de configuracion y consulta.
 public class DetallesPlantillaResponseDTO {
     private Integer idPlantilla;
     private String nombrePlantilla;

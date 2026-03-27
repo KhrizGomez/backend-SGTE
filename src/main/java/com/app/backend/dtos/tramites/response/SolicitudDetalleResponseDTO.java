@@ -9,6 +9,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+// Vista consolidada de una solicitud para pantalla de seguimiento completo.
 public class SolicitudDetalleResponseDTO {
     private Integer idSolicitud;
     private String codigoSolicitud;
@@ -35,6 +36,7 @@ public class SolicitudDetalleResponseDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
+    // Representa un paso del flujo con datos de etapa y responsable.
     public static class PasoFlujoItemDTO {
         private Integer idPaso;
         private Integer ordenPaso;
@@ -51,6 +53,7 @@ public class SolicitudDetalleResponseDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
+    // Item del historial cronologico de acciones realizadas.
     public static class HistorialItemDTO {
         private Integer idHistorial;
         private String nombreEtapa;
@@ -69,6 +72,7 @@ public class SolicitudDetalleResponseDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
+    // Metadatos de un documento adjunto asociado a la solicitud.
     public static class DocumentoItemDTO {
         private Integer idDocumento;
         private String nombreOriginal;

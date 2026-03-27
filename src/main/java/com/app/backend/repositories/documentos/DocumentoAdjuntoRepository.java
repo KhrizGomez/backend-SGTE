@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
+// Persistencia de archivos adjuntos subidos por el usuario durante el tramite.
 public interface DocumentoAdjuntoRepository extends JpaRepository<DocumentoAdjunto, Integer> {
     List<DocumentoAdjunto> findBySolicitudIdSolicitud(Integer idSolicitud);
 }

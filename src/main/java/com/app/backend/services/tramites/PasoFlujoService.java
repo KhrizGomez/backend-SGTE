@@ -4,6 +4,7 @@ import com.app.backend.dtos.tramites.response.PasoFlujoResponseDTO;
 import lombok.NonNull;
 import java.util.List;
 
+// Contrato CRUD para pasos individuales de un flujo.
 public interface PasoFlujoService {
     List<PasoFlujoResponseDTO> listarPorFlujo(@NonNull Integer idFlujo);
     PasoFlujoResponseDTO obtenerPorId(@NonNull Integer id);

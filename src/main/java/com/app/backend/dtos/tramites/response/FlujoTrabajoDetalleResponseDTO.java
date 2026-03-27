@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+// Resumen de flujo con su lista de pasos para gestion en coordinacion.
 public class FlujoTrabajoDetalleResponseDTO {
     private Integer idFlujo;
     private String nombreFlujo;

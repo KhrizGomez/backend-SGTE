@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+// Paso enviado dentro del alta de flujo, con rol y responsable opcionales.
 public class PasoFlujoCompletoRequestDTO {
     private Integer idEtapa;
     private EtapaRequestDTO etapa;

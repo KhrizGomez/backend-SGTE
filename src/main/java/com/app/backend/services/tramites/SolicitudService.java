@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
+// Contrato principal de gestion de solicitudes en coordinacion.
 public interface SolicitudService {
     List<SolicitudResponseDTO> listarTodas();
 

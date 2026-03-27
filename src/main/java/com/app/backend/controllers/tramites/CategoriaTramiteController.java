@@ -15,6 +15,7 @@ import java.util.List;
 @RequestMapping("/api/tramites/categorias")
 @RequiredArgsConstructor
 @CrossOrigin(origins = "http://localhost:4200")
+// Catalogo de categorias para clasificar plantillas de tramite.
 public class CategoriaTramiteController {
 
     private final CategoriaTramiteService categoriaTramiteService;
@@ -26,6 +27,7 @@ public class CategoriaTramiteController {
 
     @GetMapping("/activas")
     public ResponseEntity<List<CategoriaPlantillaResponseDTO>> listarCategoriasActivas() {
+        // Endpoint comun para formularios que solo deben mostrar opciones habilitadas.
         return ResponseEntity.ok(categoriaTramiteService.listarActivas());
     }
 }

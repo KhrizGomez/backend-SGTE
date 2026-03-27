@@ -23,6 +23,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 @SuppressWarnings("")
+// Construye vistas ricas de plantilla (pasos + requisitos + ventana) para UI.
 public class DetallesTramiteServiceImpl implements DetallesTramiteService {
 
     private final PlantillaTramiteRepository plantillaTramiteRepository;
@@ -62,6 +63,7 @@ public class DetallesTramiteServiceImpl implements DetallesTramiteService {
         }
 
         private DetallesPlantillaResponseDTO buildDetalle(DetallesPlantillaBaseResponseDTO base) {
+        // Completa los datos base con relaciones dinamicas de flujo y requisitos.
 
         List<PasoFlujoPlantillaResponseDTO> pasos = base.getIdFlujo() == null
                 ? List.of()

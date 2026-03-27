@@ -21,6 +21,7 @@ import java.util.Map;
 @RequestMapping("/api/solicitudes")
 @RequiredArgsConstructor
 @CrossOrigin(origins = "http://localhost:4200")
+// API principal del ciclo de vida de solicitudes de tramite.
 public class SolicitudTramiteController {
 
     private final SolicitudService solicitudService;
@@ -29,6 +30,7 @@ public class SolicitudTramiteController {
     public ResponseEntity<SolicitudCreadaResponseDTO> crearSolicitud(
             @Valid @RequestPart("solicitud") CrearSolicitudRequestDTO solicitud,
             @RequestPart(value = "archivos", required = false) List<MultipartFile> archivos) {
+        // Crea solicitud y opcionalmente registra documentos adjuntos en una sola operacion.
         solicitudService.crearSolicitudConDocumentos(solicitud, archivos);
         return ResponseEntity.status(HttpStatus.CREATED).body(SolicitudCreadaResponseDTO.builder()
                 .mensaje("Solicitud creada exitosamente")
@@ -39,6 +41,7 @@ public class SolicitudTramiteController {
 
     @GetMapping("/mis-solicitudes")
     public ResponseEntity<List<SolicitudDetalleResponseDTO>> listarMisSolicitudes() {
+        // Lista solicitudes del usuario autenticado con detalle para panel principal.
         return ResponseEntity.ok(solicitudService.listarSolicitudesUsuarioAutenticado());
     }
 
@@ -54,12 +57,14 @@ public class SolicitudTramiteController {
 
     @PostMapping("/aprobar")
     public ResponseEntity<Map<String, String>> aprobar(@Valid @RequestBody AccionPasoRequestDTO dto) {
+        // Registra aprobacion del paso actual y avanza el flujo cuando corresponde.
         solicitudService.aprobarPasoActual(dto);
         return ResponseEntity.ok(Map.of("mensaje", "Paso aprobado exitosamente"));
     }
 
     @PostMapping("/rechazar")
     public ResponseEntity<Map<String, String>> rechazar(@Valid @RequestBody AccionPasoRequestDTO dto) {
+        // Marca la solicitud como rechazada y registra motivo/comentarios en historial.
         solicitudService.rechazarSolicitud(dto);
         return ResponseEntity.ok(Map.of("mensaje", "Solicitud rechazada exitosamente"));
     }

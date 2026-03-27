@@ -17,6 +17,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 
 @Service
+// Servicio central para emitir y validar JWT usados en autenticacion/autorizacion.
 public class JwtServiceImpl implements IJwtService {
     @Value("${jwt.secret}")
     private String secretKey;
@@ -25,6 +26,7 @@ public class JwtServiceImpl implements IJwtService {
     private long jwtExpiration;
 
     private SecretKey obtenerClaveInicioSesion() {
+        // Convierte la clave configurada a la llave HMAC usada por jjwt.
         return Keys.hmacShaKeyFor(secretKey.getBytes());
     }
 
@@ -55,6 +57,7 @@ public class JwtServiceImpl implements IJwtService {
 
     @Override
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
+        // Todo acceso a claims pasa por este punto para mantener una unica ruta de parseo.
         final Claims claims = Jwts.parser()
                 .verifyWith(obtenerClaveInicioSesion())
                 .build()
@@ -65,6 +68,8 @@ public class JwtServiceImpl implements IJwtService {
 
     @Override
     public String generarToken(Map<String, Object> extraClaims,String username) {
+        // El token incorpora claims de contexto (rol, carrera, facultad, etc.)
+        // para reducir consultas extra durante la sesion.
         return Jwts.builder()
                 .claims(extraClaims)
                 .subject(username)

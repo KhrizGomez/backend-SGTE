@@ -17,6 +17,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional
 @SuppressWarnings("null")
+// Administra ventanas de recepcion y reglas de extension por plantilla.
 public class PlazoTramiteServiceImpl implements PlazoTramiteService {
 
     private final VentanaRecepcionRepository ventanaRecepcionRepository;

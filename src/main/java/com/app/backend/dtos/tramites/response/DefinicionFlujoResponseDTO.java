@@ -6,6 +6,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+// DTO liviano para CRUD de definiciones de flujo.
 public class DefinicionFlujoResponseDTO {
     private Integer idFlujo;
     private String nombreFlujo;

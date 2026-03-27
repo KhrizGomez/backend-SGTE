@@ -6,6 +6,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+// Describe una transicion entre pasos de un flujo.
 public class TransicionFlujoResponseDTO {
     private Integer idTransicion;
     private Integer idFlujo;

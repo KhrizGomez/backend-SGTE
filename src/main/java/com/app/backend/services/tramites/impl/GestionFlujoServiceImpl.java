@@ -28,6 +28,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional
 @SuppressWarnings("null")
+// Orquesta la gestion de flujos completos (flujo + pasos + responsables).
 public class GestionFlujoServiceImpl implements GestionFlujoService {
 
     private final FlujoTrabajoRepository flujoTrabajoRepository;
@@ -52,6 +53,7 @@ public class GestionFlujoServiceImpl implements GestionFlujoService {
 
     @Override
     public FlujoTrabajoDetalleResponseDTO crearFlujoCompleto(FlujoTrabajoCompletoRequestDTO request) {
+        // Inserta primero el flujo y luego sus pasos para mantener integridad referencial.
         FlujoTrabajo flujo = FlujoTrabajo.builder()
                 .nombreFlujo(request.getNombreFlujo())
                 .descripcion(request.getDescripcionFlujo())
@@ -92,6 +94,7 @@ public class GestionFlujoServiceImpl implements GestionFlujoService {
     }
 
     private PasoFlujo crearPaso(FlujoTrabajo flujo, PasoFlujoCompletoRequestDTO request) {
+        // Permite usar una etapa existente o crearla en linea dentro del alta del flujo.
         Etapa etapa = obtenerOCrearEtapa(request.getIdEtapa(), request.getEtapa());
 
         PasoFlujo paso = PasoFlujo.builder()

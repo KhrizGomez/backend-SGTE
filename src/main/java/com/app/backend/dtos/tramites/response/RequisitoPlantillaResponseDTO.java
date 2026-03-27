@@ -6,6 +6,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+// DTO de requisito documental usado en configuracion y detalle de plantilla.
 public class RequisitoPlantillaResponseDTO {
     private Integer idRequisito;
     private Integer idPlantilla;

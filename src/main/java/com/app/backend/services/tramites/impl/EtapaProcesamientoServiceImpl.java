@@ -16,6 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional
 @SuppressWarnings("null")
+// Catalogo de etapas de procesamiento reutilizadas por los flujos.
 public class EtapaProcesamientoServiceImpl implements EtapaProcesamientoService {
 
     private final EtapaRepository etapaRepository;

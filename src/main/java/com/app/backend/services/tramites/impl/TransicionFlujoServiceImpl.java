@@ -18,6 +18,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional
 @SuppressWarnings("null")
+// Administra transiciones entre pasos de un flujo y sus banderas de negocio.
 public class TransicionFlujoServiceImpl implements TransicionFlujoService {
 
     private final TransicionFlujoRepository transicionFlujoRepository;

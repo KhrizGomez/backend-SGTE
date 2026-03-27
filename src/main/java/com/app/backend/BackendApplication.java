@@ -6,6 +6,8 @@ import org.springframework.scheduling.annotation.EnableAsync;
 
 @SpringBootApplication
 @EnableAsync
+// Punto de entrada del backend. EnableAsync permite ejecutar procesos no bloqueantes,
+// por ejemplo notificaciones por correo/WhatsApp sin detener el request principal.
 public class BackendApplication {
 
 	public static void main(String[] args) {

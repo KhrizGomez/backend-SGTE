@@ -28,6 +28,7 @@ import java.util.List;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+// Orquesta notificaciones del flujo de tramites por correo, WhatsApp y registro interno.
 public class NotificacionTramiteServiceImpl implements NotificacionTramiteService {
 
     private final ICorreoService correoService;
@@ -46,6 +47,7 @@ public class NotificacionTramiteServiceImpl implements NotificacionTramiteServic
     @Transactional
     @Override
     public void notificarSolicitudCreada(Integer idSolicitud) {
+        // Evento inicial: confirma al estudiante y alerta al primer gestor del flujo.
         try {
             Solicitud solicitud = solicitudRepository.findById(idSolicitud).orElse(null);
             if (solicitud == null) return;
@@ -89,6 +91,7 @@ public class NotificacionTramiteServiceImpl implements NotificacionTramiteServic
     @Override
     public void notificarPasoAprobado(Integer idSolicitud, Integer idPasoAprobado,
                                        Integer idAprobador, Integer idSiguientePaso) {
+        // Evento intermedio/final: informa avance de etapa y posible finalizacion.
         try {
             Solicitud solicitud = solicitudRepository.findById(idSolicitud).orElse(null);
             PasoFlujo pasoAprobado = pasoFlujoRepository.findById(idPasoAprobado).orElse(null);
@@ -226,6 +229,7 @@ public class NotificacionTramiteServiceImpl implements NotificacionTramiteServic
     // ========================
 
     private void enviarPorCanalesHabilitados(Usuario usuario, String asuntoCorreo, String cuerpoCorreo, String mensajeWhatsApp) {
+        // Respeta preferencias del usuario y aplica defaults si no existe configuracion.
         boolean enviarEmail = true;
         boolean enviarWhatsApp = true; // Por defecto enviar si tiene teléfono
 
@@ -308,6 +312,7 @@ public class NotificacionTramiteServiceImpl implements NotificacionTramiteServic
     }
 
     private void persistirNotificacion(Usuario usuario, Solicitud solicitud, String codigoTipo, String titulo, String mensaje) {
+        // Guarda la notificacion en BD para bandeja interna y trazabilidad.
         try {
             TipoNotificacion tipo = tipoNotificacionRepository.findByCodigoTipo(codigoTipo).orElse(null);
             if (tipo == null) {

@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
+// Define la cadena de filtros de seguridad (JWT + politica stateless).
 public class ConfigSeguridad {
       private final FiltroAutenticacionJwt filtroAutenticacionJwt;
       private final AuthenticationProvider autenticacionProvider;
@@ -24,6 +25,8 @@ public class ConfigSeguridad {
             http.csrf(AbstractHttpConfigurer::disable)
                   .cors(cors -> cors.configure(http))
                   .authorizeHttpRequests(auth -> auth
+                        // Actualmente los endpoints se exponen en modo abierto.
+                        // El filtro JWT sigue resolviendo identidad para logica de negocio.
                         .requestMatchers("/api/**").permitAll()
                         .requestMatchers("/api/sistema/autenticacion/**").permitAll()
                         .requestMatchers("/api/sistema/registro/**").permitAll()

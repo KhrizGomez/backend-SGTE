@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
+// Catalogo de motivos de rechazo (activos/inactivos).
 public interface MotivoRechazoRepository extends JpaRepository<MotivoRechazo, Integer> {
     Optional<MotivoRechazo> findByCodigoMotivo(String codigoMotivo);
     List<MotivoRechazo> findByEstaActivoTrue();

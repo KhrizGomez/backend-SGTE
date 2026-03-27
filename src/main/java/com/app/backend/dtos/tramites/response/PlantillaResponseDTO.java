@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
+// Vista de catalogo de plantilla con resumen y requisitos visibles.
 public class PlantillaResponseDTO {
     private Integer idplantilla;
     private String nombreplantilla;

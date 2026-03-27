@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+// Payload de actualizacion de metadatos de plantilla existente.
 public class PlantillaEditarRequestDTO {
     private String nombrePlantilla;
     private String descripcionPlantilla;

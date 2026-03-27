@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+// DTO de seguimiento que representa una entrada del historial de solicitud.
 public class SeguimientoSolicitudResponseDTO {
     private Integer idSeguimiento;
     private Integer idSolicitud;

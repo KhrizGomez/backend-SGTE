@@ -14,6 +14,7 @@ import lombok.*;
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
 @Builder
+// Paso individual dentro de un flujo con su orden, rol requerido y SLA.
 public class PasoFlujo {
 
     @Id

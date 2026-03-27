@@ -6,6 +6,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+// Representa una etapa del flujo en respuestas de configuracion.
 public class EtapaProcesamientoResponseDTO {
     private Integer idEtapa;
     private String nombreEtapa;

@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+// DTO de salida para documentos oficiales o intermedios generados por el sistema.
 public class DocumentoGeneradoDTO {
     private Integer idGenerado;
     private Integer idSolicitud;

@@ -13,6 +13,8 @@ import java.util.List;
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
 @Builder
+// Entidad central del dominio: representa una solicitud iniciada por un usuario
+// y su estado dentro del flujo de tramite.
 public class Solicitud {
 
     @Id

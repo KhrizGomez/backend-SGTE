@@ -10,6 +10,7 @@ import java.time.LocalDate;
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
 @Builder
+// Define el periodo en que una plantilla puede recibir solicitudes.
 public class VentanaRecepcion {
 
     @Id

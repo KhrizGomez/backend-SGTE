@@ -6,6 +6,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+// DTO de salida para catalogo de motivos de rechazo.
 public class MotivoRechazoResponseDTO {
     private Integer idMotivo;
     private String codigoMotivo;

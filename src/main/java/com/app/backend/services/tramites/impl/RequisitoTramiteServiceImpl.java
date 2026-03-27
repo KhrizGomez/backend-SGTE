@@ -17,6 +17,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional
 @SuppressWarnings("null")
+// CRUD de requisitos documentales exigidos por cada plantilla.
 public class RequisitoTramiteServiceImpl implements RequisitoTramiteService {
 
     private final RequisitoPlantillaRepository requisitoPlantillaRepository;

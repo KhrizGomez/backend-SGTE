@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+// Definicion minima de etapa para crearla en linea desde gestion de flujo.
 public class EtapaRequestDTO {
     private String nombreEtapa;
     private String descripcionEtapa;

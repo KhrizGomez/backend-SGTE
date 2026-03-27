@@ -20,6 +20,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional
 @SuppressWarnings("null")
+// Maneja el registro formal de rechazos y su trazabilidad asociada.
 public class RechazoSolicitudServiceImpl implements RechazoSolicitudService {
 
     private final RechazoRepository rechazoRepository;

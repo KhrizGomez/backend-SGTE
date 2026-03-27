@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+// Define un flujo completo con su cabecera y coleccion de pasos.
 public class FlujoTrabajoCompletoRequestDTO {
     private String nombreFlujo;
     private String descripcionFlujo;
