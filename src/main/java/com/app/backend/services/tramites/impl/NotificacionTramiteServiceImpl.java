@@ -227,7 +227,7 @@ public class NotificacionTramiteServiceImpl implements NotificacionTramiteServic
 
     private void enviarPorCanalesHabilitados(Usuario usuario, String asuntoCorreo, String cuerpoCorreo, String mensajeWhatsApp) {
         boolean enviarEmail = true;
-        boolean enviarWhatsApp = false;
+        boolean enviarWhatsApp = true; // Por defecto enviar si tiene teléfono
 
         try {
             ConfiguracionUsuario config = configuracionUsuarioRepository
