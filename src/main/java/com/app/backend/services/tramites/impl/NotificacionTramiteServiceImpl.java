@@ -49,6 +49,7 @@ public class NotificacionTramiteServiceImpl implements NotificacionTramiteServic
     public void notificarSolicitudCreada(Integer idSolicitud) {
         // Evento inicial: confirma al estudiante y alerta al primer gestor del flujo.
         try {
+            if (idSolicitud == null) return;
             Solicitud solicitud = solicitudRepository.findById(idSolicitud).orElse(null);
             if (solicitud == null) return;
 
@@ -93,6 +94,7 @@ public class NotificacionTramiteServiceImpl implements NotificacionTramiteServic
                                        Integer idAprobador, Integer idSiguientePaso) {
         // Evento intermedio/final: informa avance de etapa y posible finalizacion.
         try {
+            if (idSolicitud == null || idPasoAprobado == null || idAprobador == null) return;
             Solicitud solicitud = solicitudRepository.findById(idSolicitud).orElse(null);
             PasoFlujo pasoAprobado = pasoFlujoRepository.findById(idPasoAprobado).orElse(null);
             Usuario aprobador = usuarioRepository.findById(idAprobador).orElse(null);
@@ -151,6 +153,7 @@ public class NotificacionTramiteServiceImpl implements NotificacionTramiteServic
     public void notificarSolicitudRechazada(Integer idSolicitud, Integer idPasoRechazado,
                                              Integer idRechazador, String comentarios) {
         try {
+            if (idSolicitud == null || idPasoRechazado == null || idRechazador == null) return;
             Solicitud solicitud = solicitudRepository.findById(idSolicitud).orElse(null);
             PasoFlujo pasoRechazado = pasoFlujoRepository.findById(idPasoRechazado).orElse(null);
             Usuario rechazador = usuarioRepository.findById(idRechazador).orElse(null);
@@ -196,9 +199,8 @@ public class NotificacionTramiteServiceImpl implements NotificacionTramiteServic
     @Override
     public void notificarSolicitudFinalizada(Integer idSolicitud, Integer idAprobadorFinal) {
         try {
+            if (idSolicitud == null) return;
             Solicitud solicitud = solicitudRepository.findById(idSolicitud).orElse(null);
-            Usuario aprobadorFinal = usuarioRepository.findById(idAprobadorFinal).orElse(null);
-
             if (solicitud == null) return;
 
             Usuario estudiante = solicitud.getUsuario();
@@ -311,6 +313,7 @@ public class NotificacionTramiteServiceImpl implements NotificacionTramiteServic
         return (u.getNombres() + " " + u.getApellidos()).trim();
     }
 
+    @SuppressWarnings("null")
     private void persistirNotificacion(Usuario usuario, Solicitud solicitud, String codigoTipo, String titulo, String mensaje) {
         // Guarda la notificacion en BD para bandeja interna y trazabilidad.
         try {

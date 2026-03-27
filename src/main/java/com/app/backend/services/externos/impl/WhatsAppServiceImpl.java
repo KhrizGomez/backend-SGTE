@@ -3,6 +3,7 @@ package com.app.backend.services.externos.impl;
 import com.app.backend.services.externos.IWhatsAppService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -12,6 +13,7 @@ import java.util.Map;
 
 @Slf4j
 @Service
+@SuppressWarnings("null")
 public class WhatsAppServiceImpl implements IWhatsAppService {
 
     @Value("${whatsapp.service.url:http://localhost:3001}")
@@ -21,6 +23,9 @@ public class WhatsAppServiceImpl implements IWhatsAppService {
     private String apiKey;
 
     private final RestTemplate restTemplate = new RestTemplate();
+
+    private static final ParameterizedTypeReference<Map<String, Object>> MAP_TYPE =
+            new ParameterizedTypeReference<>() {};
 
     @Async
     @Override
@@ -49,11 +54,11 @@ public class WhatsAppServiceImpl implements IWhatsAppService {
 
             HttpEntity<Map<String, String>> request = new HttpEntity<>(body, headers);
 
-            ResponseEntity<Map> response = restTemplate.exchange(
+            ResponseEntity<Map<String, Object>> response = restTemplate.exchange(
                     whatsappServiceUrl + "/api/whatsapp/enviar",
                     HttpMethod.POST,
                     request,
-                    Map.class
+                    MAP_TYPE
             );
 
             if (response.getStatusCode().is2xxSuccessful()) {
@@ -69,10 +74,15 @@ public class WhatsAppServiceImpl implements IWhatsAppService {
     @Override
     public boolean estaConectado() {
         try {
-            ResponseEntity<Map> response = restTemplate.getForEntity(
-                    whatsappServiceUrl + "/api/whatsapp/estado", Map.class);
-            if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
-                return "conectado".equals(response.getBody().get("estado"));
+            ResponseEntity<Map<String, Object>> response = restTemplate.exchange(
+                    whatsappServiceUrl + "/api/whatsapp/estado",
+                    HttpMethod.GET,
+                    null,
+                    MAP_TYPE
+            );
+            Map<String, Object> responseBody = response.getBody();
+            if (response.getStatusCode().is2xxSuccessful() && responseBody != null) {
+                return "conectado".equals(responseBody.get("estado"));
             }
         } catch (Exception e) {
             log.debug("WhatsApp service no disponible: {}", e.getMessage());
@@ -89,19 +99,20 @@ public class WhatsAppServiceImpl implements IWhatsAppService {
         HttpEntity<Map<String, String>> request = new HttpEntity<>(Map.of(), headers);
 
         try {
-            ResponseEntity<Map> response = restTemplate.exchange(
+            ResponseEntity<Map<String, Object>> response = restTemplate.exchange(
                     whatsappServiceUrl + "/api/whatsapp/solicitar-codigo",
                     HttpMethod.POST,
                     request,
-                    Map.class
+                    MAP_TYPE
             );
 
-            if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
-                Boolean exito = (Boolean) response.getBody().get("exito");
+            Map<String, Object> responseBody = response.getBody();
+            if (response.getStatusCode().is2xxSuccessful() && responseBody != null) {
+                Boolean exito = (Boolean) responseBody.get("exito");
                 if (Boolean.TRUE.equals(exito)) {
-                    return (String) response.getBody().get("codigo");
+                    return (String) responseBody.get("codigo");
                 } else {
-                    throw new RuntimeException("Error en Node: " + response.getBody().get("error"));
+                    throw new RuntimeException("Error en Node: " + responseBody.get("error"));
                 }
             } else {
                 throw new RuntimeException("Error HTTP del servicio de WhatsApp: " + response.getStatusCode());
