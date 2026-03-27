@@ -10,5 +10,6 @@ import java.util.Optional;
 @Repository
 public interface FacultadRepository extends JpaRepository<Facultad, Integer> {
     Optional<Facultad> findByNombreFacultad(String nombreFacultad);
+    Optional<Facultad> findByNombreFacultadIgnoreCase(String nombreFacultad);
     List<Facultad> findByUniversidadIdUniversidad(Integer idUniversidad);
 }

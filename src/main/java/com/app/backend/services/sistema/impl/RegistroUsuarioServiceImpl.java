@@ -36,6 +36,7 @@ public class RegistroUsuarioServiceImpl implements RegistroUsuarioService {
     private final CoordinadorRepository coordinadorRepository;
     private final DecanoRepository decanoRepository;
     private final CredencialRepository credencialRepository;
+    private final FacultadRepository facultadRepository;
 
     @Override
     public RegistroUsuarioRespuestaDTO registrarUsuario(RegistroUsuarioDTO dto) {
@@ -169,9 +170,28 @@ public class RegistroUsuarioServiceImpl implements RegistroUsuarioService {
             }
 
             case "decano" -> {
+                // Prioriza nombre de facultad para evitar cruces por id provenientes de otros catálogos.
+                Facultad facultadDecano = null;
+
+                if (dto.getNombreFacultad() != null && !dto.getNombreFacultad().isBlank()) {
+                    String nombreFacultad = dto.getNombreFacultad().trim();
+                    facultadDecano = facultadRepository.findByNombreFacultadIgnoreCase(nombreFacultad)
+                            .orElseThrow(() -> new RecursoNoEncontradoException(
+                                    "Facultad no encontrada con nombre: " + nombreFacultad));
+                } else if (dto.getIdFacultad() != null) {
+                    facultadDecano = facultadRepository.findById(dto.getIdFacultad())
+                            .orElseThrow(() -> new RecursoNoEncontradoException(
+                                    "Facultad no encontrada con id: " + dto.getIdFacultad()));
+                }
+
+                if (facultadDecano == null) {
+                    throw new IllegalArgumentException(
+                            "Para registrar un decano debe enviarse nombreFacultad o idFacultad válido.");
+                }
+
                 Decano decano = Decano.builder()
                         .usuario(usuario)
-                        .facultad(carrera != null ? carrera.getFacultad() : null)
+                        .facultad(facultadDecano)
                         .fechaNombramiento(dto.getFechaNombramientoDecano() != null
                                 ? dto.getFechaNombramientoDecano().atStartOfDay()
                                 : null)
